@@ -1,0 +1,54 @@
+# This is a basic workflow to help you get started with Actions
+
+name: "security-bandit"
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - "ISSUE_TEMPLATE/**"
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+      - "ISSUE_TEMPLATE/**"
+
+permissions: read-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+    # Runs a single command using the runners shell
+    - name: Python security check using Bandit
+      uses: ioggstream/bandit-report-artifacts@v1.7.4
+      with:
+        project_path: .
+        config_file: .bandit.yaml
+
+  super-sast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v3
+    - name: Test
+      run: |
+        echo UID=$(id -u) >> .env
+        docker run --rm --user=$(id -u) \
+          -v $PWD:/code \
+          -w /code \
+          -e MAVEN_OPTS=" -ntp " \
+          -e RUN_OWASP_DEPENDENCY_CHECK=false \
+          -e RUN_SPOTBUGS_CHECK=false \
+          -e RUN_SPOTLESS_CHECK=false \
+          -e RUN_SPOTLESS_APPLY=true \
+          -e HOME=/tmp \
+          -e USER=nobody \
+          -e BANDIT_CONFIG_FILE=/code/.bandit.yaml \
+          ghcr.io/par-tec/super-sast:latest

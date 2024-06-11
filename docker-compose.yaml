@@ -1,0 +1,34 @@
+#
+# Run this file using
+#
+# $ docker-compose up pre-commit
+#
+version: "3.9"
+services:
+  pre-commit:
+    build:
+      context: .
+      dockerfile: pre-commit.dockerfile
+    working_dir: /code
+    volumes:
+    - .:/code
+  super-linter:
+    image: github/super-linter:v3.15.5
+    environment:
+    - RUN_LOCAL=true
+    - VALIDATE_MARKDOWN=false
+    - VALIDATE_PYTHON_ISORT=false
+    - VALIDATE_XML=false
+    - VALIDATE_NATURAL_LANGUAGE=false
+    - IGNORE_GITIGNORED_FILES=true
+    volumes:
+    - .:/tmp/lint/
+  # This container will run successfully
+  # only if all dependencies return no errors.
+  test:
+    image: busybox
+    depends_on:
+      pre-commit:
+        condition: service_completed_successfully
+      super-linter:
+        condition: service_completed_successfully

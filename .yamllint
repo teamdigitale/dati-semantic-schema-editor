@@ -1,0 +1,15 @@
+#
+# yamllint configuration files. It disables some checks to ease the integration
+#   with other yaml tools (eg. pre-commit autoformatter, ...)
+#
+extends: default
+
+rules:
+  document-end: disable
+  document-start: disable
+  truthy: disable
+  brackets: disable
+  line-length:
+    max: 90
+  indentation:
+    indent-sequences: consistent
