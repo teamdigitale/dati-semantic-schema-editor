@@ -1,25 +1,63 @@
-# Base Cookiecutter repository
+# Schema Editor
 
-Python template repository including boilerplate workflows and CI.
+Italia OpenAPI Schema Editor devoped on [Swagger Editor](https://github.com/swagger-api/swagger-editor).
+
+This repository uses [PNPM](https://pnpm.io) for packages management and [changesets](https://github.com/changesets/changesets) for monorepo versioning and publishing.
+
+<div align="center">
+
+![Build Status](https://github.com/par-tec/dati-semantic-schema-editor/actions/workflows/ci.yml/badge.svg)
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+
+</div>
+
+## Table of contents
+
+- 💻 [Usage](#usage)
+- 📋 [Development](#development)
+- 📝 [Contributing](#contributing)
+- ⚖️ [License](#license)
+
+## Usage
+
+To use Italia Schema Editor all you need to do is installing the `@italia/schema-editor` plugin and than use as follow:
+
+XXX
+
+## Development
+
+### Installation
+
+Ensure to have installed [PNPM](https://pnpm.io/installation) package manager.
+
+Install node modules by running
 
 ```bash
-.pre-commit-config.yaml
-.github
-└── workflows
-.gitlab
-└── issue_templates
-└── merge_request_templates
-.gitlab-ci.yaml
+pnpm install
 ```
 
-Delete unused folder after creating the repository.
+### Running
 
-## Creating a new project
+Then simply execute
 
-The name of a new project should be descriptive and short.
-The repository name should be in [kebab-case](https://it.wikipedia.org/wiki/Kebab_case), string, e.g., `python-cookiecutter`,
-`api-onboarding`.
-Avoid CamelCase or underscores: you can use them for OOP classes or properties.
+```bash
+pnpm dev
+```
+
+to start all packages in development mode.
+
+### Versioning and publishing
+
+When developing a new feature or performing a new bugfix the version of the package(s) must be increased.
+In order to process this correctly perform the following steps:
+
+- Run `pnpm changeset` in the root of app in order to create a markdown containing the changes.
+
+- Commit the generated files that are inside `.changeset` folder
+
+- When the changesets files reach the "baseBranch" (actually "main"), a github action will generate a new PR with updated packages versions. Review the PR and approve merge.
+
+- Once the PR is merged into the baseBranch, a github action will publish packages automatically.
 
 ## Contributing
 
@@ -28,41 +66,6 @@ Please, see [CONTRIBUTING.md](CONTRIBUTING.md) for more details on:
 - using [pre-commit](CONTRIBUTING.md#pre-commit);
 - following the git flow and making good [pull requests](CONTRIBUTING.md#making-a-pr).
 
-## Using this repository
+## License
 
-You can create new projects starting from this repository,
-so you can use a consistent CI and checks for different projects.
-
-Besides all the explanations in the [CONTRIBUTING.md](CONTRIBUTING.md) file, you can use the docker-compose file
-(e.g. if you prefer to use docker instead of installing the tools locally)
-
-```bash
-docker-compose run pre-commit
-```
-
-## Testing github actions
-
-Tune the Github pipelines in [.github/workflows](.github/workflows/).
-
-To speed up the development, you can test the pipeline with [act](https://github.com/nektos/act).
-Its installation is beyond the scope of this document.
-
-To test the pipeline locally and ensure that secrets (e.g., service accounts and other credentials)
-are correctly configured, use:
-
- ```bash
- # Run a specific job in the pipeline
- act -j test -s CI_API_TOKEN="$(cat gh-ci.json)" \
-      -s CI_ACCOUNT=my-secret-account
- ```
-
-## Testing gitlab-ci
-
-Tune the Gitlab pipelines in [.gitlab-ci.yml](.gitlab-ci.yml).
-
-To speed up the development, you can test the pipeline with gitlab-ci-local.
-Its installation is beyond the scope of this document.
-
-```bash
-gitlab-ci-local --file .gitlab-ci.yaml super-linter
-```
+BSD 3-Clause License © [LICENSE](LICENSE)

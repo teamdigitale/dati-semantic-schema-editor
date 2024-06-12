@@ -1,0 +1,8 @@
+coverage
+public
+dist
+node_modules
+.github
+.changeset
+pnpm-lock.yaml
+pnpm-workspace.yaml

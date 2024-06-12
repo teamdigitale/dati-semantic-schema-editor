@@ -134,3 +134,6 @@ dmypy.json
 
 # CI
 .gitlab-ci-local/
+
+# Dependencies
+/node_modules
