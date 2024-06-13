@@ -9,6 +9,14 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   { files: ['**/*.jsx'], languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } } },
-  { ...pluginReactConfig, rules: { ...pluginReactConfig.rules, 'react/react-in-jsx-scope': 'off' } },
+  pluginReactConfig,
   eslintConfigPrettier,
+  {
+    rules: {
+      'no-unused-vars': 'warn',
+      '@typescript-eslint/no-unused-vars': 'warn',
+      'react/react-in-jsx-scope': 'off',
+      'react/prop-types': 'off',
+    },
+  },
 ];

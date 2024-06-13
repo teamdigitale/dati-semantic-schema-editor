@@ -1,0 +1,57 @@
+@import 'bootstrap-italia/src/scss/functions';
+@import 'bootstrap-italia/src/scss/utilities/colors_vars';
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/badge';
+@import 'bootstrap-italia/src/scss/custom/badge';
+
+.overview-container {
+  padding: 2rem;
+
+  > div {
+    > div {
+      &:not(:first-child) {
+        margin-top: 3rem;
+      }
+    }
+  }
+
+  .info {
+    position: relative;
+
+    .main {
+      .title {
+        display: flex;
+        flex-direction: column-reverse;
+
+        > span {
+          align-self: end;
+
+          > small {
+            @extend .badge;
+            background-color: $primary;
+            color: $white;
+
+            + small {
+              margin-left: 1rem;
+            }
+
+            &.version-stamp {
+              background-color: $success;
+              color: $white;
+            }
+
+            pre {
+              display: block;
+              overflow: hidden;
+              padding: 0;
+              margin: 0;
+              font-family: inherit;
+            }
+          }
+        }
+      }
+    }
+  }
+}

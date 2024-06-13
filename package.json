@@ -16,8 +16,8 @@
   "scripts": {
     "preinstall": "npx -y only-allow pnpm",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "turbo run build",
-    "dev": "turbo run dev",
+    "build": "pnpm -r build",
+    "dev": "pnpm -r --parallel dev",
     "lint": "eslint --fix",
     "ci:version": "pnpm changeset version && pnpm install",
     "ci:publish": "pnpm publish -r",

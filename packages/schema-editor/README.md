@@ -1,30 +1,118 @@
-# React + TypeScript + Vite
+# Schema Editor
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Italia OpenAPI Schema Editor npm package is a [SwaggerUI](https://github.com/swagger-api/swagger-ui) extension, developed upon [Swagger Editor](https://github.com/swagger-api/swagger-editor).
 
-Currently, two official plugins are available:
+## Table of contents
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 📋 [Installation](#installation)
+- 💻 [Usage](#usage)
+- 📝 [Contributing](#contributing)
+- ⚖️ [License](#license)
 
-## Expanding the ESLint configuration
+## Installation
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+```bash
+npm install @italia/schema-editor
+```
 
-- Configure the top-level `parserOptions` property like this:
+## Usage
+
+The package can be used in 2 ways:
+
+- as a react component with editor and operations panels
+- as a SwaggerUI plugins collection to create custom layouts
+- as an Ace editor theme
+
+### Standalone component
 
 ```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
+import { SchemaEditor } from '@italia/schema-editor';
+import '@italia/schema-editor/dist/style.css';
+
+function App() {
+  // By omitting both params the editor will be loaded as empty
+  const params = {
+    url: 'https://raw.githubusercontent.com/samchungy/zod-openapi/master/examples/simple/openapi.yml', // OPTIONAL: an OpenAPI file url
+    schema: '...', // OPTIONAL: an OpenAPI schema definition
+  };
+
+  return (
+    <div className="app-container">
+      <SchemaEditor {...params} />
+    </div>
+  );
 }
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+### SwaggerUI plugins collection
+
+This is an example of using only the right-column layout (without editor):
+
+```js
+import SwaggerUI from 'swagger-ui-react';
+import { ErrorsPlugin, JSONSchema5Plugin, OverviewPlugin } from '@italia/schema-editor';
+import '@italia/schema-editor/dist/style.css';
+
+const CustomLayoutPlugin = () => ({
+  components: {
+    CustomLayout: ({ getComponent }) => getComponent('OverviewContainer', true),
+  },
+});
+
+function App() {
+  return (
+    <SwaggerUI
+      plugins={[ErrorsPlugin, JSONSchema5Plugin, OverviewPlugin, CustomLayoutPlugin]}
+      layout={'CustomLayout'}
+    />
+  );
+}
+```
+
+This is an example of using only the models tab:
+
+```js
+import SwaggerUI from 'swagger-ui-react';
+import { OverviewPlugin } from '@italia/schema-editor';
+import '@italia/schema-editor/dist/style.css';
+
+function CustomLayout({ getComponent }) {
+  const TabModels = getComponent('TabModels', true);
+  return (
+    <div>
+      <h1>Preview of schema models only</h1>
+      <TabModels />
+    </div>
+  );
+}
+
+const CustomLayoutPlugin = () => ({
+  components: {
+    CustomLayout,
+  },
+});
+
+function App() {
+  return <SwaggerUI plugins={[OverviewPlugin, CustomLayoutPlugin]} layout={'CustomLayout'} />;
+}
+```
+
+### Ace editor theme
+
+```js
+import { EditorThemePlugin } from '@italia/schema-editor';
+
+// Initialize ace editor before
+EditorThemePlugin();
+```
+
+## Contributing
+
+Please, see [CONTRIBUTING.md](CONTRIBUTING.md) for more details on:
+
+- using [pre-commit](CONTRIBUTING.md#pre-commit);
+- following the git flow and making good [pull requests](CONTRIBUTING.md#making-a-pr).
+
+## License
+
+BSD 3-Clause License © [LICENSE](LICENSE)
