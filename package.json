@@ -16,9 +16,9 @@
   "scripts": {
     "preinstall": "npx -y only-allow pnpm",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "pnpm -r --parallel run build",
-    "dev": "pnpm -r --parallel run dev",
-    "start": "pnpm -r --parallel run start",
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "eslint --fix",
     "ci:version": "pnpm changeset version && pnpm install",
     "ci:publish": "pnpm publish -r",
     "prepare": "husky install"
@@ -35,6 +35,7 @@
     "husky": "^9.0.11",
     "lint-staged": "^15.2.6",
     "prettier": "^3.3.2",
+    "turbo": "^2.0.3",
     "typescript": "^5.4.5",
     "typescript-eslint": "^7.13.0"
   },

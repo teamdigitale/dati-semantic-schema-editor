@@ -6,6 +6,7 @@ import 'typeface-titillium-web';
 import './App.scss';
 
 import { Header, HeaderBrand, HeaderContent, HeaderRightZone, HeaderSocialsZone, Icon } from 'design-react-kit';
+
 import { SchemaEditor } from '@italia/schema-editor';
 import '@italia/schema-editor/dist/style.css';
 

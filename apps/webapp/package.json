@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@italia/schema-editor": "^0.0.0",
+    "@italia/schema-editor": "workspace:*",
     "bootstrap-italia": "^2.8.2",
     "design-react-kit": "^5.0.4",
     "react": "^18.2.0",

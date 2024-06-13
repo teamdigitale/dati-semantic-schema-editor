@@ -30,3 +30,10 @@ jobs:
           VALIDATE_PYTHON_ISORT: false
           VALIDATE_XML: false
           VALIDATE_NATURAL_LANGUAGE: false
+          VALIDATE_JAVASCRIPT_ES: false
+          VALIDATE_JAVASCRIPT_STANDARD: false
+          JAVASCRIPT_ES_CONFIG_FILE: eslint.config.mjs
+          VALIDATE_TYPESCRIPT_ES: true
+          VALIDATE_TYPESCRIPT_STANDARD: false
+          TYPESCRIPT_ES_CONFIG_FILE: eslint.config.mjs
+
