@@ -1,8 +1,7 @@
 import './SchemaEditor.scss';
 
 import { useEffect, useRef } from 'react';
-import SwaggerEditor from 'swagger-editor';
-import SwaggerUI from 'swagger-ui';
+import type SwaggerUI from 'swagger-ui';
 import { EditorThemePlugin, ErrorsPlugin, JSONSchema5Plugin, LayoutPlugin, OverviewPlugin } from '../../plugins';
 
 interface Props {
@@ -12,9 +11,14 @@ interface Props {
 
 export function SchemaEditor({ spec, url }: Props) {
   const instance = useRef<typeof SwaggerUI>(null);
+  const prevSpec = usePrevious(spec);
+  const prevUrl = usePrevious(url);
 
   useEffect(() => {
-    window.onload = function () {
+    async function loadInstance() {
+      const SwaggerEditor = await import('swagger-editor').then((x) => x.default);
+      const SwaggerUI = await import('swagger-ui').then((x) => x.default);
+
       instance.current = new SwaggerUI({
         ...(spec ? { spec } : {}),
         ...(url ? { url } : {}),
@@ -22,19 +26,7 @@ export function SchemaEditor({ spec, url }: Props) {
         layout: 'ItaliaSchemaEditorLayout',
         presets: [SwaggerUI.presets.apis],
         plugins: [
-          SwaggerEditor.plugins.EditorPlugin,
-          SwaggerEditor.plugins.ValidateBasePlugin,
-          SwaggerEditor.plugins.ValidateSemanticPlugin,
-          SwaggerEditor.plugins.ValidateJsonSchemaPlugin,
-          SwaggerEditor.plugins.LocalStoragePlugin,
-          SwaggerEditor.plugins.EditorAutosuggestPlugin,
-          SwaggerEditor.plugins.EditorAutosuggestSnippetsPlugin,
-          SwaggerEditor.plugins.EditorAutosuggestKeywordsPlugin,
-          SwaggerEditor.plugins.EditorAutosuggestRefsPlugin,
-          SwaggerEditor.plugins.EditorAutosuggestOAS3KeywordsPlugin,
-          SwaggerEditor.plugins.PerformancePlugin,
-          SwaggerEditor.plugins.JumpToPathPlugin,
-          SwaggerEditor.plugins.ASTPlugin,
+          ...Object.values(SwaggerEditor.plugins),
           EditorThemePlugin,
           ErrorsPlugin,
           JSONSchema5Plugin,
@@ -50,8 +42,41 @@ export function SchemaEditor({ spec, url }: Props) {
         oas3GeneratorUrl: 'https://generator3.swagger.io/openapi.json',
         swagger2ConverterUrl: 'https://converter.swagger.io/api/convert',
       });
-    };
+    }
+    if (document.readyState === 'complete') loadInstance();
+    else window.onload = () => loadInstance();
   }, []);
+
+  useEffect(() => {
+    if (instance.current) {
+      const prevStateUrl = instance.current?.specSelectors.url();
+      if (url !== prevStateUrl || url !== prevUrl) {
+        instance.current?.specActions.updateSpec('');
+        if (url) {
+          instance.current?.specActions.updateUrl(url);
+          instance.current?.specActions.download(url);
+        }
+      }
+    }
+  }, [instance.current, url]);
+
+  useEffect(() => {
+    if (instance.current) {
+      const prevStateSpec = instance.current?.specSelectors.specStr();
+      if (spec && spec !== SwaggerUI.config.defaults.spec && (spec !== prevStateSpec || spec !== prevSpec)) {
+        const updatedSpec = typeof spec === 'object' ? JSON.stringify(spec) : spec;
+        instance.current?.specActions.updateSpec(updatedSpec);
+      }
+    }
+  }, [instance.current, spec]);
 
   return <div id="schema-editor" className="schema-editor" />;
 }
+
+const usePrevious = (value) => {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+  return ref.current;
+};

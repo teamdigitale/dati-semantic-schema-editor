@@ -13,12 +13,14 @@ export default defineConfig({
       fileName: (format) => `index.${format}.js`,
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react/jsx-runtime'],
+      external: ['react', 'react-dom', 'react/jsx-runtime', 'swagger-editor', 'swagger-ui'],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'React-dom',
           'react/jsx-runtime': 'react/jsx-runtime',
+          'swagger-editor': 'swagger-editor',
+          'swagger-ui': 'swagger-ui',
         },
       },
     },

@@ -1,10 +1,10 @@
 import { createContext } from 'react';
 import { NavigationItem } from './models';
 
-interface Context {
+export interface ISchemaNavigationContext {
   history: NavigationItem[];
   push: (item: NavigationItem) => void;
   go: (index: number) => void;
 }
 
-export const SchemaNavigationContext = createContext<Context>(null as never);
+export const SchemaNavigationContext = createContext<ISchemaNavigationContext>(null as never);

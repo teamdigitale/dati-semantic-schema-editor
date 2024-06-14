@@ -11,6 +11,28 @@ Italia OpenAPI Schema Editor npm package is a [SwaggerUI](https://github.com/swa
 
 ## Installation
 
+First of all install peer dependencies for styles and swagger ui
+
+```bash
+npm install swagger-editor bootstrap-italia typeface-lora typeface-roboto-mono typeface-titillium-web
+```
+
+Then apply the downloaded css as below:
+
+```js
+import React from 'react';
+import 'bootstrap-italia/dist/css/bootstrap-italia.min.css';
+import 'typeface-titillium-web';
+import 'typeface-roboto-mono';
+import 'typeface-lora';
+
+function App() {
+  return <div>This is an example</div>;
+}
+```
+
+Finally install @italia/schema-editor and use it like described in the next paragraph
+
 ```bash
 npm install @italia/schema-editor
 ```
@@ -55,7 +77,10 @@ import '@italia/schema-editor/dist/style.css';
 
 const CustomLayoutPlugin = () => ({
   components: {
-    CustomLayout: ({ getComponent }) => getComponent('OverviewContainer', true),
+    CustomLayout: ({ getComponent }) => {
+      const OverviewContainer = getComponent('OverviewContainer', true);
+      return <OverviewContainer />;
+    },
   },
 });
 
