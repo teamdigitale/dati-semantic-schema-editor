@@ -1,0 +1,16 @@
+.swagger-ui {
+  table.model {
+    tr.property-row {
+      td {
+        padding-bottom: 1.5rem;
+      }
+    }
+    .renderedMarkdown {
+      p {
+        font-size: inherit;
+        font-style: italic;
+        margin-bottom: 0;
+      }
+    }
+  }
+}

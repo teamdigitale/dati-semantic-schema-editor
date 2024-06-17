@@ -41,6 +41,7 @@ export function SchemaEditor({ spec, url }: Props) {
         swagger2GeneratorUrl: 'https://generator.swagger.io/api/swagger.json',
         oas3GeneratorUrl: 'https://generator3.swagger.io/openapi.json',
         swagger2ConverterUrl: 'https://converter.swagger.io/api/convert',
+        jsonldPlaygroundUrl: 'https://json-ld.org/playground/#startTab=tab-expand&json-ld=',
       });
     }
     if (document.readyState === 'complete') loadInstance();

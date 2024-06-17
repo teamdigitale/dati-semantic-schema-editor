@@ -42,22 +42,20 @@ export const ModelContainer = ({
   const Model = getComponent('Model');
 
   return (
-    <div key={name} className="d-block neutral-2-bg p-3 mb-3">
-      {/* Top */}
-      <a href="#" className="d-block" onClick={(e) => handleItemClick(e, name)}>
-        <div className="d-flex">
-          <div className="flex-grow-1">
-            <strong>{name}</strong>
-          </div>
+    <div key={name} className="model-container d-block neutral-2-bg p-3 mb-3">
+      {!expanded ? (
+        <a key={name} href="#" className="d-block" onClick={(e) => handleItemClick(e, name)}>
           <div className="d-flex">
-            <JumpToPath specPath={[...specPathBase, name]} content={'#'} />
+            <div className="flex-grow-1">
+              <strong>{name}</strong>
+            </div>
+            <div className="d-flex">
+              <JumpToPath specPath={[...specPathBase, name]} content={'#'} />
+            </div>
           </div>
-        </div>
-      </a>
-
-      {/* Content */}
-      {expanded && (
-        <div className="mt-3">
+        </a>
+      ) : (
+        <div>
           <Model
             name={name}
             expandDepth={defaultModelsExpandDepth}

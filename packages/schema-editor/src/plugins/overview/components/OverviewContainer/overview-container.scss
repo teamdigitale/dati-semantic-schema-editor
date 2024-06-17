@@ -17,6 +17,15 @@
     }
   }
 
+  .swagger-ui {
+    pre,
+    .pre,
+    .code {
+      font-family: var(--bs-font-monospace);
+      font-size: small;
+    }
+  }
+
   .info {
     position: relative;
 
