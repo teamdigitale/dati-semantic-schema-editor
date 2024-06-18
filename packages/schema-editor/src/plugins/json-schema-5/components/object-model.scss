@@ -1,15 +1,26 @@
-.swagger-ui {
-  table.model {
-    tr.property-row {
-      td {
-        padding-bottom: 1.5rem;
-      }
-    }
-    .renderedMarkdown {
-      p {
-        font-size: inherit;
-        font-style: italic;
-        margin-bottom: 0;
+.object-model {
+  .brace-open,
+  .brace-close {
+    font-weight: bold;
+  }
+
+  table.modello {
+    tbody {
+      tr {
+        td {
+          vertical-align: top;
+          padding-left: 1.5rem;
+          padding-bottom: 1rem;
+          font-size: small;
+
+          &:first-of-type {
+            font-weight: bold;
+
+            .star {
+              color: var(--bs-danger);
+            }
+          }
+        }
       }
     }
   }

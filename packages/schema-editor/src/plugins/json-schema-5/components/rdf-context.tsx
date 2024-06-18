@@ -1,19 +1,19 @@
 import { useJsonLDContextResolver } from '../hooks';
-import { DictModel } from './dict-model';
-import { PropertyModel } from './property-model';
+import { RDFVocabulary } from './rdf-vocabulary';
+import { RDFProperties } from './rdf-properties';
 
-export const ContextModel = ({ propertyName, jsonldContext }) => {
+export const RDFContext = ({ propertyName, jsonldContext }) => {
   const resolvedContext = useJsonLDContextResolver(propertyName, jsonldContext);
 
   return resolvedContext ? (
     <div>
       <div>
-        <PropertyModel {...resolvedContext} />
+        <RDFProperties {...resolvedContext} />
       </div>
 
       {resolvedContext.vocabularyUri && (
         <div className="mt-2">
-          <DictModel {...resolvedContext} />
+          <RDFVocabulary {...resolvedContext} />
         </div>
       )}
     </div>

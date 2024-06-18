@@ -1,5 +1,4 @@
 import './overview-container.scss';
-import 'swagger-ui/dist/swagger-ui.css';
 
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'design-react-kit';
 import { useState } from 'react';
@@ -11,7 +10,7 @@ const OverviewContainer = ({ errSelectors, specSelectors, getComponent }) => {
   const InfoContainer = getComponent('InfoContainer', true);
   const TabOperations = getComponent('TabOperations', true);
   const TabWebhooks = getComponent('TabWebhooks', true);
-  const TabModels = getComponent('TabModels', true);
+  const Models = getComponent('Models', true);
 
   const isSwagger2 = specSelectors.isSwagger2();
   const isOAS3 = specSelectors.isOAS3();
@@ -63,18 +62,14 @@ const OverviewContainer = ({ errSelectors, specSelectors, getComponent }) => {
   }
 
   if (loadingMessage) {
-    return (
-      <div className="swagger-ui">
-        <div className="loading-container">{loadingMessage}</div>
-      </div>
-    );
+    return <div className="loading-container">{loadingMessage}</div>;
   }
 
   const tabs = [
     { id: 'informations', title: 'Informations', Component: InfoContainer },
     { id: 'operations', title: 'Operations', Component: TabOperations },
     ...(isOAS31 ? [{ id: 'webhooks', title: 'Webhooks', Component: TabWebhooks }] : []),
-    { id: 'models', title: 'Models', Component: TabModels },
+    { id: 'models', title: 'Models', Component: Models },
   ];
 
   return (

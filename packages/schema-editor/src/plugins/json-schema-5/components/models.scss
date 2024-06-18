@@ -1,0 +1,59 @@
+@import 'bootstrap-italia/src/scss/functions';
+@import 'bootstrap-italia/src/scss/utilities/colors_vars';
+@import 'bootstrap-italia/src/scss/variables';
+
+.modelli {
+  pre,
+  .pre {
+    font-size: small;
+  }
+
+  .prop-type-container {
+    .prop-type,
+    .prop-format {
+      font-weight: bold;
+      color: $primary;
+    }
+  }
+
+  .property {
+    color: $text-muted;
+
+    &:first-of-type {
+      br {
+        display: none;
+      }
+    }
+  }
+
+  .renderedMarkdown {
+    p {
+      font-style: italic;
+      font-weight: inherit;
+      font-size: inherit;
+      line-height: inherit;
+      color: $text-muted;
+      margin: 0;
+    }
+  }
+
+  .model-toggle {
+    top: unset;
+    vertical-align: middle;
+
+    &:after {
+      content: '';
+      background: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>')
+        50% no-repeat;
+      background-size: 100%;
+      display: inline-block;
+      height: 20px;
+      width: 20px;
+      vertical-align: bottom;
+    }
+  }
+
+  .model-jump-to-path {
+    cursor: pointer;
+  }
+}

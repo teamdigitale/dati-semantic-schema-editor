@@ -1,3 +1,4 @@
+import 'swagger-ui/dist/swagger-ui.css';
 import './SchemaEditor.scss';
 
 import { useEffect, useRef } from 'react';
@@ -37,7 +38,7 @@ export function SchemaEditor({ spec, url }: Props) {
             componentList: ['ItaliaSchemaEditorLayout', 'Topbar', 'EditorContainer'],
           }),
         ],
-        showExtensions: true,
+        showExtensions: false, // Avoid showing properties starting with x-
         swagger2GeneratorUrl: 'https://generator.swagger.io/api/swagger.json',
         oas3GeneratorUrl: 'https://generator3.swagger.io/openapi.json',
         swagger2ConverterUrl: 'https://converter.swagger.io/api/convert',

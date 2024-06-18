@@ -2,7 +2,7 @@ import { Badge, Spinner } from 'design-react-kit';
 import { useSparqlQuery } from '../hooks/use-sparql';
 import { basename } from '../utils';
 
-export const PropertyModel = ({ fieldUri, fieldName }) => {
+export const RDFProperties = ({ fieldUri, fieldName }) => {
   const { data, status } = useSparqlQuery(
     `
     prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
