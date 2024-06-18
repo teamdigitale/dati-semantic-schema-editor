@@ -1,7 +1,7 @@
 import { Breadcrumb, BreadcrumbItem, Icon } from 'design-react-kit';
 import React from 'react';
 import { useSchemaNavigation } from '../../overview/components/Navigation';
-import { useSchemaBasePath } from '../../overview/hooks/schema.hooks';
+import { useSchemaBasePath } from '../hooks';
 
 export const ModelsBreadcrumb = ({ specSelectors }) => {
   const { history, go } = useSchemaNavigation();

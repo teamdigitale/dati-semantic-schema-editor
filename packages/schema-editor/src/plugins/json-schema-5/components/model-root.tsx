@@ -1,6 +1,6 @@
 import Im, { Map } from 'immutable';
 import { useSchemaNavigation } from '../../overview/components/Navigation';
-import { useSchemaBasePath } from '../../overview/hooks/schema.hooks';
+import { useSchemaBasePath } from '../hooks';
 
 export const ModelRoot = ({
   name,
