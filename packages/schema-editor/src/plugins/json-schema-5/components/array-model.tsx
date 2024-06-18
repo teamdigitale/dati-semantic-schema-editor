@@ -4,7 +4,7 @@ import { sanitizeUrl } from '../../../utils';
 import { TypeFormat } from './common/type-format';
 import { Alert } from 'design-react-kit';
 import { JsonLdContextAccordion } from './common/jsonld-context-accordion';
-import { Example } from './common/example';
+import { ExampleBlock } from './common/example';
 
 const propClass = 'property';
 
@@ -16,7 +16,7 @@ export const ArrayModel = (props) => {
   const items = schema.get('items');
   const example = schema.get('example');
   const properties = schema.filter(
-    (v, key) => ['type', 'items', 'description', '$$ref', 'externalDocs'].indexOf(key) === -1,
+    (v, key) => ['type', 'items', 'description', '$$ref', 'externalDocs', 'example'].indexOf(key) === -1,
   );
   const externalDocsUrl = schema.getIn(['externalDocs', 'url']);
   const externalDocsDescription = schema.getIn(['externalDocs', 'description']);
@@ -61,7 +61,9 @@ export const ArrayModel = (props) => {
         />
       </div>
 
-      {depth === 1 && !!example && <Example example={example} jsonldContext={jsonldContext} getConfigs={getConfigs} />}
+      {!!example && (
+        <ExampleBlock depth={depth} example={example} jsonldContext={jsonldContext} getConfigs={getConfigs} />
+      )}
 
       {depth === 1 && !!jsonldContext && <JsonLdContextAccordion jsonldContext={jsonldContext} />}
     </div>

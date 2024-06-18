@@ -5,7 +5,7 @@ import { getExtensions } from '../utils';
 import { TypeFormat } from './common/type-format';
 import { Alert } from 'design-react-kit';
 import { JsonLdContextAccordion } from './common/jsonld-context-accordion';
-import { Example } from './common/example';
+import { ExampleBlock } from './common/example';
 
 const propClass = 'property';
 
@@ -26,7 +26,9 @@ export const PrimitiveModel = ({ schema, depth, jsonldContext: rootJsonldContext
   const example = schema.get('example');
   const extensions = getExtensions(schema);
   const properties = schema
-    .filter((_, key) => ['enum', 'type', 'format', 'description', '$$ref', 'externalDocs'].indexOf(key) === -1)
+    .filter(
+      (_, key) => ['enum', 'type', 'format', 'description', '$$ref', 'externalDocs', 'example'].indexOf(key) === -1,
+    )
     .filterNot((_, key) => extensions.has(key));
   const externalDocsUrl = schema.getIn(['externalDocs', 'url']);
   const externalDocsDescription = schema.getIn(['externalDocs', 'description']);
@@ -82,7 +84,9 @@ export const PrimitiveModel = ({ schema, depth, jsonldContext: rootJsonldContext
         </span>
       ) : null}
 
-      {depth === 1 && !!example && <Example example={example} jsonldContext={jsonldContext} getConfigs={getConfigs} />}
+      {!!example && (
+        <ExampleBlock depth={depth} example={example} jsonldContext={jsonldContext} getConfigs={getConfigs} />
+      )}
 
       {depth === 1 && !!jsonldContext && <JsonLdContextAccordion jsonldContext={jsonldContext} />}
     </div>

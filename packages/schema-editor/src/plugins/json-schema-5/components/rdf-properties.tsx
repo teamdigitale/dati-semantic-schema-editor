@@ -24,17 +24,17 @@ export const RDFProperties = ({ fieldUri, fieldName }) => {
   ) : content ? (
     <>
       {!!content.domain && (
-        <Badge color="primary" href={content.domain.toString()} target="_blank" rel="noreferrer" className="me-1">
+        <Badge color="primary" href={content.domain.toString()} target="_blank" rel="noreferrer">
           {basename(content.domain)}
         </Badge>
       )}
 
-      <Badge color="secondary" href={fieldUri.toString()} target="_blank" rel="noreferrer" className="me-1">
+      <Badge color="secondary" href={fieldUri.toString()} target="_blank" rel="noreferrer">
         {fieldName.toString()}
       </Badge>
 
       {!!content.class && (
-        <Badge color="success" href={content.class.toString()} target="_blank" rel="noreferrer" className="me-1">
+        <Badge color="success" href={content.class.toString()} target="_blank" rel="noreferrer">
           {basename(content.class)}
         </Badge>
       )}

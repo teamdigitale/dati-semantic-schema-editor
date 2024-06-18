@@ -3,7 +3,7 @@ import './object-model.scss';
 import { Alert } from 'design-react-kit';
 import { List } from 'immutable';
 import { sanitizeUrl } from '../../../utils';
-import { Example } from './common/example';
+import { ExampleBlock } from './common/example';
 import { JsonLdContextAccordion } from './common/jsonld-context-accordion';
 import { RDFContext } from './rdf-context';
 
@@ -14,8 +14,6 @@ const propClass = 'property';
 const ObjectModel = ({
   schema,
   name,
-  displayName,
-  isRef,
   getComponent,
   getConfigs,
   depth,
@@ -248,7 +246,9 @@ const ObjectModel = ({
           <span className="brace-close">{braceClose}</span>
         </div>
 
-        {!!example && <Example example={example} jsonldContext={jsonldContext} getConfigs={getConfigs} />}
+        {!!example && (
+          <ExampleBlock depth={1} example={example} jsonldContext={jsonldContext} getConfigs={getConfigs} />
+        )}
 
         {!!jsonldContext && <JsonLdContextAccordion jsonldContext={jsonldContext} />}
 

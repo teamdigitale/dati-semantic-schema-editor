@@ -22,7 +22,6 @@ export const useJsonLDContextResolver = (key: string, jsonldContext: any) => {
   }
 
   if (typeof fieldName === 'string' && fieldName.includes(':')) {
-    console.log('processing : field', fieldName);
     const [a, b] = fieldName.split(':', 2);
     fieldName = b;
     ns = a;

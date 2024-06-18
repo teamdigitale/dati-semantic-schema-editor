@@ -41,8 +41,6 @@ export const ModelRoot = ({
   const JumpToPath = getComponent('JumpToPath', true);
   const Model = getComponent('Model');
 
-  console.log(fullPath, specPath, schemaValue, rawSchemaValue, schema, rawSchema);
-
   return (
     <div key={name} className="model-container">
       {!expanded ? (
