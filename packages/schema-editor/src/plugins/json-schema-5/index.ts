@@ -1,4 +1,5 @@
 import { ArrayModel } from './components/array-model';
+import { Model } from './components/model';
 import { ModelCollapse } from './components/model-collapse';
 import { ModelRoot } from './components/model-root';
 import { Models } from './components/models';
@@ -11,6 +12,7 @@ export const JSONSchema5Plugin = () => ({
     Models,
     ModelsBreadcrumb,
     ModelRoot,
+    Model,
     ModelCollapse,
     PrimitiveModel,
     ArrayModel,
