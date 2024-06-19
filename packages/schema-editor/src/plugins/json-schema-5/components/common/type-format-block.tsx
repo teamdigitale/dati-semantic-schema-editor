@@ -3,7 +3,7 @@ interface Props {
   format?: string;
 }
 
-export function TypeFormat({ type, format }: Props) {
+export function TypeFormatBlock({ type, format }: Props) {
   return (
     <div className="prop-type-container">
       <span className="prop-type">{type}</span>

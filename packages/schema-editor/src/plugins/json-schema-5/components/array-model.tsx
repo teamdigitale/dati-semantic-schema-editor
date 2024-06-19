@@ -1,53 +1,48 @@
 import './array-model.scss';
 
-import { sanitizeUrl } from '../../../utils';
-import { TypeFormat } from './common/type-format';
-import { Alert } from 'design-react-kit';
-import { JsonLdContextAccordion } from './common/jsonld-context-accordion';
-import { ExampleBlock } from './common/example';
-
-const propClass = 'property';
+import { DeprecatedBlock } from './common/deprecated-block';
+import { DescriptionBlock } from './common/description-block';
+import { ExampleBlock } from './common/example-block';
+import { ExternalDocsBlock } from './common/external-docs-block';
+import { JsonLdContextBlock } from './common/jsonld-context-block';
+import { PropertiesBlock } from './common/properties-block';
+import { TitleBlock } from './common/title-block';
+import { TypeFormatBlock } from './common/type-format-block';
 
 export const ArrayModel = (props) => {
-  const { getComponent, getConfigs, schema, depth, specPath, jsonldContext: rootJsonldContext } = props;
+  const {
+    schema,
+    name,
+    displayName,
+    getComponent,
+    getConfigs,
+    depth,
+    specPath,
+    jsonldContext: rootJsonldContext,
+  } = props;
 
-  const deprecated = schema.get('deprecated');
-  const description = schema.get('description');
+  const title = (schema?.get('title') as string) || displayName || name || '';
+  const jsonldContext = rootJsonldContext || schema.get('x-jsonld-context');
   const items = schema.get('items');
-  const example = schema.get('example');
   const properties = schema.filter(
     (v, key) => ['type', 'items', 'description', '$$ref', 'externalDocs', 'example'].indexOf(key) === -1,
   );
-  const externalDocsUrl = schema.getIn(['externalDocs', 'url']);
-  const externalDocsDescription = schema.getIn(['externalDocs', 'description']);
-  const jsonldContext = schema.get('x-jsonld-context') || rootJsonldContext;
 
-  const Markdown = getComponent('Markdown', true);
   const Model = getComponent('Model');
-  const Property = getComponent('Property');
-  const Link = getComponent('Link');
 
   return (
     <div className="modello array-model">
-      <TypeFormat type="array" />
+      <TitleBlock title={title} specPath={specPath} depth={depth} getComponent={getComponent} />
 
-      {!!deprecated && <Alert color="warning">This definition is deprecated</Alert>}
+      <TypeFormatBlock type="array" />
 
-      {!!description && <Markdown source={description} />}
+      <DeprecatedBlock schema={schema} />
 
-      {!!externalDocsUrl && (
-        <div className="external-docs">
-          <Link target="_blank" href={sanitizeUrl(externalDocsUrl)}>
-            {externalDocsDescription || externalDocsUrl}
-          </Link>
-        </div>
-      )}
+      <DescriptionBlock schema={schema} getComponent={getComponent} />
 
-      {properties.size
-        ? properties
-            .entrySeq()
-            .map(([key, v]) => <Property key={`${key}-${v}`} propKey={key} propVal={v} propClass={propClass} />)
-        : null}
+      <ExternalDocsBlock schema={schema} getComponent={getComponent} />
+
+      <PropertiesBlock properties={properties} getComponent={getComponent} />
 
       <div>
         <Model
@@ -61,11 +56,9 @@ export const ArrayModel = (props) => {
         />
       </div>
 
-      {!!example && (
-        <ExampleBlock depth={depth} example={example} jsonldContext={jsonldContext} getConfigs={getConfigs} />
-      )}
+      <ExampleBlock schema={schema} jsonldContext={jsonldContext} depth={depth} getConfigs={getConfigs} />
 
-      {depth === 1 && !!jsonldContext && <JsonLdContextAccordion jsonldContext={jsonldContext} />}
+      <JsonLdContextBlock jsonldContext={jsonldContext} depth={depth} />
     </div>
   );
 };

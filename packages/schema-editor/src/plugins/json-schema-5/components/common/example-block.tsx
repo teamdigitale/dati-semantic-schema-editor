@@ -1,8 +1,9 @@
 import { Callout, CalloutTitle, Icon, CalloutText } from 'design-react-kit';
 
-export function ExampleBlock({ depth, example, jsonldContext, getConfigs }) {
+export function ExampleBlock({ depth, schema, jsonldContext, getConfigs }) {
   const { jsonldPlaygroundUrl } = getConfigs();
-  const exampleString = JSON.stringify(example, null, 2);
+  const example: object = schema.get('example');
+  const exampleString: string = example ? JSON.stringify(example, null, 2) : '';
 
   const OpenInPlaygroundButton = ({ className }) =>
     jsonldPlaygroundUrl && jsonldContext && example ? (
@@ -16,7 +17,7 @@ export function ExampleBlock({ depth, example, jsonldContext, getConfigs }) {
       </a>
     ) : null;
 
-  return depth <= 1 ? (
+  return !example ? null : depth <= 1 ? (
     <Callout color="note" detailed className="p-4 mt-3">
       <CalloutTitle>
         Example:

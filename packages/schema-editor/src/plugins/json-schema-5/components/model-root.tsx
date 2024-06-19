@@ -56,34 +56,23 @@ export const ModelRoot = ({
         </a>
       ) : (
         <div className="d-block neutral-2-bg p-3 mb-3">
-          <h4 className="d-flex">
-            {(schema?.get('title') as string) || displayName || name || ''}
-            <span className="ms-auto">
-              <span className="model-jump-to-path">
-                <JumpToPath specPath={specPath} content={'#'} />
-              </span>
-            </span>
-          </h4>
-
-          <div>
-            <Model
-              name={name}
-              expandDepth={defaultModelsExpandDepth}
-              schema={schema || Im.Map()}
-              displayName={displayName}
-              fullPath={fullPath}
-              specPath={specPath}
-              getComponent={getComponent}
-              specSelectors={specSelectors}
-              getConfigs={getConfigs}
-              layoutSelectors={layoutSelectors}
-              layoutActions={layoutActions}
-              includeReadOnly={true}
-              includeWriteOnly={true}
-              expanded={true}
-              depth={1}
-            />
-          </div>
+          <Model
+            name={name}
+            expandDepth={defaultModelsExpandDepth}
+            schema={schema || Im.Map()}
+            displayName={displayName}
+            fullPath={fullPath}
+            specPath={specPath}
+            getComponent={getComponent}
+            specSelectors={specSelectors}
+            getConfigs={getConfigs}
+            layoutSelectors={layoutSelectors}
+            layoutActions={layoutActions}
+            includeReadOnly={true}
+            includeWriteOnly={true}
+            expanded={true}
+            depth={1}
+          />
         </div>
       )}
     </div>

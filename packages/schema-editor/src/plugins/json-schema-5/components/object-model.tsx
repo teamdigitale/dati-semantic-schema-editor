@@ -1,19 +1,22 @@
 import './object-model.scss';
 
-import { Alert } from 'design-react-kit';
 import { List } from 'immutable';
-import { sanitizeUrl } from '../../../utils';
-import { ExampleBlock } from './common/example';
-import { JsonLdContextAccordion } from './common/jsonld-context-accordion';
+import { DeprecatedBlock } from './common/deprecated-block';
+import { DescriptionBlock } from './common/description-block';
+import { ExampleBlock } from './common/example-block';
+import { ExternalDocsBlock } from './common/external-docs-block';
+import { JsonLdContextBlock } from './common/jsonld-context-block';
+import { PropertiesBlock } from './common/properties-block';
 import { RDFContext } from './rdf-context';
+import { TitleBlock } from './common/title-block';
 
 const braceOpen = '{';
 const braceClose = '}';
-const propClass = 'property';
 
 const ObjectModel = ({
   schema,
   name,
+  displayName,
   getComponent,
   getConfigs,
   depth,
@@ -23,23 +26,15 @@ const ObjectModel = ({
   jsonldContext: rootJsonldContext,
   ...otherProps
 }) => {
-  if (!schema) {
-    return null;
-  }
-
   const { specSelectors, expandDepth, includeReadOnly, includeWriteOnly } = otherProps;
   const { showExtensions } = getConfigs();
 
-  const jsonldContext = schema.get('x-jsonld-context') || rootJsonldContext;
-  const example = schema.get('example');
-  const description = schema.get('description');
+  const title = (schema?.get('title') as string) || displayName || name || '';
+  const jsonldContext = rootJsonldContext || schema.get('x-jsonld-context');
   const properties = schema.get('properties');
   const additionalProperties = schema.get('additionalProperties');
   const requiredProperties = schema.get('required');
   const infoProperties = schema.filter((v, key) => ['maxProperties', 'minProperties', 'nullable'].indexOf(key) !== -1);
-  const deprecated = schema.get('deprecated');
-  const externalDocsUrl = schema.getIn(['externalDocs', 'url']);
-  const externalDocsDescription = schema.getIn(['externalDocs', 'description']);
   const extensions = schema
     .entrySeq()
     .filter(([key]) => key.startsWith('x-'))
@@ -51,28 +46,23 @@ const ObjectModel = ({
   const oneOf = isOAS3 ? schema.get('oneOf') : null;
   const not = isOAS3 ? schema.get('not') : null;
 
-  const Markdown = getComponent('Markdown', true);
   const Model = getComponent('Model');
   const ModelCollapse = getComponent('ModelCollapse');
-  const Property = getComponent('Property');
-  const Link = getComponent('Link');
 
   return (
     <div className="modello object-model">
       <ModelCollapse modelName={name} onToggle={onToggle} expanded={expanded ? true : depth <= expandDepth}>
+        <TitleBlock title={title} specPath={specPath} depth={depth} getComponent={getComponent} />
+
         {/* <TypeFormat type="object" /> */}
 
-        {!!deprecated && <Alert color="warning">This definition is deprecated</Alert>}
+        <DeprecatedBlock schema={schema} />
 
-        {!!description && <Markdown source={description} />}
+        <DescriptionBlock schema={schema} getComponent={getComponent} />
 
-        {!!externalDocsUrl && (
-          <div className="external-docs">
-            <Link target="_blank" href={sanitizeUrl(externalDocsUrl)}>
-              {externalDocsDescription || externalDocsUrl}
-            </Link>
-          </div>
-        )}
+        <ExternalDocsBlock schema={schema} getComponent={getComponent} />
+
+        <PropertiesBlock properties={infoProperties} getComponent={getComponent} />
 
         <div>
           <span className="brace-open object">{braceOpen}</span>
@@ -246,17 +236,9 @@ const ObjectModel = ({
           <span className="brace-close">{braceClose}</span>
         </div>
 
-        {!!example && (
-          <ExampleBlock depth={1} example={example} jsonldContext={jsonldContext} getConfigs={getConfigs} />
-        )}
+        <ExampleBlock schema={schema} jsonldContext={jsonldContext} depth={depth} getConfigs={getConfigs} />
 
-        {!!jsonldContext && <JsonLdContextAccordion jsonldContext={jsonldContext} />}
-
-        {infoProperties.size
-          ? infoProperties
-              .entrySeq()
-              .map(([key, v]) => <Property key={`${key}-${v}`} propKey={key} propVal={v} propClass={propClass} />)
-          : null}
+        <JsonLdContextBlock jsonldContext={jsonldContext} depth={depth} />
       </ModelCollapse>
     </div>
   );

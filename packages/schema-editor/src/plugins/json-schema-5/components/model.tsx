@@ -88,6 +88,10 @@ export const Model = (props) => {
   const isRef = propIsRef !== undefined ? propIsRef : !!$$ref;
   type = (schema && schema.get('type')) || type;
 
+  if (!schema?.get) {
+    return null;
+  }
+
   switch (type) {
     case 'object':
       return (
