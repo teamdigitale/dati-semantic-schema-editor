@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useSchemaNavigation } from '../../overview/components/Navigation';
 
-export function ModelCollapse({ children, modelName, expanded }) {
+export function ModelCollapse({ children, modelName, expanded, jsonldContext }) {
   const { push } = useSchemaNavigation();
   const [isExpanded, setIsExpanded] = useState<boolean>(expanded);
   const title = modelName || 'Show';
 
   const handleClick = (): void => {
     if (modelName) {
-      push({ id: modelName, title: modelName });
+      push({ id: modelName, title: modelName, jsonldContext });
     } else {
       setIsExpanded(!expanded);
     }

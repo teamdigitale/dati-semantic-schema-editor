@@ -34,7 +34,6 @@ export function ExampleBlock({ depth, schema, jsonldContext, getConfigs }) {
       </span>
       <span className="json-schema-2020-12-keyword__value json-schema-2020-12-keyword__value--const ms-2">
         {exampleString}
-        <OpenInPlaygroundButton className="ms-auto me-4 z-1" />
       </span>
     </div>
   );

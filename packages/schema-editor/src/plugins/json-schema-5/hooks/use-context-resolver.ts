@@ -1,11 +1,25 @@
-export const useJsonLDContextResolver = (key: string, jsonldContext: any) => {
+interface JsonLDContextResolverResponse {
+  fieldName: string | undefined;
+  fieldUri: string | undefined;
+  vocabularyUri: string | undefined;
+  ns: string | undefined;
+}
+
+export const useJsonLDContextResolver = (key: string, jsonldContext: any): JsonLDContextResolverResponse => {
+  const emptyResponse: JsonLDContextResolverResponse = {
+    fieldName: undefined,
+    fieldUri: undefined,
+    vocabularyUri: undefined,
+    ns: undefined,
+  };
+
   if (!key || !jsonldContext || typeof jsonldContext !== 'object' || !Object.keys(jsonldContext).length) {
-    return undefined;
+    return emptyResponse;
   }
 
   let fieldName: any = jsonldContext.get(key);
   if (fieldName === null) {
-    return undefined;
+    return emptyResponse;
   }
   if (fieldName === undefined) {
     fieldName = key;

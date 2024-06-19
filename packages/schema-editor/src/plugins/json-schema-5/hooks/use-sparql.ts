@@ -2,7 +2,11 @@ import { useCallback, useEffect, useState } from 'react';
 
 const BASE_URL = 'https://www.robertopolli.it/sparc0rs/';
 
-export function useSparqlQuery(query: string) {
+interface SparqlQueryOptions {
+  skip?: boolean;
+}
+
+export function useSparqlQuery(query: string, options?: SparqlQueryOptions) {
   const [status, setStatus] = useState<'idle' | 'pending' | 'fulfilled' | 'error'>('idle');
   const [data, setData] = useState<any | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
@@ -25,6 +29,7 @@ export function useSparqlQuery(query: string) {
   }, []);
 
   useEffect(() => {
+    if (options?.skip) return;
     callback(query);
   }, [callback, query]);
 

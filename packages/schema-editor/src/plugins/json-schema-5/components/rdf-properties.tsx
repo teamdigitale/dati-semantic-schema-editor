@@ -1,8 +1,12 @@
-import { Badge, Spinner } from 'design-react-kit';
+import './rdf-properties.scss';
+
+import { Breadcrumb, BreadcrumbItem, Icon, Spinner } from 'design-react-kit';
 import { useSparqlQuery } from '../hooks/use-sparql';
 import { basename } from '../utils';
+import { useJsonLDContextResolver } from '../hooks';
 
-export const RDFProperties = ({ fieldUri, fieldName }) => {
+export const RDFProperties = ({ propertyName, jsonldContext }) => {
+  const { fieldUri, fieldName } = useJsonLDContextResolver(propertyName, jsonldContext);
   const { data, status } = useSparqlQuery(
     `
     prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -14,30 +18,36 @@ export const RDFProperties = ({ fieldUri, fieldName }) => {
       .
     }
   `,
+    { skip: !fieldUri },
   );
+
   const content = data?.results?.bindings
     ? Object.fromEntries(Object.entries(data.results.bindings[0] || {}).map(([k, v]: any[]) => [k, v.value]))
     : undefined;
 
-  return status === 'pending' ? (
-    <Spinner active small />
-  ) : content ? (
-    <>
-      {!!content.domain && (
-        <Badge color="primary" href={content.domain.toString()} target="_blank" rel="noreferrer">
-          {basename(content.domain)}
-        </Badge>
-      )}
+  const parts = [
+    ...(content?.domain ? [{ title: basename(content.domain), href: content.domain.toString() }] : []),
+    ...(fieldName ? [{ title: fieldName, href: fieldUri?.toString() }] : []),
+  ];
 
-      <Badge color="secondary" href={fieldUri.toString()} target="_blank" rel="noreferrer">
-        {fieldName.toString()}
-      </Badge>
-
-      {!!content.class && (
-        <Badge color="success" href={content.class.toString()} target="_blank" rel="noreferrer">
-          {basename(content.class)}
-        </Badge>
-      )}
-    </>
-  ) : null;
+  if (status === 'pending') {
+    return <Spinner active small />;
+  } else if (!parts?.length) {
+    return null;
+  }
+  return (
+    <div className="rdf-properties">
+      <Breadcrumb>
+        {parts.map((x, i) => (
+          <BreadcrumbItem key={x.title}>
+            <a href={x.href}>
+              <Icon icon="it-link" size="xs" className="me-1" />
+              {x.title}
+            </a>
+            {i < parts.length - 1 && <span className="separator">/</span>}
+          </BreadcrumbItem>
+        ))}
+      </Breadcrumb>
+    </div>
+  );
 };

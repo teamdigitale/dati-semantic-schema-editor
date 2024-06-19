@@ -7,8 +7,10 @@ import { ExampleBlock } from './common/example-block';
 import { ExternalDocsBlock } from './common/external-docs-block';
 import { JsonLdContextBlock } from './common/jsonld-context-block';
 import { PropertiesBlock } from './common/properties-block';
-import { RDFContext } from './rdf-context';
 import { TitleBlock } from './common/title-block';
+import { RDFProperties } from './rdf-properties';
+import { RDFVocabulary } from './rdf-vocabulary';
+import { TypeFormatBlock } from './common/type-format-block';
 
 const braceOpen = '{';
 const braceClose = '}';
@@ -29,6 +31,7 @@ const ObjectModel = ({
   const { specSelectors, expandDepth, includeReadOnly, includeWriteOnly } = otherProps;
   const { showExtensions } = getConfigs();
 
+  const propertyName = Array.from(specPath).reverse()[0] as string;
   const title = (schema?.get('title') as string) || displayName || name || '';
   const jsonldContext = rootJsonldContext || schema.get('x-jsonld-context');
   const properties = schema.get('properties');
@@ -51,10 +54,17 @@ const ObjectModel = ({
 
   return (
     <div className="modello object-model">
-      <ModelCollapse modelName={name} onToggle={onToggle} expanded={expanded ? true : depth <= expandDepth}>
+      <ModelCollapse
+        modelName={name}
+        onToggle={onToggle}
+        expanded={expanded ? true : depth <= expandDepth}
+        jsonldContext={jsonldContext}
+      >
         <TitleBlock title={title} specPath={specPath} depth={depth} getComponent={getComponent} />
 
-        {/* <TypeFormat type="object" /> */}
+        {/* <RDFProperties jsonldContext={jsonldContext} propertyName={propertyName} /> */}
+
+        <TypeFormatBlock jsonldContext={jsonldContext} propertyName={propertyName} />
 
         <DeprecatedBlock schema={schema} />
 
@@ -95,7 +105,7 @@ const ObjectModel = ({
                             {isRequired && <span className="star">*</span>}
                           </td>
                           <td>
-                            {jsonldContext && <RDFContext propertyName={key} jsonldContext={jsonldContext} />}
+                            <RDFProperties jsonldContext={jsonldContext} propertyName={key} />
                             <Model
                               key={`object-${name}-${key}_${value}`}
                               {...otherProps}
@@ -105,6 +115,7 @@ const ObjectModel = ({
                               getConfigs={getConfigs}
                               schema={value}
                               depth={depth + 1}
+                              jsonldContext={jsonldContext}
                             />
                           </td>
                         </tr>
@@ -144,6 +155,7 @@ const ObjectModel = ({
                         getConfigs={getConfigs}
                         schema={additionalProperties}
                         depth={depth + 1}
+                        jsonldContext={jsonldContext}
                       />
                     </td>
                   </tr>
@@ -163,6 +175,7 @@ const ObjectModel = ({
                             getConfigs={getConfigs}
                             schema={schema}
                             depth={depth + 1}
+                            jsonldContext={jsonldContext}
                           />
                         </div>
                       ))}
@@ -184,6 +197,7 @@ const ObjectModel = ({
                             getConfigs={getConfigs}
                             schema={schema}
                             depth={depth + 1}
+                            jsonldContext={jsonldContext}
                           />
                         </div>
                       ))}
@@ -205,6 +219,7 @@ const ObjectModel = ({
                             getConfigs={getConfigs}
                             schema={schema}
                             depth={depth + 1}
+                            jsonldContext={jsonldContext}
                           />
                         </div>
                       ))}
@@ -225,6 +240,7 @@ const ObjectModel = ({
                           getConfigs={getConfigs}
                           schema={not}
                           depth={depth + 1}
+                          jsonldContext={jsonldContext}
                         />
                       </div>
                     </td>

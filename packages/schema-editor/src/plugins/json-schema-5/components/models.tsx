@@ -13,6 +13,7 @@ export function Models({ getComponent, specSelectors, getConfigs }) {
   }
 
   const ModelsBreadcrumb = getComponent('ModelsBreadcrumb', true);
+  const ModelCollapse = getComponent('ModelCollapse', true);
   const ModelRoot = getComponent('ModelRoot', true);
 
   return (
@@ -23,11 +24,17 @@ export function Models({ getComponent, specSelectors, getConfigs }) {
       {history.length === 0 &&
         definitions
           .entrySeq()
-          .map(([name]) => <ModelRoot key={name} name={name} />)
+          .map(([name]) => (
+            <div key={name} className="d-block neutral-2-bg p-3 mb-3">
+              <ModelCollapse modelName={name} />
+            </div>
+          ))
           .toArray()}
 
       {/* Schema model */}
-      {currentHistoryItem && <ModelRoot name={currentHistoryItem.title} expanded />}
+      {currentHistoryItem && (
+        <ModelRoot name={currentHistoryItem.title} jsonldContext={currentHistoryItem.jsonldContext} />
+      )}
     </div>
   );
 }

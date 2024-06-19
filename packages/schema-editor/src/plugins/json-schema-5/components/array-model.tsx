@@ -8,6 +8,7 @@ import { JsonLdContextBlock } from './common/jsonld-context-block';
 import { PropertiesBlock } from './common/properties-block';
 import { TitleBlock } from './common/title-block';
 import { TypeFormatBlock } from './common/type-format-block';
+import { RDFProperties } from './rdf-properties';
 
 export const ArrayModel = (props) => {
   const {
@@ -21,6 +22,7 @@ export const ArrayModel = (props) => {
     jsonldContext: rootJsonldContext,
   } = props;
 
+  const propertyName = Array.from(specPath).reverse()[0] as string;
   const title = (schema?.get('title') as string) || displayName || name || '';
   const jsonldContext = rootJsonldContext || schema.get('x-jsonld-context');
   const items = schema.get('items');
@@ -34,7 +36,9 @@ export const ArrayModel = (props) => {
     <div className="modello array-model">
       <TitleBlock title={title} specPath={specPath} depth={depth} getComponent={getComponent} />
 
-      <TypeFormatBlock type="array" />
+      {/* <RDFProperties jsonldContext={jsonldContext} propertyName={propertyName} /> */}
+
+      <TypeFormatBlock type="array" jsonldContext={jsonldContext} propertyName={propertyName} />
 
       <DeprecatedBlock schema={schema} />
 
@@ -53,6 +57,7 @@ export const ArrayModel = (props) => {
           schema={items}
           required={false}
           depth={depth + 1}
+          jsonldContext={jsonldContext}
         />
       </div>
 

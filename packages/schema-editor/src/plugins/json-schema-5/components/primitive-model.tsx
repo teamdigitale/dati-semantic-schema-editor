@@ -6,9 +6,10 @@ import { DescriptionBlock } from './common/description-block';
 import { ExampleBlock } from './common/example-block';
 import { ExternalDocsBlock } from './common/external-docs-block';
 import { JsonLdContextBlock } from './common/jsonld-context-block';
-import { TypeFormatBlock } from './common/type-format-block';
 import { PropertiesBlock } from './common/properties-block';
 import { TitleBlock } from './common/title-block';
+import { TypeFormatBlock } from './common/type-format-block';
+import { RDFProperties } from './rdf-properties';
 
 export const PrimitiveModel = ({
   schema,
@@ -22,6 +23,7 @@ export const PrimitiveModel = ({
 }) => {
   const { showExtensions } = getConfigs();
 
+  const propertyName = Array.from(specPath).reverse()[0] as string;
   const title = (schema?.get('title') as string) || displayName || name || '';
   const jsonldContext = rootJsonldContext || schema.get('x-jsonld-context');
   const type = schema.get('type');
@@ -39,7 +41,9 @@ export const PrimitiveModel = ({
     <div className="modello primitive-model">
       <TitleBlock title={title} specPath={specPath} depth={depth} getComponent={getComponent} />
 
-      <TypeFormatBlock type={type} format={format} />
+      {/* <RDFProperties jsonldContext={jsonldContext} propertyName={propertyName} /> */}
+
+      <TypeFormatBlock type={type} format={format} jsonldContext={jsonldContext} propertyName={propertyName} />
 
       {enumArray && <div className="prop-enum">Enum: [ {enumArray.join(', ')} ]</div>}
 
