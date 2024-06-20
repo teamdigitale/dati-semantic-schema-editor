@@ -9,7 +9,7 @@ import { HeadingBlock } from './common/heading-block';
 import { JsonLdContextBlock } from './common/jsonld-context-block';
 import { OntoScoreBlock } from './common/onto-score-block';
 import { PropertiesBlock } from './common/properties-block';
-import { ReferenceBlock } from './common/reference-block';
+import { RDFOntologiesBlock } from './common/rdf-ontologies-block';
 import { TypeFormatBlock } from './common/type-format-block';
 
 const braceOpen = '{';
@@ -55,13 +55,19 @@ const ObjectModel = ({
 
   return (
     <div className="modello object-model">
+      {depth > 1 && (
+        <div>
+          <RDFOntologiesBlock jsonldContext={jsonldContext} propertyName={propertyName} />
+        </div>
+      )}
+
       <ModelCollapse
         modelName={name}
         onToggle={onToggle}
         expanded={expanded ? true : depth <= expandDepth}
         jsonldContext={jsonldContext}
       >
-        {depth === 1 ? (
+        {depth === 1 && (
           <HeadingBlock
             title={title}
             specPath={specPath}
@@ -71,8 +77,6 @@ const ObjectModel = ({
           >
             <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} />
           </HeadingBlock>
-        ) : (
-          <ReferenceBlock jsonldContext={jsonldContext} propertyName={propertyName} />
         )}
 
         <TypeFormatBlock jsonldContext={jsonldContext} propertyName={propertyName} />

@@ -9,7 +9,7 @@ import { HeadingBlock } from './common/heading-block';
 import { JsonLdContextBlock } from './common/jsonld-context-block';
 import { PropertiesBlock } from './common/properties-block';
 import { TypeFormatBlock } from './common/type-format-block';
-import { ReferenceBlock } from './common/reference-block';
+import { RDFOntologiesBlock } from './common/rdf-ontologies-block';
 
 export const PrimitiveModel = ({
   schema,
@@ -51,7 +51,7 @@ export const PrimitiveModel = ({
           {/* <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} /> */}
         </HeadingBlock>
       ) : (
-        <ReferenceBlock jsonldContext={jsonldContext} propertyName={propertyName} />
+        <RDFOntologiesBlock jsonldContext={jsonldContext} propertyName={propertyName} />
       )}
 
       <TypeFormatBlock type={type} format={format} jsonldContext={jsonldContext} propertyName={propertyName} />

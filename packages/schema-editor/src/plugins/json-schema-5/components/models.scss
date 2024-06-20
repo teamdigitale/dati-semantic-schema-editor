@@ -16,10 +16,11 @@
     }
   }
 
-  .property {
-    color: $text-muted;
+  .modello {
+    .property {
+      display: block;
+      color: $text-muted;
 
-    &:first-of-type {
       br {
         display: none;
       }

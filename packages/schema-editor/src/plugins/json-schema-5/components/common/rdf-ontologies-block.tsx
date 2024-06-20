@@ -1,15 +1,17 @@
 import { Icon, LinkList, LinkListItem, Popover, PopoverBody, PopoverHeader, Spinner } from 'design-react-kit';
 import { useRef, useState } from 'react';
-import { useRDFReferenceResolver } from '../../hooks';
+import { useRDFOntologiesResolver } from '../../hooks';
 
-export function ReferenceBlock({ jsonldContext, propertyName }) {
+export function RDFOntologiesBlock({ jsonldContext, propertyName }) {
   const targetRef = useRef(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
-  const { data: items = [], status } = useRDFReferenceResolver(jsonldContext, propertyName);
+  const { data: items = [], status } = useRDFOntologiesResolver(jsonldContext, propertyName);
   const item = items[items.length - 1];
 
   return status === 'pending' ? (
-    <Spinner active small />
+    <span className="d-inline-block align-middle">
+      <Spinner active small />
+    </span>
   ) : item ? (
     <span>
       (

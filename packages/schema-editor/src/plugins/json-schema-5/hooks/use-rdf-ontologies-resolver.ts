@@ -6,7 +6,7 @@ function basename(path: string) {
   return parts[parts.length - 1];
 }
 
-export function useRDFReferenceResolver(jsonldContext, propertyName) {
+export function useRDFOntologiesResolver(jsonldContext, propertyName) {
   const { fieldUri, fieldName } = useJsonLDContextResolver(jsonldContext, propertyName);
   const { data, status } = useSparqlQuery(
     `
