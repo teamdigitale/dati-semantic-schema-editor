@@ -1,8 +1,8 @@
 import { Badge, Icon } from 'design-react-kit';
-import { useJsonLDContextResolver } from '../hooks';
+import { useJsonLDContextResolver } from '../../hooks';
 
-export const RDFVocabulary = ({ propertyName, jsonldContext, className }) => {
-  const { vocabularyUri } = useJsonLDContextResolver(propertyName, jsonldContext);
+export const RDFVocabularyBlock = ({ propertyName, jsonldContext, className }) => {
+  const { vocabularyUri } = useJsonLDContextResolver(jsonldContext, propertyName);
 
   return vocabularyUri ? (
     <Badge color="success" href={vocabularyUri} target="_blank" rel="noreferrer" className={className}>

@@ -4,11 +4,11 @@ import { DeprecatedBlock } from './common/deprecated-block';
 import { DescriptionBlock } from './common/description-block';
 import { ExampleBlock } from './common/example-block';
 import { ExternalDocsBlock } from './common/external-docs-block';
+import { HeadingBlock } from './common/heading-block';
 import { JsonLdContextBlock } from './common/jsonld-context-block';
 import { PropertiesBlock } from './common/properties-block';
-import { TitleBlock } from './common/title-block';
+import { ReferenceBlock } from './common/reference-block';
 import { TypeFormatBlock } from './common/type-format-block';
-import { RDFProperties } from './rdf-properties';
 
 export const ArrayModel = (props) => {
   const {
@@ -22,7 +22,8 @@ export const ArrayModel = (props) => {
     jsonldContext: rootJsonldContext,
   } = props;
 
-  const propertyName = Array.from(specPath).reverse()[0] as string;
+  const specPathArray = Array.from(specPath);
+  const propertyName = specPathArray[specPathArray.length - 1] as string;
   const title = (schema?.get('title') as string) || displayName || name || '';
   const jsonldContext = rootJsonldContext || schema.get('x-jsonld-context');
   const items = schema.get('items');
@@ -34,9 +35,19 @@ export const ArrayModel = (props) => {
 
   return (
     <div className="modello array-model">
-      <TitleBlock title={title} specPath={specPath} depth={depth} getComponent={getComponent} />
-
-      {/* <RDFProperties jsonldContext={jsonldContext} propertyName={propertyName} /> */}
+      {depth === 1 ? (
+        <HeadingBlock
+          title={title}
+          specPath={specPath}
+          jsonldContext={jsonldContext}
+          propertyName={propertyName}
+          getComponent={getComponent}
+        >
+          {/* <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} /> */}
+        </HeadingBlock>
+      ) : (
+        <ReferenceBlock jsonldContext={jsonldContext} propertyName={propertyName} />
+      )}
 
       <TypeFormatBlock type="array" jsonldContext={jsonldContext} propertyName={propertyName} />
 

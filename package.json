@@ -15,7 +15,7 @@
   },
   "scripts": {
     "preinstall": "npx -y only-allow pnpm",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "eslint --fix",
@@ -37,7 +37,8 @@
     "prettier": "^3.3.2",
     "turbo": "^2.0.3",
     "typescript": "^5.4.5",
-    "typescript-eslint": "^7.13.0"
+    "typescript-eslint": "^7.13.0",
+    "vitest": "^1.6.0"
   },
   "lint-staged": {
     "**/src/**/*.{js,ts,jsx,tsx}": [

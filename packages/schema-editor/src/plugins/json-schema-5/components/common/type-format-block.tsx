@@ -1,5 +1,5 @@
 import { Badge } from 'design-react-kit';
-import { RDFVocabulary } from '../rdf-vocabulary';
+import { RDFVocabularyBlock } from './rdf-vocabulary-block';
 
 interface Props {
   jsonldContext: any;
@@ -17,7 +17,7 @@ export function TypeFormatBlock({ type, format, jsonldContext, propertyName }: P
           {format}
         </Badge>
       )}
-      <RDFVocabulary jsonldContext={jsonldContext} propertyName={propertyName} className="ms-2" />
+      <RDFVocabularyBlock jsonldContext={jsonldContext} propertyName={propertyName} className="ms-2" />
     </div>
   );
 }

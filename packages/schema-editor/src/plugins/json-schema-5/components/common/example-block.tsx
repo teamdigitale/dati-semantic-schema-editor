@@ -1,23 +1,38 @@
 import { Callout, CalloutTitle, Icon, CalloutText } from 'design-react-kit';
+import type { Map } from 'immutable';
 
-export function ExampleBlock({ depth, schema, jsonldContext, getConfigs }) {
+interface Props {
+  depth: number;
+  schema: Map<any, Map<any, any>>;
+  jsonldContext: Map<any, any>;
+  getConfigs: () => any;
+}
+
+export function ExampleBlock({ depth, schema, jsonldContext, getConfigs }: Props) {
   const { jsonldPlaygroundUrl } = getConfigs();
-  const example: object = schema.get('example');
-  const exampleString: string = example ? JSON.stringify(example, null, 2) : '';
+
+  const example = schema.get('example');
+  if (!example) {
+    return null;
+  }
+  const exampleString: string = JSON.stringify(example, null, 2);
 
   const OpenInPlaygroundButton = ({ className }) =>
-    jsonldPlaygroundUrl && jsonldContext && example ? (
+    jsonldPlaygroundUrl && jsonldContext ? (
       <a
         className={className}
         target="_blank"
         rel="noreferrer"
-        href={jsonldPlaygroundUrl + encodeURIComponent(JSON.stringify({ '@context': jsonldContext, ...example }))}
+        href={
+          jsonldPlaygroundUrl +
+          encodeURIComponent(JSON.stringify({ '@context': jsonldContext.toJSON(), ...example.toJSON() }))
+        }
       >
         <Icon icon="it-external-link" size="sm" title="Open in playground" />
       </a>
     ) : null;
 
-  return !example ? null : depth <= 1 ? (
+  return depth <= 1 ? (
     <Callout color="note" detailed className="p-4 mt-3">
       <CalloutTitle>
         Example:

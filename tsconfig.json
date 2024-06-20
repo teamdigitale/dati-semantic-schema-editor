@@ -30,6 +30,10 @@
     "forceConsistentCasingInFileNames": true,
   },
   "include": [
-    "src"
+    "apps",
+    "packages"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }
