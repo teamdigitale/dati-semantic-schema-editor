@@ -1,4 +1,3 @@
-import { useJsonLDResolver } from './use-jsonld-resolver';
 import { useSparqlQuery } from './use-sparql';
 
 export function basename(path: string) {
@@ -6,20 +5,19 @@ export function basename(path: string) {
   return parts[parts.length - 1];
 }
 
-export function useRDFOntologiesResolver(jsonldContext, propertyName) {
-  const { data: jsonLDResolverResult } = useJsonLDResolver(jsonldContext, [propertyName]);
+export function useRDFOntologiesResolver(fieldUri: string | undefined) {
   const { data: sparqlData, status: sparqlStatus } = useSparqlQuery(
     `
     prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
     select distinct * where {
-      <${jsonLDResolverResult?.fieldUri}>
+      <${fieldUri}>
         rdfs:domain ?domain ;
         rdfs:range ?class
       .
     }
   `,
-    { skip: !jsonLDResolverResult?.fieldUri },
+    { skip: !fieldUri },
   );
 
   const content = sparqlData?.results?.bindings
@@ -29,7 +27,7 @@ export function useRDFOntologiesResolver(jsonldContext, propertyName) {
   return {
     data: {
       ontologicalClass: content?.domain as string | undefined,
-      ontologicalProperty: jsonLDResolverResult?.fieldUri as string | undefined,
+      ontologicalProperty: fieldUri as string | undefined,
       ontologicalType: content?.class as string | undefined,
     },
     status: sparqlStatus,

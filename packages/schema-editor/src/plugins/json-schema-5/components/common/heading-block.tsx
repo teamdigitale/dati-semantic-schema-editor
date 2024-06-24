@@ -3,19 +3,18 @@ import { RDFOntologicalClassPropertyBlock } from './rdf-ontological-class-proper
 interface Props {
   title: string;
   specPath: any;
-  jsonldContext: any;
-  propertyName: string;
+  jsonldType: string;
   getComponent: any;
   children?: JSX.Element;
 }
 
-export function HeadingBlock({ title, specPath, jsonldContext, propertyName, getComponent, children }: Props) {
+export function HeadingBlock({ title, specPath, jsonldType, getComponent, children }: Props) {
   const JumpToPath = getComponent('JumpToPath', true);
 
   return (
     <div className="d-flex">
       <h4>
-        {title} <RDFOntologicalClassPropertyBlock jsonldContext={jsonldContext} propertyName={propertyName} />
+        {title} <RDFOntologicalClassPropertyBlock fieldUri={jsonldType} />
       </h4>
 
       <div className="d-flex align-items-center ms-auto">

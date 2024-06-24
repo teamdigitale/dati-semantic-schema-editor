@@ -12,6 +12,7 @@ import { PropertiesBlock } from './common/properties-block';
 import { RDFOntologicalClassPropertyBlock } from './common/rdf-ontological-class-property-block';
 import { TypeFormatVocabularyBlock } from './common/type-format-vocabulary-block';
 import type { ModelCollapse as ModelCollapseComponent } from './model-collapse';
+import { useJsonLDResolver } from '../hooks';
 
 const braceOpen = '{';
 const braceClose = '}';
@@ -33,6 +34,7 @@ const ObjectModel = ({
 
   const specPathArray = Array.from(specPath);
   const propertyName = specPathArray[specPathArray.length - 1] as string;
+  const jsonldType = schema.get('x-jsonld-type');
   const title = (schema?.get('title') as string) || displayName || name || '';
   const properties = schema.get('properties');
   const additionalProperties = schema.get('additionalProperties');
@@ -46,6 +48,8 @@ const ObjectModel = ({
   const oneOf = isOAS3 ? schema.get('oneOf') : null;
   const not = isOAS3 ? schema.get('not') : null;
 
+  const { data: jsonLDResolverResult } = useJsonLDResolver(jsonldContext, [propertyName]);
+
   const Model = getComponent('Model');
   const ModelCollapse: typeof ModelCollapseComponent = getComponent('ModelCollapse', true);
 
@@ -53,19 +57,13 @@ const ObjectModel = ({
     <div className="modello object-model">
       {depth > 1 && (
         <div>
-          <RDFOntologicalClassPropertyBlock jsonldContext={jsonldContext} propertyName={propertyName} />
+          <RDFOntologicalClassPropertyBlock fieldUri={jsonLDResolverResult?.fieldUri} />
         </div>
       )}
 
       <ModelCollapse title={title} specPath={specPath} expanded={expanded} schema={schema}>
         {depth === 1 && (
-          <HeadingBlock
-            title={title}
-            specPath={specPath}
-            jsonldContext={jsonldContext}
-            propertyName={propertyName}
-            getComponent={getComponent}
-          >
+          <HeadingBlock title={title} specPath={specPath} jsonldType={jsonldType} getComponent={getComponent}>
             <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} />
           </HeadingBlock>
         )}

@@ -1,3 +1,4 @@
+import { useJsonLDResolver } from '../hooks';
 import './array-model.scss';
 
 import { DeprecatedBlock } from './common/deprecated-block';
@@ -15,26 +16,23 @@ export const ArrayModel = (props) => {
 
   const specPathArray = Array.from(specPath);
   const propertyName = specPathArray[specPathArray.length - 1] as string;
+  const jsonldType = schema.get('x-jsonld-type');
   const title = (schema?.get('title') as string) || displayName || name || '';
   const items = schema.get('items');
   const properties = schema.filter(
     (v, key) => ['type', 'items', 'description', '$$ref', 'externalDocs', 'example'].indexOf(key) === -1,
   );
 
+  const { data: jsonLDResolverResult } = useJsonLDResolver(jsonldContext, [propertyName]);
+
   const Model = getComponent('Model');
 
   return (
     <div className="modello array-model">
       {depth === 1 ? (
-        <HeadingBlock
-          title={title}
-          specPath={specPath}
-          jsonldContext={jsonldContext}
-          propertyName={propertyName}
-          getComponent={getComponent}
-        />
+        <HeadingBlock title={title} specPath={specPath} jsonldType={jsonldType} getComponent={getComponent} />
       ) : (
-        <RDFOntologicalClassPropertyBlock jsonldContext={jsonldContext} propertyName={propertyName} />
+        <RDFOntologicalClassPropertyBlock fieldUri={jsonLDResolverResult?.fieldUri} />
       )}
 
       <TypeFormatVocabularyBlock type="array" jsonldContext={jsonldContext} propertyName={propertyName} />

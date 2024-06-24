@@ -10,6 +10,7 @@ import { JsonLdContextBlock } from './common/jsonld-context-block';
 import { PropertiesBlock } from './common/properties-block';
 import { TypeFormatVocabularyBlock } from './common/type-format-vocabulary-block';
 import { RDFOntologicalClassPropertyBlock } from './common/rdf-ontological-class-property-block';
+import { useJsonLDResolver } from '../hooks';
 
 export const PrimitiveModel = ({
   schema,
@@ -25,6 +26,7 @@ export const PrimitiveModel = ({
 
   const specPathArray = Array.from(specPath);
   const propertyName = specPathArray[specPathArray.length - 1] as string;
+  const jsonldType = schema.get('x-jsonld-type');
   const title = (schema?.get('title') as string) || displayName || name || '';
   const type = schema.get('type');
   const format = schema.get('format');
@@ -37,20 +39,16 @@ export const PrimitiveModel = ({
     )
     .filterNot((_, key) => extensions.has(key));
 
+  const { data: jsonLDResolverResult } = useJsonLDResolver(jsonldContext, [propertyName]);
+
   return (
     <div className="modello primitive-model">
       {depth === 1 ? (
-        <HeadingBlock
-          title={title}
-          specPath={specPath}
-          jsonldContext={jsonldContext}
-          propertyName={propertyName}
-          getComponent={getComponent}
-        >
+        <HeadingBlock title={title} specPath={specPath} jsonldType={jsonldType} getComponent={getComponent}>
           {/* <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} /> */}
         </HeadingBlock>
       ) : (
-        <RDFOntologicalClassPropertyBlock jsonldContext={jsonldContext} propertyName={propertyName} />
+        <RDFOntologicalClassPropertyBlock fieldUri={jsonLDResolverResult?.fieldUri} />
       )}
 
       <TypeFormatVocabularyBlock

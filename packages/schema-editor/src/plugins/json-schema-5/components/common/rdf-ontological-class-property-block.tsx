@@ -1,8 +1,8 @@
 import { Spinner } from 'design-react-kit';
 import { basename, useRDFOntologiesResolver } from '../../hooks';
 
-export function RDFOntologicalClassPropertyBlock({ jsonldContext, propertyName }) {
-  const { data, status } = useRDFOntologiesResolver(jsonldContext, propertyName);
+export function RDFOntologicalClassPropertyBlock({ fieldUri }) {
+  const { data, status } = useRDFOntologiesResolver(fieldUri);
   const items = [
     ...(data.ontologicalClass ? [data.ontologicalClass] : []),
     ...(data.ontologicalProperty ? [data.ontologicalProperty] : []),
@@ -13,7 +13,7 @@ export function RDFOntologicalClassPropertyBlock({ jsonldContext, propertyName }
       <Spinner active small />
     </span>
   ) : items?.length > 0 ? (
-    <strong>
+    <span className="rdf-ontological-class-property">
       [
       {items.map((x, i) => (
         <>
@@ -24,6 +24,6 @@ export function RDFOntologicalClassPropertyBlock({ jsonldContext, propertyName }
         </>
       ))}
       ]
-    </strong>
+    </span>
   ) : null;
 }

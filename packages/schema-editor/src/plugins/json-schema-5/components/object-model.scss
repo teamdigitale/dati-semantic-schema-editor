@@ -21,6 +21,12 @@
               color: var(--bs-danger);
             }
           }
+
+          &:last-of-type {
+            .rdf-ontological-class-property {
+              font-weight: bold;
+            }
+          }
         }
       }
     }
