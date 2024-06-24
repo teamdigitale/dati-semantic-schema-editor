@@ -11,21 +11,11 @@ import { RDFOntologicalClassPropertyBlock } from './common/rdf-ontological-class
 import { TypeFormatVocabularyBlock } from './common/type-format-vocabulary-block';
 
 export const ArrayModel = (props) => {
-  const {
-    schema,
-    name,
-    displayName,
-    getComponent,
-    getConfigs,
-    depth,
-    specPath,
-    jsonldContext: rootJsonldContext,
-  } = props;
+  const { schema, name, displayName, getComponent, getConfigs, depth, specPath, jsonldContext } = props;
 
   const specPathArray = Array.from(specPath);
   const propertyName = specPathArray[specPathArray.length - 1] as string;
   const title = (schema?.get('title') as string) || displayName || name || '';
-  const jsonldContext = rootJsonldContext || schema.get('x-jsonld-context');
   const items = schema.get('items');
   const properties = schema.filter(
     (v, key) => ['type', 'items', 'description', '$$ref', 'externalDocs', 'example'].indexOf(key) === -1,

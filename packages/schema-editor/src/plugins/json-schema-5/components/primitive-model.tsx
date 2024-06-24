@@ -17,7 +17,7 @@ export const PrimitiveModel = ({
   displayName,
   depth,
   specPath,
-  jsonldContext: rootJsonldContext,
+  jsonldContext,
   getComponent,
   getConfigs,
 }) => {
@@ -26,7 +26,6 @@ export const PrimitiveModel = ({
   const specPathArray = Array.from(specPath);
   const propertyName = specPathArray[specPathArray.length - 1] as string;
   const title = (schema?.get('title') as string) || displayName || name || '';
-  const jsonldContext = rootJsonldContext || schema.get('x-jsonld-context');
   const type = schema.get('type');
   const format = schema.get('format');
   const xml = schema.get('xml');

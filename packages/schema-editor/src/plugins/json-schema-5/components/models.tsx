@@ -1,41 +1,49 @@
 import './models.scss';
 
 import { useSchemaNavigation } from '../../overview/components/Navigation';
+import type { ModelCollapse as ModelCollapseComponent } from './model-collapse';
+import type { ModelRoot as ModelRootComponent } from './model-root';
+import type { ModelsBreadcrumb as ModelsBreadcrumbComponent } from './models-breadcrumb';
 
 export function Models({ getComponent, specSelectors, getConfigs }) {
-  const { history } = useSchemaNavigation();
+  const { history, jsonldContextFullPath } = useSchemaNavigation();
   const currentHistoryItem = history[history.length - 1];
+
+  const isOAS3 = specSelectors.isOAS3();
+  const specPathBase = isOAS3 ? ['components', 'schemas'] : ['definitions'];
 
   const definitions = specSelectors.definitions();
   const { defaultModelsExpandDepth } = getConfigs();
   if (!definitions.size || defaultModelsExpandDepth < 0) {
     return null;
   }
-  // console.log(definitions.toJSON());
-  // console.log(history);
 
-  const ModelsBreadcrumb = getComponent('ModelsBreadcrumb', true);
-  const ModelCollapse = getComponent('ModelCollapse', true);
-  const ModelRoot = getComponent('ModelRoot', true);
+  const ModelsBreadcrumb: typeof ModelsBreadcrumbComponent = getComponent('ModelsBreadcrumb', true);
+  const ModelCollapse: typeof ModelCollapseComponent = getComponent('ModelCollapse', true);
+  const ModelRoot: typeof ModelRootComponent = getComponent('ModelRoot', true);
 
   return (
     <div className="modelli">
-      <ModelsBreadcrumb />
+      <ModelsBreadcrumb specPathBase={specPathBase} />
 
       {/* Root */}
       {history.length === 0 &&
         definitions
           .entrySeq()
-          .map(([name]) => (
-            <div key={name} className="d-block neutral-2-bg p-3 mb-3">
-              <ModelCollapse modelName={name} />
+          .map(([key, schema]) => (
+            <div key={key} className="d-block neutral-2-bg p-3 mb-3">
+              <ModelCollapse title={key} specPath={[...specPathBase, key]} schema={schema} />
             </div>
           ))
           .toArray()}
 
       {/* Schema model */}
       {currentHistoryItem && (
-        <ModelRoot name={currentHistoryItem.title} jsonldContext={currentHistoryItem.jsonldContext} />
+        <ModelRoot
+          name={currentHistoryItem.title}
+          fullPath={currentHistoryItem.fullPath}
+          jsonldContextFullPath={jsonldContextFullPath}
+        />
       )}
     </div>
   );

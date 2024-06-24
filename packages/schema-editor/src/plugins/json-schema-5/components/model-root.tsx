@@ -1,27 +1,33 @@
-import Im, { Map } from 'immutable';
-import { useSchemaBasePath } from '../hooks';
+import { List, Map } from 'immutable';
+
+interface Props {
+  name: string;
+  fullPath: string[];
+  jsonldContextFullPath: string[] | undefined;
+  getComponent?: any;
+  specSelectors?: any;
+  specActions?: any;
+  layoutSelectors?: any;
+  layoutActions?: any;
+  getConfigs?: any;
+}
 
 export const ModelRoot = ({
   name,
-  jsonldContext,
+  fullPath,
+  jsonldContextFullPath,
   getComponent,
   specSelectors,
   specActions,
-  layoutSelectors,
-  layoutActions,
   getConfigs,
-}) => {
-  const [specPathBase] = useSchemaBasePath(specSelectors);
-  const { defaultModelsExpandDepth } = getConfigs();
-
-  const fullPath = [...specPathBase, name];
-  const specPath = Im.List(fullPath);
+}: Props) => {
+  const specPath = List(fullPath);
 
   const schemaValue = specSelectors.specResolvedSubtree(fullPath);
   const rawSchemaValue = specSelectors.specJson().getIn(fullPath);
 
-  const schema = Map.isMap(schemaValue) ? schemaValue : Im.Map();
-  const rawSchema = Map.isMap(rawSchemaValue) ? rawSchemaValue : Im.Map();
+  const schema = Map.isMap(schemaValue) ? schemaValue : Map();
+  const rawSchema = Map.isMap(rawSchemaValue) ? rawSchemaValue : Map();
 
   const displayName = schema.get('title') || rawSchema.get('title') || name;
 
@@ -29,22 +35,23 @@ export const ModelRoot = ({
     specActions.requestResolvedSubtree(fullPath);
   }
 
+  const jsonldContext = jsonldContextFullPath
+    ? specSelectors.specResolvedSubtree(jsonldContextFullPath)?.get('x-jsonld-context')
+    : undefined;
+
   const Model = getComponent('Model');
 
   return (
     <div className="d-block neutral-2-bg p-3 mb-3">
       <Model
         name={name}
-        expandDepth={defaultModelsExpandDepth}
-        schema={schema || Im.Map()}
+        schema={schema}
         displayName={displayName}
         fullPath={fullPath}
         specPath={specPath}
         getComponent={getComponent}
         specSelectors={specSelectors}
         getConfigs={getConfigs}
-        layoutSelectors={layoutSelectors}
-        layoutActions={layoutActions}
         includeReadOnly={true}
         includeWriteOnly={true}
         expanded={true}

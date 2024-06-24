@@ -11,6 +11,7 @@ import { OntoScoreBlock } from './common/onto-score-block';
 import { PropertiesBlock } from './common/properties-block';
 import { RDFOntologicalClassPropertyBlock } from './common/rdf-ontological-class-property-block';
 import { TypeFormatVocabularyBlock } from './common/type-format-vocabulary-block';
+import type { ModelCollapse as ModelCollapseComponent } from './model-collapse';
 
 const braceOpen = '{';
 const braceClose = '}';
@@ -22,27 +23,22 @@ const ObjectModel = ({
   getComponent,
   getConfigs,
   depth,
-  onToggle,
   expanded,
   specPath,
-  jsonldContext: rootJsonldContext,
+  jsonldContext,
   ...otherProps
 }) => {
-  const { specSelectors, expandDepth, includeReadOnly, includeWriteOnly } = otherProps;
+  const { specSelectors, includeReadOnly, includeWriteOnly } = otherProps;
   const { showExtensions } = getConfigs();
 
   const specPathArray = Array.from(specPath);
   const propertyName = specPathArray[specPathArray.length - 1] as string;
   const title = (schema?.get('title') as string) || displayName || name || '';
-  const jsonldContext = rootJsonldContext || schema.get('x-jsonld-context');
   const properties = schema.get('properties');
   const additionalProperties = schema.get('additionalProperties');
   const requiredProperties = schema.get('required');
   const infoProperties = schema.filter((v, key) => ['maxProperties', 'minProperties', 'nullable'].indexOf(key) !== -1);
-  const extensions = schema
-    .entrySeq()
-    .filter(([key]) => key.startsWith('x-'))
-    .filter(([key]) => !['x-jsonld-context', 'x-jsonld-type'].includes(key));
+  const extensions = schema.entrySeq().filter(([key]) => key.startsWith('x-'));
 
   const isOAS3 = specSelectors.isOAS3();
   const allOf = isOAS3 ? schema.get('allOf') : null;
@@ -51,9 +47,7 @@ const ObjectModel = ({
   const not = isOAS3 ? schema.get('not') : null;
 
   const Model = getComponent('Model');
-  const ModelCollapse = getComponent('ModelCollapse');
-
-  console.log(specPath, title, name, displayName, schema.toJSON(), otherProps.key, otherProps.elKey);
+  const ModelCollapse: typeof ModelCollapseComponent = getComponent('ModelCollapse', true);
 
   return (
     <div className="modello object-model">
@@ -63,12 +57,7 @@ const ObjectModel = ({
         </div>
       )}
 
-      <ModelCollapse
-        modelName={name}
-        onToggle={onToggle}
-        expanded={expanded ? true : depth <= expandDepth}
-        jsonldContext={jsonldContext}
-      >
+      <ModelCollapse title={title} specPath={specPath} expanded={expanded} schema={schema}>
         {depth === 1 && (
           <HeadingBlock
             title={title}
@@ -125,6 +114,7 @@ const ObjectModel = ({
                             <Model
                               key={`object-${name}-${key}_${value}`}
                               {...otherProps}
+                              name={key}
                               required={isRequired}
                               getComponent={getComponent}
                               specPath={specPath.push('properties', key)}
@@ -132,7 +122,6 @@ const ObjectModel = ({
                               schema={value}
                               depth={depth + 1}
                               jsonldContext={jsonldContext}
-                              elKey={key}
                             />
                           </td>
                         </tr>

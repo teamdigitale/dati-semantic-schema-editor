@@ -29,7 +29,7 @@ export function useRDFOntologiesResolver(jsonldContext, propertyName) {
   return {
     data: {
       ontologicalClass: content?.domain as string | undefined,
-      ontologicalProperty: jsonLDResolverResult?.fieldName as string | undefined,
+      ontologicalProperty: jsonLDResolverResult?.fieldUri as string | undefined,
       ontologicalType: content?.class as string | undefined,
     },
     status: sparqlStatus,

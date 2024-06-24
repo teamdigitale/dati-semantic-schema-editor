@@ -1,26 +1,43 @@
-import { useState } from 'react';
+import { ReactNode } from 'react';
 import { useSchemaNavigation } from '../../overview/components/Navigation';
 
-export function ModelCollapse({ children, modelName, expanded, jsonldContext }) {
-  const { push } = useSchemaNavigation();
-  const [isExpanded, setIsExpanded] = useState<boolean>(expanded);
-  const title = modelName || 'Show';
+interface Props {
+  title: string;
+  children?: ReactNode;
+  expanded?: boolean;
+  specPath?: any;
+  schema?: any;
+}
+
+/**
+ * The collapsed visualization for object models (or root model only)
+ */
+export function ModelCollapse({ children, expanded, title, specPath, schema }: Props) {
+  const { jsonldContextFullPath, push } = useSchemaNavigation();
+  const specPathArray: string[] = specPath ? Array.from(specPath) : [];
 
   const handleClick = (): void => {
-    if (modelName) {
-      push({ id: modelName, title: modelName, jsonldContext });
-    } else {
-      setIsExpanded(!expanded);
-    }
+    const hasParentJsonldContextFullPath = !!jsonldContextFullPath;
+    const hasJsonldContextFullPath = schema.has('x-jsonld-context');
+    push({
+      id: specPathArray.join('-'),
+      title,
+      fullPath: specPathArray,
+      jsonldContextFullPath: !hasParentJsonldContextFullPath && hasJsonldContextFullPath ? specPathArray : undefined,
+    });
   };
 
   return (
     <span className="model-collapse">
-      {!isExpanded ? (
-        <a href="#" className="text-primary" onClick={handleClick}>
-          {title && <strong>{title}</strong>}
-          <span className="model-toggle collapsed"></span>
-        </a>
+      {!expanded ? (
+        <>
+          {title && (
+            <a href="#" className="text-primary" onClick={handleClick}>
+              <strong>{title || 'Show'}</strong>
+              <span className="model-toggle collapsed"></span>
+            </a>
+          )}
+        </>
       ) : (
         children
       )}

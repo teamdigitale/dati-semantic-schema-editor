@@ -1,4 +1,4 @@
-import { Icon, Spinner } from 'design-react-kit';
+import { Spinner } from 'design-react-kit';
 import { basename, useRDFOntologiesResolver } from '../../hooks';
 
 export function RDFOntologicalClassPropertyBlock({ jsonldContext, propertyName }) {
