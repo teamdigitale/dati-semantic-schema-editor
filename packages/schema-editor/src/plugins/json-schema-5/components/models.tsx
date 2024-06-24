@@ -11,6 +11,8 @@ export function Models({ getComponent, specSelectors, getConfigs }) {
   if (!definitions.size || defaultModelsExpandDepth < 0) {
     return null;
   }
+  // console.log(definitions.toJSON());
+  // console.log(history);
 
   const ModelsBreadcrumb = getComponent('ModelsBreadcrumb', true);
   const ModelCollapse = getComponent('ModelCollapse', true);

@@ -8,8 +8,8 @@ import { ExternalDocsBlock } from './common/external-docs-block';
 import { HeadingBlock } from './common/heading-block';
 import { JsonLdContextBlock } from './common/jsonld-context-block';
 import { PropertiesBlock } from './common/properties-block';
-import { TypeFormatBlock } from './common/type-format-block';
-import { RDFOntologiesBlock } from './common/rdf-ontologies-block';
+import { TypeFormatVocabularyBlock } from './common/type-format-vocabulary-block';
+import { RDFOntologicalClassPropertyBlock } from './common/rdf-ontological-class-property-block';
 
 export const PrimitiveModel = ({
   schema,
@@ -51,10 +51,15 @@ export const PrimitiveModel = ({
           {/* <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} /> */}
         </HeadingBlock>
       ) : (
-        <RDFOntologiesBlock jsonldContext={jsonldContext} propertyName={propertyName} />
+        <RDFOntologicalClassPropertyBlock jsonldContext={jsonldContext} propertyName={propertyName} />
       )}
 
-      <TypeFormatBlock type={type} format={format} jsonldContext={jsonldContext} propertyName={propertyName} />
+      <TypeFormatVocabularyBlock
+        type={type}
+        format={format}
+        jsonldContext={jsonldContext}
+        propertyName={propertyName}
+      />
 
       {enumArray && <div className="prop-enum">Enum: [ {enumArray.join(', ')} ]</div>}
 

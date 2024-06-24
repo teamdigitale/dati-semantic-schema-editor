@@ -8,8 +8,8 @@ interface SparqlQueryOptions {
 
 export function useSparqlQuery(query: string, options?: SparqlQueryOptions) {
   const [status, setStatus] = useState<'idle' | 'pending' | 'fulfilled' | 'error'>('idle');
-  const [data, setData] = useState<any | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
+  const [data, setData] = useState<any | undefined>(undefined);
 
   const callback = useCallback(async (query: string) => {
     try {

@@ -7,8 +7,8 @@ import { ExternalDocsBlock } from './common/external-docs-block';
 import { HeadingBlock } from './common/heading-block';
 import { JsonLdContextBlock } from './common/jsonld-context-block';
 import { PropertiesBlock } from './common/properties-block';
-import { RDFOntologiesBlock } from './common/rdf-ontologies-block';
-import { TypeFormatBlock } from './common/type-format-block';
+import { RDFOntologicalClassPropertyBlock } from './common/rdf-ontological-class-property-block';
+import { TypeFormatVocabularyBlock } from './common/type-format-vocabulary-block';
 
 export const ArrayModel = (props) => {
   const {
@@ -42,14 +42,12 @@ export const ArrayModel = (props) => {
           jsonldContext={jsonldContext}
           propertyName={propertyName}
           getComponent={getComponent}
-        >
-          {/* <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} /> */}
-        </HeadingBlock>
+        />
       ) : (
-        <RDFOntologiesBlock jsonldContext={jsonldContext} propertyName={propertyName} />
+        <RDFOntologicalClassPropertyBlock jsonldContext={jsonldContext} propertyName={propertyName} />
       )}
 
-      <TypeFormatBlock type="array" jsonldContext={jsonldContext} propertyName={propertyName} />
+      <TypeFormatVocabularyBlock type="array" jsonldContext={jsonldContext} propertyName={propertyName} />
 
       <DeprecatedBlock schema={schema} />
 

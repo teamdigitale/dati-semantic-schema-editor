@@ -1,4 +1,4 @@
-import { Badge } from 'design-react-kit';
+import { RDFOntologicalTypeBlock } from './rdf-ontological-type-block';
 import { RDFVocabularyBlock } from './rdf-vocabulary-block';
 
 interface Props {
@@ -8,15 +8,15 @@ interface Props {
   format?: string;
 }
 
-export function TypeFormatBlock({ type, format, jsonldContext, propertyName }: Props) {
+export function TypeFormatVocabularyBlock({ type, format, jsonldContext, propertyName }: Props) {
   return (
     <div className="prop-type-container">
       <span className="prop-type">{type}</span>
-      {format && (
-        <Badge color="primary" className="ms-2">
-          {format}
-        </Badge>
-      )}
+
+      {format && <span className="prop-type ms-2">{format}</span>}
+
+      <RDFOntologicalTypeBlock jsonldContext={jsonldContext} propertyName={propertyName} className="ms-2" />
+
       <RDFVocabularyBlock jsonldContext={jsonldContext} propertyName={propertyName} className="ms-2" />
     </div>
   );

@@ -17,6 +17,9 @@
   }
 
   .modello {
+    overflow-x: auto;
+    word-break: break-word;
+
     .property {
       display: block;
       color: $text-muted;
