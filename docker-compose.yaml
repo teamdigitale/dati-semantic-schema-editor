@@ -5,6 +5,8 @@
 #
 version: "3.9"
 services:
+  app:
+    build: .
   pre-commit:
     build:
       context: .
