@@ -59,6 +59,18 @@ In order to process this correctly perform the following steps:
 
 - Once the PR is merged into the baseBranch, a github action will publish packages automatically.
 
+## Docker builds
+
+To create images for the two webapps, run th following commands:
+
+```bash
+# Editor webapp
+docker build . --target webapp --tag webapp:latest
+
+# Showcase webapp
+docker build . --target example --tag example:latest
+```
+
 ## Contributing
 
 Please, see [CONTRIBUTING.md](CONTRIBUTING.md) for more details on:

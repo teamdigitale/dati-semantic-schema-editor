@@ -2,7 +2,7 @@ import { Breadcrumb, BreadcrumbItem, Icon } from 'design-react-kit';
 import React from 'react';
 import { useSchemaNavigation } from '../../overview/components/Navigation';
 
-interface Props {
+export interface Props {
   specPathBase: string[];
 }
 

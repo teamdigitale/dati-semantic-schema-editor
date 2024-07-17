@@ -1,1 +1,13 @@
+.git
+.gitignore
+.github
+.gitlab
+
+.vscode
+.turbo
+
+node_modules
+dist
+
 Dockerfile
+*.md
