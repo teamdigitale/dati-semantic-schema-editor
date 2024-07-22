@@ -9,6 +9,9 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@italia/schema-editor": "workspace:*",
     "ace-builds": "^1.35.0",

@@ -20,6 +20,19 @@ This repository uses [PNPM](https://pnpm.io) and [turborepo](https://turbo.build
 
 ## Usage
 
+### Usage with Docker
+
+To launch the application, just run docker compose
+- that will build and deploy the app - and
+open the browser
+
+```bash
+docker compose up -d app
+open http://localhost:5000
+```
+
+### Local Usage
+
 To use Italia Schema Editor all you need to do is installing the `@italia/schema-editor` plugin and than use as follow:
 
 XXX
@@ -58,6 +71,18 @@ In order to process this correctly perform the following steps:
 - When the changesets files reach the "baseBranch" (actually "main"), a github action will generate a new PR with updated packages versions. Review the PR and approve merge.
 
 - Once the PR is merged into the baseBranch, a github action will publish packages automatically.
+
+## Docker builds
+
+To create images for the two webapps, run th following commands:
+
+```bash
+# Editor webapp
+docker build . --target webapp --tag webapp:latest
+
+# Showcase webapp
+docker build . --target example --tag example:latest
+```
 
 ## Contributing
 

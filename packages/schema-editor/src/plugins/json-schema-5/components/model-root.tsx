@@ -1,6 +1,6 @@
 import { List, Map } from 'immutable';
 
-interface Props {
+export interface Props {
   name: string;
   fullPath: string[];
   jsonldContextFullPath: string[] | undefined;
