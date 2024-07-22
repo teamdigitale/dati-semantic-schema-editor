@@ -1,0 +1,205 @@
+openapi: 3.0.3
+info:
+  title: Schema della Pratica di Rendita
+  version: 202401.18.00
+  x-summary: Schema della Pratica di Rendita compatibile con l'Ontologia INPS relativa ai contributi previdenziali.
+  license:
+    name: CC BY 4.0
+    url: https://creativecommons.org/licenses/by/4.0/
+  termsOfService: https://creativecommons.org/licenses/by/4.0/
+  contact:
+    name: Andrea Cigliano
+    email: andrea.cigliano@inps.it
+  description: https://w3id.org/italia/social-security/onto/contributions/PraticaDiRendita
+paths: {}
+servers: []
+tags: []
+components:
+  schemas:
+
+    IdPraticaRendita:
+      type: string
+      x-refersTo: https://w3id.org/italia/social-security/onto/contributions/numeroPratica
+      description: https://w3id.org/italia/social-security/onto/contributions/numeroPratica
+      example: '5498551'
+      maxLength: 50
+      minLength: 1
+
+    PraticaRendita:
+      type: object
+      x-jsonld-type: https://w3id.org/italia/social-security/onto/contributions/PraticaDiRendita
+      # This custom property defines the associated json-ld
+      #   context that can be used to semantically describe
+      #   the instances.
+      x-jsonld-context:
+        "@vocab": "https://w3id.org/italia/social-security/onto/contributions/"
+        descrizione_pratica_rendita: descrizionePratica
+        rendita_ha_atto_adeguamento_contributivo:
+          "@id": haAttoAdeguamentoContributivo
+        rendita_ha_domanda_adeguamento_contributivo:
+          "@id": haDomandaAdeguamentoContributivo
+        rendita_ha_pagatore_onere:
+          "@id": haPagatoreOnere
+        rendita_ha_titolare_pratica:
+          "@id": haTitolarePraticaAdeguamentoContributivo
+      additionalProperties: true
+      description: https://w3id.org/italia/social-security/onto/contributions/PraticaDiRendita
+      required:
+      - id_pratica_rendita
+      - descrizione_pratica_rendita
+      properties:
+        id_pratica_rendita:
+          $ref: "#/components/schemas/IdPraticaRendita"
+        descrizione_pratica_rendita:
+          type: string
+          maxLength: 255
+        rendita_ha_domanda_adeguamento_contributivo:
+          type: object
+          items:
+            $ref: "#/components/schemas/DomandaAdeguamentoContributivo"
+        rendita_ha_atto_adeguamento_contributivo:
+          type: object
+          items:
+            $ref: "#/components/schemas/AttoAdeguamentoContributivo"
+        rendita_ha_pagatore_onere:
+          type: object
+          items:
+            $ref: "#/components/schemas/Superstite"
+        rendita_ha_titolare_pratica:
+          type: object
+          items:
+            $ref: "#/components/schemas/TitolarePratica"
+      example:
+        id_pratica_rendita:
+          $ref: "#/components/schemas/IdPraticaRendita/example"
+        descrizione_pratica_rendita: 'Rendita'
+        rendita_ha_domanda_adeguamento_contributivo:
+          $ref: "#/components/schemas/DomandaAdeguamentoContributivo/example"
+        rendita_ha_atto_adeguamento_contributivo:
+          $ref: "#/components/schemas/AttoAdeguamentoContributivo/example"
+        rendita_ha_pagatore_onere:
+          $ref: "#/components/schemas/Superstite/example"
+        rendita_ha_titolare_pratica:
+          $ref: "#/components/schemas/TitolarePratica/example"
+
+    DomandaAdeguamentoContributivo:
+      type: object
+      x-jsonld-type: https://w3id.org/italia/social-security/onto/contributions/DomandaAdeguamentoContributivo
+      x-jsonld-context:
+        "@vocab": "https://w3id.org/italia/social-security/onto/contributions/"
+        numero_domanda: numeroDomanda
+        data_domanda: dataDomanda
+      additionalProperties: true
+      description:
+          https://w3id.org/italia/social-security/onto/contributions/DomandaAdeguamentoContributivo
+      required:
+      - numero_domanda
+      - data_domanda
+      properties:
+        numero_domanda:
+          type: string
+          maxLength: 50
+        data_domanda:
+          type: string
+          format: date
+          pattern: ([0-9]{4})-([0-1][0-9])-([0-3][0-9])
+      example:
+        numero_domanda: '3154988'
+        data_domanda: '2022-06-25'
+
+    AttoAdeguamentoContributivo:
+      type: object
+      x-jsonld-type: https://w3id.org/italia/social-security/onto/contributions/AttoAdeguamentoContributivo
+      x-jsonld-context:
+        "@vocab": "https://w3id.org/italia/social-security/onto/contributions/"
+        numero_atto: numeroAtto
+        data_atto: dataAtto
+      additionalProperties: true
+      description:
+          https://w3id.org/italia/social-security/onto/contributions/AttoAdeguamentoContributivo
+      required:
+      - numero_atto
+      - data_atto
+      properties:
+        numero_atto:
+          type: string
+          maxLength: 50
+        data_atto:
+          type: string
+          format: date
+          pattern: ([0-9]{4})-([0-1][0-9])-([0-3][0-9])
+      example:
+        numero_atto: '2316547'
+        data_atto: '2022-07-25'
+
+    TitolarePratica:
+      type: object
+      x-jsonld-type: https://w3id.org/italia/social-security/onto/contributions/TitolarePraticaAdeguamentoContributivo
+      x-jsonld-context:
+        "@vocab": "https://w3id.org/italia/social-security/onto/contributions/"
+      additionalProperties: true
+      description:
+          https://w3id.org/italia/social-security/onto/contributions/TitolarePraticaAdeguamentoContributivo
+      required:
+      - cf_titolare
+      - nome_titolare
+      - cognome_titolare
+      properties:
+        cf_superstite:
+          $ref: "#/components/schemas/Cf"
+        nome_superstite:
+          $ref: "#/components/schemas/Nome"
+        cognome_superstite:
+          $ref: "#/components/schemas/Cognome"
+      example:
+        cf_titolare:
+          $ref: "#/components/schemas/Cf/example"
+        nome_titolare:
+          $ref: "#/components/schemas/Nome/example"
+        cognome_titolare:
+          $ref: "#/components/schemas/Cognome/example"
+
+    Superstite:
+      type: object
+      x-jsonld-type: https://w3id.org/italia/social-security/onto/contributions/SuperstiteDiTitolarePraticaAdeguamentoContributivo
+      x-jsonld-context:
+        "@vocab": "https://w3id.org/italia/social-security/onto/contributions/"
+      additionalProperties: true
+      description:
+          https://w3id.org/italia/social-security/onto/contributions/SuperstiteDiTitolarePraticaAdeguamentoContributivo
+      required:
+      - cf_superstite
+      - nome_superstite
+      - cognome_superstite
+      properties:
+        cf_superstite:
+          $ref: "#/components/schemas/Cf"
+        nome_superstite:
+          $ref: "#/components/schemas/Nome"
+        cognome_superstite:
+          $ref: "#/components/schemas/Cognome"
+      example:
+        cf_superstite:
+          $ref: "#/components/schemas/Cf/example"
+        nome_superstite:
+          $ref: "#/components/schemas/Nome/example"
+        cognome_superstite:
+          $ref: "#/components/schemas/Cognome/example"
+
+    Cf:
+      type: string
+      maxLength: 20
+      x-refersTo: https://w3id.org/italia/onto/CPV/taxCode
+      example: 'RSSFRC64G58k152L'
+
+    Nome:
+      type: string
+      maxLength: 50
+      x-refersTo: https://w3id.org/italia/onto/CPV/givenName
+      example: 'Franco'
+
+    Cognome:
+      type: string
+      maxLength: 50
+      x-refersTo: https://w3id.org/italia/onto/CPV/familyName
+      example: 'Rossi'
