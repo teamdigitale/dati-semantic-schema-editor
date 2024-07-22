@@ -20,6 +20,19 @@ This repository uses [PNPM](https://pnpm.io) and [turborepo](https://turbo.build
 
 ## Usage
 
+### Usage with Docker
+
+To launch the application, just run docker compose
+- that will build and deploy the app - and
+open the browser
+
+```bash
+docker compose up -d app
+open http://localhost:5000
+```
+
+### Local Usage
+
 To use Italia Schema Editor all you need to do is installing the `@italia/schema-editor` plugin and than use as follow:
 
 XXX
