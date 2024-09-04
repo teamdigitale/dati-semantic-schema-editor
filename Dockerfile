@@ -1,3 +1,5 @@
+FROM docker.io/nginx:stable-alpine3.19 AS nginx
+
 FROM docker.io/node:20-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -11,12 +13,12 @@ RUN pnpm run -r build
 RUN pnpm deploy --filter=webapp --prod /prod/webapp
 RUN pnpm deploy --filter=example --prod /prod/example
 
-FROM nginx:stable-alpine3.19 AS webapp
+FROM nginx AS webapp
 COPY --from=build /prod/webapp/dist /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx","-g","daemon off;"]
 
-FROM nginx:stable-alpine3.19 AS example
+FROM nginx AS example
 COPY --from=build /prod/example/dist /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx","-g","daemon off;"]

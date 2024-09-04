@@ -36,4 +36,3 @@ jobs:
           VALIDATE_TYPESCRIPT_ES: true
           VALIDATE_TYPESCRIPT_STANDARD: false
           TYPESCRIPT_ES_CONFIG_FILE: eslint.config.mjs
-

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-const BASE_URL = 'https://www.robertopolli.it/sparc0rs/';
+const BASE_URL = 'https://virtuoso-dev-external-service-ndc-dev.apps.cloudpub.testedev.istat.it/sparql';
 
 interface SparqlQueryOptions {
   skip?: boolean;
