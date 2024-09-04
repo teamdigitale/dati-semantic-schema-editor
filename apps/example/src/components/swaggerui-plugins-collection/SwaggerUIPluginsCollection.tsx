@@ -15,7 +15,7 @@ export function SwaggerUIPluginsCollection() {
   return (
     <div>
       <SwaggerUI
-        url="https://petstore.swagger.io/v2/swagger.json"
+        url="https://raw.githubusercontent.com/ioggstream/draft-polli-restapi-ld-keywords/main/schemas.oas3.yaml"
         plugins={[ErrorsPlugin, JSONSchema5Plugin, OverviewPlugin, CustomLayoutPlugin]}
         layout={'CustomLayout'}
       />

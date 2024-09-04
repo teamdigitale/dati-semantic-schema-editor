@@ -1,4 +1,4 @@
-FROM node:20-slim AS base
+FROM docker.io/node:20-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
@@ -11,16 +11,12 @@ RUN pnpm run -r build
 RUN pnpm deploy --filter=webapp --prod /prod/webapp
 RUN pnpm deploy --filter=example --prod /prod/example
 
-FROM ubuntu AS webapp
-RUN apt-get update
-RUN apt-get install nginx -y
-COPY --from=build /prod/webapp/dist /var/www/html/
+FROM nginx:stable-alpine3.19 AS webapp
+COPY --from=build /prod/webapp/dist /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx","-g","daemon off;"]
 
-FROM ubuntu AS example
-RUN apt-get update
-RUN apt-get install nginx -y
-COPY --from=build /prod/example/dist /var/www/html/
+FROM nginx:stable-alpine3.19 AS example
+COPY --from=build /prod/example/dist /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx","-g","daemon off;"]
