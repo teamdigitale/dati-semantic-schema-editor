@@ -39,6 +39,16 @@ XXX
 
 ## Development
 
+### Develop with docker
+
+To start the development environment with docker, run the following command:
+
+```bash
+docker compose up -d dev
+```
+
+This will run a development environment based on the [dev.dockerfile](./dev.dockerfile) and will start the development server.
+
 ### Installation
 
 Ensure to have installed [PNPM](https://pnpm.io/installation) package manager.

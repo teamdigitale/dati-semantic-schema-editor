@@ -15,6 +15,21 @@ services:
     working_dir: /code
     volumes:
     - .:/code
+  dev:
+    build:
+      context: .
+      dockerfile: dev.dockerfile
+    working_dir: /code
+    volumes:
+    - .:/code
+    ports:
+      - "5000:80"
+    entrypoint:
+    - bash
+    - -c
+    - |
+      corepack install
+      npm run dev
   super-linter:
     image: github/super-linter:v3.15.5
     environment:
