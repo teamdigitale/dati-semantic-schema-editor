@@ -1,0 +1,51 @@
+#
+# This is a blank template for a schema collection.
+#
+#
+openapi: 3.0.3
+components:
+  schemas:
+    ExportedSchemas:
+      anyOf: []
+    #
+    # Add your schemas here.
+    #
+    Person:
+      type: object
+      x-jsonld-type: # Try to auto-complete this field with "https://w3id.org/italia/onto/CPV/Person"
+      x-jsonld-context:
+        # Try to auto-complete this field with "@vocab",
+        #   then auto-complete the vocab value with "https://w3id.org/italia/onto/CPV/"
+      properties:
+        givenName:
+          type: string
+          description: The given name of the person.
+          example: John
+        familyName:
+          type: string
+          description: The family name of the person.
+          example: Doe
+info:
+  title: A schema collection
+  version: 202108.01.00
+  x-summary: A schema collection with CPV ontology.
+  license:
+    name: BSD3
+    url: https://opensource.org/licenses/BSD-3-Clause
+  termsOfService: https://opensource.org/licenses/BSD-3-Clause
+  contact:
+    name: Roberto Polli
+    email: robipolli@gmail.com
+    url: http://spcdata.digitpa.gov.it/Amministrazione/agid
+  description: |-
+
+    ## Welcome!
+    Edit the following schema examples in this semantic editor
+    based on Swagger Editor.
+#
+# If this is a schema-only file, you can leave the following sections empty.
+# Do not remove them, as they are required by the OpenAPI 3.0 specification.
+#
+paths: {}
+servers: []
+tags: []

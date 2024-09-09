@@ -3,7 +3,7 @@ import './SchemaEditor.scss';
 
 import { useEffect, useRef } from 'react';
 import type SwaggerUI from 'swagger-ui';
-import { EditorThemePlugin, ErrorsPlugin, JSONSchema5Plugin, LayoutPlugin, OverviewPlugin } from '../../plugins';
+import { EditorAutosuggestCustomPlugin, EditorThemePlugin, ErrorsPlugin, JSONSchema5Plugin, LayoutPlugin, OverviewPlugin } from '../../plugins';
 
 interface Props {
   spec?: string | object;
@@ -29,6 +29,7 @@ export function SchemaEditor({ spec, url }: Props) {
         plugins: [
           ...Object.values(SwaggerEditor.plugins),
           EditorThemePlugin,
+          EditorAutosuggestCustomPlugin,
           ErrorsPlugin,
           JSONSchema5Plugin,
           OverviewPlugin,
