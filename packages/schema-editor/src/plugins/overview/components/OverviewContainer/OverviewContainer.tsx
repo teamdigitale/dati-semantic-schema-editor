@@ -8,6 +8,7 @@ const OverviewContainer = ({ errSelectors, specSelectors, getComponent }) => {
   const VersionPragmaFilter = getComponent('VersionPragmaFilter');
   const Errors = getComponent('Errors', true);
   const InfoContainer = getComponent('InfoContainer', true);
+  const TabHelp = getComponent('TabHelp', true);
   const TabOperations = getComponent('TabOperations', true);
   const TabWebhooks = getComponent('TabWebhooks', true);
   const Models = getComponent('Models', true);
@@ -16,7 +17,7 @@ const OverviewContainer = ({ errSelectors, specSelectors, getComponent }) => {
   const isOAS3 = specSelectors.isOAS3();
   const isOAS31 = specSelectors.isOAS31();
 
-  const [activeTab, toggleTab] = useState('informations');
+  const [activeTab, toggleTab] = useState('information');
 
   const isSpecEmpty = !specSelectors.specStr();
   const loadingStatus = specSelectors.loadingStatus();
@@ -66,10 +67,11 @@ const OverviewContainer = ({ errSelectors, specSelectors, getComponent }) => {
   }
 
   const tabs = [
-    { id: 'informations', title: 'Informations', Component: InfoContainer },
-    { id: 'operations', title: 'Operations', Component: TabOperations },
+    { id: 'help', title: 'Help', Component: TabHelp },
+    { id: 'models', title: 'Data Models', Component: Models },
+    { id: 'information', title: 'Information', Component: InfoContainer },
+    // { id: 'operations', title: 'Operations', Component: TabOperations },
     ...(isOAS31 ? [{ id: 'webhooks', title: 'Webhooks', Component: TabWebhooks }] : []),
-    { id: 'models', title: 'Models', Component: Models },
   ];
 
   return (

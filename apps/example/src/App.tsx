@@ -15,9 +15,8 @@ import {
   Icon,
   Nav,
   NavItem,
-  NavLink,
 } from 'design-react-kit';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import { Home } from './components/home/Home';
 import { Standalone } from './components/standalone/Standalone';
 import { SwaggerUIPluginsCollection } from './components/swaggerui-plugins-collection/SwaggerUIPluginsCollection';
@@ -55,16 +54,23 @@ function App() {
               <div className="menu-wrapper">
                 <Nav navbar>
                   <NavItem>
-                    <NavLink href="/">Home</NavLink>
+                    <Link className='nav-link' to="/">Home</Link>
                   </NavItem>
                   <NavItem>
-                    <NavLink href="/standalone">Standalone</NavLink>
+                    <Link className='nav-link' to="/standalone?url=/schemas/example-schema.oas3.yaml">
+                      Standalone Schema
+                    </Link>
                   </NavItem>
                   <NavItem>
-                    <NavLink href="/swaggerui">SwaggerUI</NavLink>
+                    <Link className='nav-link' to="/standalone?url=/schemas/help.yaml">
+                      Standalone Help
+                    </Link>
                   </NavItem>
                   <NavItem>
-                    <NavLink href="/ace">ACE editor</NavLink>
+                    <Link className='nav-link' to="/swaggerui">SwaggerUI</Link>
+                  </NavItem>
+                  <NavItem>
+                    <Link className='nav-link' to="/ace">ACE editor</Link>
                   </NavItem>
                 </Nav>
               </div>

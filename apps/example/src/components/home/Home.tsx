@@ -4,12 +4,16 @@ import { Link } from 'react-router-dom';
 export function Home() {
   return (
     <div className="d-flex justify-content-center p-5">
-      <Link to="/standalone">
+      <Link to="/standalone?url=/schemas/example-schema.oas3.yaml">
         <Button className="me-2" color="primary" size="lg">
-          Standalone
+          Standalone Schema
         </Button>
       </Link>
-
+      <Link to="/standalone?url=/schemas/help.yaml">
+        <Button className="me-2" color="primary" size="lg">
+          Standalone Help
+        </Button>
+      </Link>
       <Link to="/swaggerui">
         <Button className="me-2" color="primary" size="lg">
           SwaggerUI

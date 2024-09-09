@@ -15,7 +15,7 @@ export function SwaggerUIPluginsCollection() {
   return (
     <div>
       <SwaggerUI
-        url="https://raw.githubusercontent.com/ioggstream/draft-polli-restapi-ld-keywords/main/schemas.oas3.yaml"
+        url="/schemas/example-schema.oas3.yaml"
         plugins={[ErrorsPlugin, JSONSchema5Plugin, OverviewPlugin, CustomLayoutPlugin]}
         layout={'CustomLayout'}
       />

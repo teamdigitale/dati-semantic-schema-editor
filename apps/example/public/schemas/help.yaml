@@ -1,0 +1,21 @@
+#  > 🇮🇹 ITALIAN
+#  Questa applicazione visualizza i tuoi schemi dati (modelli) in formato OpenAPI interrogando i dati presenti su schema.gov.it.
+#
+#  L'applicazione mostrerà le informazioni sintattiche specificate
+#  tramite il formato OpenAPI (JSON Schema draft 4) quali il tipo sintattico (`string`, `number`, `object`, `array`, etc.) la lunghezza massima, minima, i valori o le espressioni regolari ammesse, etc.
+#  Inoltre verranno visualizzate le informazioni semantiche come la descrizione, il titolo, i vincoli legati alle classi semantiche (`rdf:type`) e al dominio applicativo (`rdfs:domain`, `rdfs:range`).
+#
+#  Incolla qui i tuoi schemi o le tue specifiche OpenAPI
+#  oppure scaricali cliccando su "From url" e modificale direttamente nell'editor
+#
+#
+#  > 🇬🇧 ENGLISH
+#  This application renders your schemas (data models) based on OpenAPI specification using data retrieved from schema.gov.it.
+#
+# The application will display the syntactic information specified
+# through the OpenAPI format (JSON Schema draft 4) such as the syntactic type (`string`, `number`, `object`, `array`, etc.), the maximum and minimum length, the allowed values or regular expressions, etc.
+# In addition, the semantic information will be displayed such as the description, the title, the constraints related to the semantic classes (`rdf:type`) and the application domain (`rdfs:domain`, `rdfs:range`).
+#
+#  Paste here your OAS specifications
+#  or download them from the internet and click on "From url"
+#  then modify them directly in the editor.

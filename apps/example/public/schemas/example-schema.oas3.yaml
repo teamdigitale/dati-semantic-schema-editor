@@ -18,7 +18,28 @@ components:
       additionalProperties: false
       properties:
         education_level:
-          $ref: "https://onto.robertopolli.it/vocabularies/v1/vocabularies-schema/education-level?schema_type=anyOfenum#/SchemaVocabulary"
+          type: string
+          maxLength: 3
+          description: |-
+            Il livello di istruzione della persona.
+            I valori ammessi sono indicati nel [vocabolario](https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level)
+          enum:
+            - ACO
+            - CDU
+            - FLA
+            - IFP
+            - IFTS
+            - ITS
+            - L
+            - LD
+            - LS
+            - LSE
+            - NED
+            - PSE
+            - RDD
+            - SLA
+            - USG
+            - USV
       example:
         education_level: NED
     Parent:
