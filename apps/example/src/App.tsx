@@ -62,6 +62,11 @@ function App() {
                     </Link>
                   </NavItem>
                   <NavItem>
+                    <Link className='nav-link' to="/standalone?url=/schemas/blank-template.yaml">
+                      Standalone Template
+                    </Link>
+                  </NavItem>
+                  <NavItem>
                     <Link className='nav-link' to="/standalone?url=/schemas/help.yaml">
                       Standalone Help
                     </Link>
