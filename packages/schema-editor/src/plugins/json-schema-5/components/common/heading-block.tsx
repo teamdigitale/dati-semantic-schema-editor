@@ -1,4 +1,4 @@
-import { RDFOntologicalClassPropertyBlock } from './rdf-ontological-class-property-block';
+import { RDFOntologicalClassBlock } from './rdf-ontological-class-block';
 
 interface Props {
   title: string;
@@ -14,7 +14,7 @@ export function HeadingBlock({ title, specPath, jsonldType, getComponent, childr
   return (
     <div className="d-flex">
       <h4>
-        {title} <RDFOntologicalClassPropertyBlock fieldUri={jsonldType} />
+        {title} <RDFOntologicalClassBlock classUri={jsonldType} />
       </h4>
 
       <div className="d-flex align-items-center ms-auto">

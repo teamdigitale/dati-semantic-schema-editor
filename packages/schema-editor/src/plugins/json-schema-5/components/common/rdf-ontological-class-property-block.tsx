@@ -1,8 +1,8 @@
 import { Spinner } from 'design-react-kit';
-import { basename, useRDFOntologiesResolver } from '../../hooks';
+import { basename, useRDFPropertyResolver } from '../../hooks';
 
 export function RDFOntologicalClassPropertyBlock({ fieldUri }) {
-  const { data, status } = useRDFOntologiesResolver(fieldUri);
+  const { data, status } = useRDFPropertyResolver(fieldUri);
   const items = [
     ...(data.ontologicalClass ? [data.ontologicalClass] : []),
     ...(data.ontologicalProperty ? [data.ontologicalProperty] : []),
