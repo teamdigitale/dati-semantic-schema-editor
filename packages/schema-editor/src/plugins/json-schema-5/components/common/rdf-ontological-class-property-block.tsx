@@ -1,29 +1,51 @@
 import { Spinner } from 'design-react-kit';
-import { basename, useRDFPropertyResolver } from '../../hooks';
+import { basename, useRDFPropertyResolver as useRDFPropertyResolver } from '../../hooks';
 
 export function RDFOntologicalClassPropertyBlock({ fieldUri }) {
   const { data, status } = useRDFPropertyResolver(fieldUri);
-  const items = [
-    ...(data.ontologicalClass ? [data.ontologicalClass] : []),
-    ...(data.ontologicalProperty ? [data.ontologicalProperty] : []),
-  ];
 
-  return status === 'pending' ? (
-    <span className="d-inline-block align-middle">
-      <Spinner active small />
-    </span>
-  ) : items?.length > 0 ? (
-    <span className="rdf-ontological-class-property">
-      [
-      {items.map((x, i) => (
+  if (status === 'pending') {
+    return (
+      <span className="d-inline-block align-middle">
+        <Spinner active small />
+      </span>
+    );
+  }
+
+  if (!data?.ontologicalClass) {
+    return null;
+  }
+
+  const rdfProperty = (
+    <>
+      <a href={data.ontologicalClass} target='_blank' rel='noreferrer'>
+        {basename(data.ontologicalClass)}
+      </a>
+      {data.ontologicalProperty && (
         <>
-          <a key={x} href={x} target="_blank" rel="noreferrer">
-            {basename(x)}
+          .
+          <a href={data.ontologicalProperty} target='_blank' rel='noreferrer'>
+            {basename(data.ontologicalProperty)}
           </a>
-          {i < items.length - 1 && '.'}
         </>
-      ))}
-      ]
+      )}
+    </>
+  );
+
+  return (
+    <>
+    <span
+      className="rdf-ontological-class-property"
+      style={{ textDecoration: rdfProperty ? 'underline dotted' : 'none' }}
+    >
+      [{rdfProperty}]
     </span>
-  ) : null;
+    <span
+      className="rdf-ontological-class-property ms-2 badge bg-primary"
+      >
+        <br />
+        {data?.ontologicalPropertyComment}
+      </span>
+    </>
+  );
 }

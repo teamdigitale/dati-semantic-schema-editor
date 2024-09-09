@@ -8,13 +8,20 @@ export function basename(path: string) {
 export function useRDFPropertyResolver(fieldUri: string | undefined) {
   const { data: sparqlData, status: sparqlStatus } = useSparqlQuery(
     `
-    prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX RDFS: <http://www.w3.org/2000/01/rdf-schema#>
 
-    select distinct * where {
+    SELECT DISTINCT * WHERE {
       <${fieldUri}>
         rdfs:domain ?domain ;
         rdfs:range ?class
       .
+
+      OPTIONAL {
+        <${fieldUri}>
+          rdfs:comment ?comment
+        .
+        FILTER(lang(?comment) = 'en')
+      }
     }
   `,
     { skip: !fieldUri },
@@ -29,6 +36,7 @@ export function useRDFPropertyResolver(fieldUri: string | undefined) {
       ontologicalClass: content?.domain as string | undefined,
       ontologicalProperty: fieldUri as string | undefined,
       ontologicalType: content?.class as string | undefined,
+      ontologicalPropertyComment: content?.comment as string | undefined,
     },
     status: sparqlStatus,
   };
