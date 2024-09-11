@@ -24,7 +24,7 @@ oppure scaricali cliccando su "From URL" (TODO) e modificali direttamente.
 Usa `CTRL+Space` per attivare l'auto-completamento
 delle parole chiave OpenAPI
 (incluse quelle semantiche: `x-jsonld-type` e `x-jsonld-context`)
-e degli URL delle classi semantiche principali.
+e degli URI delle classi semantiche principali.
 
 ###### 🇬🇧 ENGLISH
 
@@ -47,7 +47,4 @@ or download them by clicking on "From URL" (TODO) and modify them directly.
 
 Use `CTRL+Space` to activate the automatic completion
 of OpenAPI keywords
-
-and the URLs of the main semantic classes.
-
- `;
+and the URIs of the main semantic classes.
