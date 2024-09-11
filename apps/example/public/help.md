@@ -5,7 +5,7 @@ Questa applicazione visualizza i tuoi schemi dati (modelli) in formato OpenAPI i
 L'applicazione mostra:
 
 - le informazioni sintattiche specificate
-in formato [OpenAPI 3.0](https://spec.openapis.org/oas/v3.0.3.html) (JSON Schema draft 4) quali
+in formato [OpenAPI 3.0](https://spec.openapis.org/oas/v3.0.3.html) (JSON Schema Wright Draft 00) quali
 il tipo sintattico (`string`, `number`, `object`, `array`, etc.) la lunghezza massima, minima, i valori o le espressioni regolari ammesse, etc;
 - le informazioni semantiche in formato
 [JSON-LD](https://spec.openapis.org/oas/v3.0.3.html)
@@ -33,7 +33,7 @@ This application displays your data schemas (models) in OpenAPI format by queryi
 The application shows:
 
 - the syntactic information specified
-in [OpenAPI 3.0](https://spec.openapis.org/oas/v3.0.3.html) format (JSON Schema draft 4)
+in [OpenAPI 3.0](https://spec.openapis.org/oas/v3.0.3.html) format (JSON Schema Wright Draft 00)
 such as the syntactic type (`string`, `number`, `object`, `array`, etc.), the maximum and minimum length, the allowed values or regular expressions, etc;
 - the semantic information in JSON-LD format
 like
