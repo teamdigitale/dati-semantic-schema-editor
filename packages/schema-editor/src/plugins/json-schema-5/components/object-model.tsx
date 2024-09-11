@@ -89,7 +89,7 @@ const ObjectModel = ({
                     .entrySeq()
                     .filter(([key, value]) => {
                       return (
-                        (!value.get('readOnly') || includeReadOnly) && (!value.get('writeOnly') || includeWriteOnly)
+                        (!value?.get('readOnly') || includeReadOnly) && (!value?.get('writeOnly') || includeWriteOnly)
                       );
                     })
                     .map(([key, value]) => {
