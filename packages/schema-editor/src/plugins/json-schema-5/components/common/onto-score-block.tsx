@@ -6,8 +6,11 @@ export function OntoScoreBlock({ schema, jsonldContext }) {
   const { score } = useOntoScore(jsonldContext, properties);
 
   return (
-    <Badge color={score > 0.9 ? 'success' : score > 0.5 ? 'warning' : 'danger'}>
-      <small>OntoScore: {score.toFixed(1)}</small>
+    <Badge
+      color={score > 0.9 ? 'success' : score > 0.5 ? 'warning' : 'danger'}
+      title='Ratio of semantic annotated properties to total properties. This is a beta feature and its implementation may change in future.'
+      >
+      <small>OntoScore &beta;: {score.toFixed(1)}</small>
     </Badge>
   );
 }
