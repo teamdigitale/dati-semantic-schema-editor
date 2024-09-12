@@ -1,3 +1,6 @@
+/**
+ * A component that renders a primitive model (e.g. a string, number, boolean, etc.).
+ */
 import './primitive-model.scss';
 
 import { getExtensions } from '../utils';

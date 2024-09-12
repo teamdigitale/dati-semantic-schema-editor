@@ -1,0 +1,88 @@
+#
+# Schema to test the editor.
+#
+openapi: 3.0.3
+components:
+  schemas:
+    ExportedSchemas:
+      anyOf: []
+    #
+    # Add your schemas here.
+    #
+    Person:
+      type: object
+      x-jsonld-type: "https://w3id.org/italia/onto/CPV/Person"
+      x-jsonld-context:
+        "@vocab": "https://w3id.org/italia/onto/CPV/"
+        detached: null
+        family_name: familyName
+        tax_code:
+          "@id": taxCode
+        education_level:
+          "@id": hasLevelOfEducation
+          "@type": "@id"
+          "@context":
+            "@base": "https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/"
+      properties:
+        missing:
+          type: string
+          description: >-
+            This property does not exist in the CPV ontology.
+            The editor shows a :warning: sign.
+        detached:
+          type: number
+          description: >-
+            This is a detached property.
+            The editor does show nothing.
+        givenName:
+          type: string
+          description: >-
+            The associated rdf:Property is inferred from @vocab.
+            The editor shows the retrieved information.
+          example: John
+        family_name:
+          type: string
+          description: >-
+            The associated rdf:Property is explicitly mentioned in @context.
+            The editor shows the retrieved information.
+        tax_code:
+          type: string
+          description: >-
+            The associated rdf:Property is explicitly mentioned in @context using `@id`.
+            The editor shows the retrieved information.
+        education_level:
+          type: string
+          description: >-
+            The associated rdf:Property is explicitly mentioned in @context using `@id`.
+            The editor identifies the controlled vocabulary
+            mentioned in the context.
+          example: "L"
+      example:
+        givenName: John
+        family_name: Doe
+        tax_code: "DOEJHN77T01H501A"
+        education_level: "L"
+
+info:
+  title: Test schema collection
+  version: 202409.01.00
+  x-summary: A schema to test functionalities of the editor.
+  license:
+    name: BSD3
+    url: https://opensource.org/licenses/BSD-3-Clause
+  termsOfService: https://opensource.org/licenses/BSD-3-Clause
+  contact:
+    name: Roberto Polli
+    email: roberto.polli@par-tec.it
+    url: https://www.par-tec.it
+  description: |-
+
+    ## Welcome!
+    This schema is used to test the editor functionalities.
+#
+# If this is a schema-only file, you can leave the following sections empty.
+# Do not remove them, as they are required by the OpenAPI 3.0 specification.
+#
+paths: {}
+servers: []
+tags: []

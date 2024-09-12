@@ -9,9 +9,9 @@ export function Home() {
           Standalone Schema
         </Button>
       </Link>
-      <Link to="/standalone?url=/schemas/help.yaml">
+      <Link to="/standalone?url=/schemas/test-schema.oas3.yaml">
         <Button className="me-2" color="primary" size="lg">
-          Standalone Help
+          Standalone Test
         </Button>
       </Link>
       <Link to="/swaggerui">

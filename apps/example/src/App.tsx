@@ -67,8 +67,8 @@ function App() {
                     </Link>
                   </NavItem>
                   <NavItem>
-                    <Link className='nav-link' to="/standalone?url=/schemas/help.yaml">
-                      Standalone Help
+                    <Link className='nav-link' to="/standalone?url=/schemas/test-schema.oas3.yaml">
+                      Standalone Test
                     </Link>
                   </NavItem>
                   <NavItem>

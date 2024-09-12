@@ -31,8 +31,9 @@ export const useJsonLDResolver = (jsonldContext: Map<any, any> | any, keysPath: 
       let innerContext = context;
       for (let i = 0; i < keysPath.length; i++) {
         const key = keysPath[i];
-        if (!innerContext[key]) {
-          throw new Error(`Property ${key} not found in inner @context`);
+        if (innerContext[key] === undefined) {
+          console.log(`Property ${key} not found in inner @context. Resolving with default @vocab.`);
+          innerContext[key] = key;
         } else if (i < keysPath.length - 1 && !innerContext[key]['@context']) {
           throw new Error(`Missing inner @context for property ${key}`);
         }
