@@ -12,10 +12,14 @@ const CustomLayoutPlugin = () => ({
 });
 
 export function SwaggerUIPluginsCollection() {
+  // Retrieve the 'url' query parameter from the URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const schemaUrl = urlParams.get('url') || '/schemas/example-schema.oas3.yaml';
+
   return (
     <div>
       <SwaggerUI
-        url="/schemas/example-schema.oas3.yaml"
+        url={schemaUrl}
         plugins={[ErrorsPlugin, JSONSchema5Plugin, OverviewPlugin, CustomLayoutPlugin]}
         layout={'CustomLayout'}
       />

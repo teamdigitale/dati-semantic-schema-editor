@@ -9,3 +9,12 @@ WHERE {
     ?keyClass rdfs:label ?label . FILTER (lang(?label) = 'it')
     }
 }
+
+; ---
+
+select distinct * where{
+
+?onto <https://w3id.org/italia/onto/ADMS/hasKeyClass> ?c .
+
+?onto a owl:Ontology .
+}
