@@ -11,12 +11,15 @@ import { SchemaEditor } from '@italia/schema-editor';
 import '@italia/schema-editor/dist/style.css';
 
 function App() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const schemaUrl = urlParams.get('url') || 'schemas/test-schema.oas3.yaml';
+
   return (
     <>
       <Header type="center">
         <HeaderContent>
           <HeaderBrand iconAlt="it code circle icon" iconName="it-code-circle">
-            <h2>Schema Editor</h2>
+            <h2>Schema Editor - 0.0.1 beta</h2>
             <h3>Italian OpenAPI Schema Editor</h3>
           </HeaderBrand>
           <HeaderRightZone>
@@ -34,7 +37,7 @@ function App() {
       </Header>
 
       <div className="app-container">
-        <SchemaEditor />
+        <SchemaEditor url={schemaUrl} />
       </div>
     </>
   );

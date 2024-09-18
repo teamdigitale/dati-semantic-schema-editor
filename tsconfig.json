@@ -27,7 +27,7 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": [
     "apps",

@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: "security-bandit"
+name: "SAST"
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -17,21 +17,6 @@ on:
 permissions: read-all
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-
-    # Runs a single command using the runners shell
-    - name: Python security check using Bandit
-      uses: ioggstream/bandit-report-artifacts@v1.7.4
-      with:
-        project_path: .
-        config_file: .bandit.yaml
-
   super-sast:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -47,7 +32,7 @@ jobs:
           -e RUN_OWASP_DEPENDENCY_CHECK=false \
           -e RUN_SPOTBUGS_CHECK=false \
           -e RUN_SPOTLESS_CHECK=false \
-          -e RUN_SPOTLESS_APPLY=true \
+          -e RUN_SPOTLESS_APPLY=false \
           -e HOME=/tmp \
           -e USER=nobody \
           -e BANDIT_CONFIG_FILE=/code/.bandit.yaml \

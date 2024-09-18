@@ -7,7 +7,7 @@ export function TabHelp({getComponent}) {
 
   useEffect(() => {
     // Fetch the content of the description.md file
-    fetch("/help.md").then((response) => response.text()).then((text) => setDescription(text)).catch((error) => console.error("Error loading description:", error));
+    fetch("help.md").then((response) => response.text()).then((text) => setDescription(text)).catch((error) => console.error("Error loading description:", error));
   }, []);
 
   return (<div>
