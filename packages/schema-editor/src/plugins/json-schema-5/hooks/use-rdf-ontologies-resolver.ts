@@ -45,20 +45,30 @@ export function useRDFPropertyResolver(fieldUri: string | undefined) {
 export function useRDFClassResolver(classUri: string | undefined) {
   const { data: sparqlData, status: sparqlStatus } = useSparqlQuery(
     `
-    prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-    select distinct * where {
+    SELECT DISTINCT
+      ?classUri
+      ?label
+      ?comment
+      GROUP_CONCAT(DISTINCT ?subClassOf; separator=",") as ?superClasses
+
+    WHERE {
 
       VALUES ?classUri { <${classUri}> }
 
       ?classUri
-        rdfs:label ?label ;
-        rdfs:comment ?comment
+        rdfs:label ?label
       .
       FILTER(lang(?label) = 'en')
-      FILTER(lang(?comment) = 'en')
 
-      optional {
+      OPTIONAL {
+        ?classUri  rdfs:comment ?comment
+        .
+        FILTER(lang(?comment) = 'en')
+      }
+
+      OPTIONAL {
         ?classUri
           rdfs:subClassOf ?subClassOf
         .
