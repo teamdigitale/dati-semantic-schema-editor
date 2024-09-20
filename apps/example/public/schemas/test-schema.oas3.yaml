@@ -21,8 +21,6 @@ components:
         education_level:
           "@id": hasLevelOfEducation
           "@type": "@id"
-          "@context":
-            "@base": "https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/"
       properties:
         missing:
           type: string
@@ -55,7 +53,14 @@ components:
           description: >-
             The associated rdf:Property is explicitly mentioned in @context using `@id`.
             The editor identifies the controlled vocabulary
-            mentioned in the context.
+            even if it is not mentioned in the context.
+          example: "L"
+        hasLevelOfEducation:
+          type: string
+          description: >-
+            The associated rdf:Property is not explicitly mentioned in @context.
+            The editor identifies the controlled vocabulary
+            even if it is not mentioned in the context.
           example: "L"
       example:
         givenName: John

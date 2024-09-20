@@ -5,23 +5,41 @@ export function basename(path: string) {
   return parts[parts.length - 1];
 }
 
-export function useRDFPropertyResolver(fieldUri: string | undefined) {
+export interface RDFProperty {
+  ontologicalProperty?: string;
+  ontologicalClass?: string;
+  ontologicalType?: string | undefined;
+  ontologicalPropertyComment?: string | undefined;
+  controlledVocabulary?: string | undefined;
+}
+
+export function useRDFPropertyResolver(fieldUri: string | undefined): { data: RDFProperty; status: string } {
   const { data: sparqlData, status: sparqlStatus } = useSparqlQuery(
     `
     PREFIX RDFS: <http://www.w3.org/2000/01/rdf-schema#>
 
+
     SELECT DISTINCT * WHERE {
-      <${fieldUri}>
+      VALUES ?fieldUri { <${fieldUri}> }
+
+      ?fieldUri
         rdfs:domain ?domain ;
         rdfs:range ?class
       .
 
       OPTIONAL {
-        <${fieldUri}>
+        ?fieldUri
           rdfs:comment ?comment
         .
         FILTER(lang(?comment) = 'en')
       }
+
+      OPTIONAL {
+        ?class
+          <https://w3id.org/italia/onto/l0/controlledVocabulary> ?controlledVocabulary
+        .
+      }
+
     }
   `,
     { skip: !fieldUri },
@@ -37,6 +55,7 @@ export function useRDFPropertyResolver(fieldUri: string | undefined) {
       ontologicalProperty: fieldUri as string | undefined,
       ontologicalType: content?.class as string | undefined,
       ontologicalPropertyComment: content?.comment as string | undefined,
+      controlledVocabulary: content?.controlledVocabulary as string | undefined,
     },
     status: sparqlStatus,
   };
@@ -93,7 +112,6 @@ export function useRDFClassResolver(classUri: string | undefined) {
     status: sparqlStatus,
   };
 }
-
 
 export function useRDFClassPropertiesResolver(classUri: string | undefined) {
   const { data: sparqlData, status: sparqlStatus } = useSparqlQuery(

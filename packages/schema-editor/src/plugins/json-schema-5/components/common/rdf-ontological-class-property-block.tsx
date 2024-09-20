@@ -46,12 +46,6 @@ export function RDFOntologicalClassPropertyBlock({ fieldUri }) {
     >
       [{rdfProperty}]
     </span>
-    <span
-      className="rdf-ontological-class-property ms-2 badge bg-primary"
-      >
-        <br />
-        {data?.ontologicalPropertyComment}
-      </span>
     </>
   );
 }

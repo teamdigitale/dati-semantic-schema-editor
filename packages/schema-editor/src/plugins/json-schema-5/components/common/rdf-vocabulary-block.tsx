@@ -1,11 +1,13 @@
 import { Badge, Icon } from 'design-react-kit';
-import { useJsonLDResolver } from '../../hooks';
 
-export const RDFVocabularyBlock = ({ propertyName, jsonldContext, className }) => {
-  const { data } = useJsonLDResolver(jsonldContext, [propertyName]);
+interface Props {
+  vocabulary: string | undefined;
+  className?: string;
+}
 
-  return data?.vocabularyUri ? (
-    <Badge color="success" href={data?.vocabularyUri} target="_blank" rel="noreferrer" className={className}>
+export const RDFVocabularyBlock = ({ vocabulary, className }: Props) => {
+  return vocabulary ? (
+    <Badge color="success" href={vocabulary} target="_blank" rel="noreferrer" className={className}>
       <span>
         Show values <Icon icon="it-external-link" size="xs" color="white" title="View vocabulary" />
       </span>

@@ -1,3 +1,4 @@
+import { RDFProperty } from '../../hooks';
 import { RDFOntologicalTypeBlock } from './rdf-ontological-type-block';
 import { RDFVocabularyBlock } from './rdf-vocabulary-block';
 
@@ -6,9 +7,10 @@ interface Props {
   propertyName: string;
   type?: string;
   format?: string;
+  rdfProperty?: RDFProperty;
 }
 
-export function TypeFormatVocabularyBlock({ type, format, jsonldContext, propertyName }: Props) {
+export function TypeFormatVocabularyBlock({ type, format, jsonldContext, propertyName, rdfProperty }: Props) {
   return (
     <div className="prop-type-container">
       <span className="prop-type">{type}</span>
@@ -17,7 +19,7 @@ export function TypeFormatVocabularyBlock({ type, format, jsonldContext, propert
 
       <RDFOntologicalTypeBlock jsonldContext={jsonldContext} propertyName={propertyName} className="ms-2" />
 
-      <RDFVocabularyBlock jsonldContext={jsonldContext} propertyName={propertyName} className="ms-2" />
+      <RDFVocabularyBlock vocabulary={rdfProperty?.controlledVocabulary} className="ms-2" />
     </div>
   );
 }

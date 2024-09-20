@@ -3,6 +3,7 @@
  */
 import './primitive-model.scss';
 
+import { useJsonLDResolver, useRDFPropertyResolver } from '../hooks';
 import { getExtensions } from '../utils';
 import { DeprecatedBlock } from './common/deprecated-block';
 import { DescriptionBlock } from './common/description-block';
@@ -11,9 +12,9 @@ import { ExternalDocsBlock } from './common/external-docs-block';
 import { HeadingBlock } from './common/heading-block';
 import { JsonLdContextBlock } from './common/jsonld-context-block';
 import { PropertiesBlock } from './common/properties-block';
-import { TypeFormatVocabularyBlock } from './common/type-format-vocabulary-block';
 import { RDFOntologicalClassPropertyBlock } from './common/rdf-ontological-class-property-block';
-import { useJsonLDResolver } from '../hooks';
+import { SemanticDescriptionBlock } from './common/semantic-description-block';
+import { TypeFormatVocabularyBlock } from './common/type-format-vocabulary-block';
 
 export const PrimitiveModel = ({
   schema,
@@ -43,6 +44,7 @@ export const PrimitiveModel = ({
     .filterNot((_, key) => extensions.has(key));
 
   const { data: jsonLDResolverResult } = useJsonLDResolver(jsonldContext, [propertyName]);
+  const { data: rdfProperty } = useRDFPropertyResolver(jsonLDResolverResult?.fieldUri);
 
   return (
     <div className="modello primitive-model">
@@ -59,13 +61,15 @@ export const PrimitiveModel = ({
         format={format}
         jsonldContext={jsonldContext}
         propertyName={propertyName}
+        rdfProperty={rdfProperty}
       />
 
       {enumArray && <div className="prop-enum">Enum: [ {enumArray.join(', ')} ]</div>}
 
       <DeprecatedBlock schema={schema} />
-
       <DescriptionBlock schema={schema} getComponent={getComponent} />
+
+      <SemanticDescriptionBlock getComponent={getComponent} description={rdfProperty?.ontologicalPropertyComment} />
 
       <ExternalDocsBlock schema={schema} getComponent={getComponent} />
 
