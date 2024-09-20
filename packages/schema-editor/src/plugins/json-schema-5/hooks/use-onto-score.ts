@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 
+interface OntoScoreResult {
+  countSemantic: number;
+  countProperties: number;
+}
+
 export function useOntoScore(jsonldContext, properties) {
-  const [score, setScore] = useState<number>(0);
+  const [ontoResult, setOntoResult] = useState<OntoScoreResult>({ countSemantic: 0, countProperties: 0 });
 
   useEffect(() => {
     if (!jsonldContext?.entrySeq || !properties) {
@@ -10,7 +15,7 @@ export function useOntoScore(jsonldContext, properties) {
 
     const countProperties = properties.count() || 0;
     if (countProperties === 0) {
-      setScore(0);
+      setOntoResult({ countSemantic: 0, countProperties: 0 });
     }
 
     const countSemantic = jsonldContext
@@ -18,10 +23,14 @@ export function useOntoScore(jsonldContext, properties) {
       .toArray()
       .filter(([key]) => properties.get(key)).length;
 
-    setScore(countSemantic / countProperties);
+    setOntoResult({ countSemantic, countProperties });
   }, [jsonldContext, properties]);
 
   return {
-    score,
+    ...ontoResult,
+    score:
+      ontoResult.countProperties > 0
+        ? ontoResult.countSemantic / ontoResult.countProperties
+        : ontoResult.countProperties,
   };
 }
