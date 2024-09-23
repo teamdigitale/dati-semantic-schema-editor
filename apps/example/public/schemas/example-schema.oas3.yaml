@@ -7,17 +7,22 @@ openapi: 3.0.3
 components:
   schemas:
     EducationLevel:
+      x-jsonld-type: https://w3id.org/italia/onto/CPV/EducationLevel
       x-jsonld-context:
+        # Use the value of the id field as the identifier, prefixed
+        #  with the @base URL.
+        id: "@id"
+        "@base": "https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/"
+        # Then use the @vocab to define the default vocabulary
+        #  for the other fields.
         "@vocab": "https://w3id.org/italia/onto/CPV/"
-        education_level:
-          "@id": "hasLevelOfEducation"
-          "@type": "@id"
-          "@context":
-            "@base": "https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/"
+        description: educationLevelDesc
       type: object
       additionalProperties: false
       properties:
-        education_level:
+        description:
+          type: string
+        id:
           type: string
           maxLength: 3
           description: |-
@@ -41,7 +46,8 @@ components:
             - USG
             - USV
       example:
-        education_level: NED
+        id: NED
+        description: Nessun titolo di studio
     Parent:
       x-jsonld-context:
         "@vocab": "https://w3id.org/italia/onto/CPV/"
@@ -194,11 +200,11 @@ components:
         - tax_code: RSSMRA77L01H501A
     TaxCode:
       type: string
-      # Since jsonld does not support to attach a @context
-      #  to a primitive type, we reference the semantic
-      #  context using `x-jsonld-type.`
-      x-jsonld-type: https://w3id.org/italia/onto/CPV/taxCode
-      description: Il codice fiscale.
+      description: >-
+        An (eventually provisional) tax code.
+
+        Note: assigning a x-jsonld-type to a primitive type
+        would not add any semantic information.
       example: RSSMRA75L01H501A
       maxLength: 16
       minLength: 11

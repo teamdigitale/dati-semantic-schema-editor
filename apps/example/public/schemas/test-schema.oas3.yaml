@@ -9,6 +9,33 @@ components:
     #
     # Add your schemas here.
     #
+    Primitive:
+      type: string
+      description: >-
+        JSON-LD does not support to attach a `@context` to a primitive type,
+        and the x-jsonld-type would be something like `rdfs:Literal`, that
+        bear no semantic information.
+    Array:
+      type: array
+      description: >-
+        JSON-LD does not support to attach a `@context` to a primitive type,
+        and the x-jsonld-type would be something like `rdfs:Literal`, that
+        bear no semantic information.
+      items:
+        type: string
+    NoContextNoParty:
+      type: object
+      x-jsonld-type: https://w3id.org/italia/onto/CPV/Alive
+      properties:
+        givenName:
+          type: string
+          description: >-
+            While CPV:Alive is a subclass of CPV:Person,
+            [JSON-LD Framing](https://www.w3.org/TR/json-ld-framing/)
+            cannot resolve properties because
+            there's no `x-jsonld-context`.
+      example:
+        givenName: John
     Person:
       type: object
       x-jsonld-type: "https://w3id.org/italia/onto/CPV/Person"
