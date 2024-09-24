@@ -4,6 +4,8 @@ import { useSchemaNavigation } from '../../overview/components/Navigation';
 import type { ModelCollapse as ModelCollapseComponent } from './model-collapse';
 import type { ModelRoot as ModelRootComponent } from './model-root';
 import type { ModelsBreadcrumb as ModelsBreadcrumbComponent } from './models-breadcrumb';
+import { Button } from 'design-react-kit';
+import { compressAndBase64UrlSafe } from '../utils';
 
 export function Models({ getComponent, specSelectors, getConfigs }) {
   const { history, jsonldContextFullPath } = useSchemaNavigation();
@@ -22,8 +24,21 @@ export function Models({ getComponent, specSelectors, getConfigs }) {
   const ModelCollapse: typeof ModelCollapseComponent = getComponent('ModelCollapse', true);
   const ModelRoot: typeof ModelRootComponent = getComponent('ModelRoot', true);
 
+  const copyToClipboard = (text: string) => {
+    const el = document.createElement('textarea');
+    el.value = `${window.location.origin}#oas:${compressAndBase64UrlSafe(text)}`;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+  };
+
   return (
     <div className="modelli">
+      <Button color="primary" onClick={() => copyToClipboard(specSelectors.specStr())}>
+        copy
+      </Button>
+
       <ModelsBreadcrumb specPathBase={specPathBase} />
 
       {/* Root */}

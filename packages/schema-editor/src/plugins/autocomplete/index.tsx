@@ -176,7 +176,6 @@ export const EditorAutosuggestCustomPlugin = () => ({
     editor: {
       wrapActions: {
         addAutosuggestionCompleters: (ori, system) => (context) => {
-          // TODO: Try/catch to avoid breaking the editor if the plugin is not loaded.
           try {
             return ori(context).concat([
               {

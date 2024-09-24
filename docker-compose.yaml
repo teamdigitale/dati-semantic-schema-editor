@@ -29,6 +29,7 @@ services:
     - -c
     - |
       corepack install
+      pnpm install
       npm run dev
   super-linter:
     image: github/super-linter:v3.15.5

@@ -7,19 +7,22 @@ import './App.scss';
 
 import { Header, HeaderBrand, HeaderContent, HeaderRightZone, HeaderSocialsZone, Icon } from 'design-react-kit';
 
-import { SchemaEditor } from '@italia/schema-editor';
+import { decompressAndBase64UrlSafe, SchemaEditor } from '@italia/schema-editor';
 import '@italia/schema-editor/dist/style.css';
 
 function App() {
   const urlParams = new URLSearchParams(window.location.search);
-  const schemaUrl = urlParams.get('url') || 'schemas/test-schema.oas3.yaml';
+  const schemaUrl = urlParams.get('url') || 'schemas/starter-schema.oas3.yaml';
+
+  const fragment = window.location.hash?.replace('#oas:', '');
+  const schemaSpec = fragment ? decompressAndBase64UrlSafe(fragment) : undefined;
 
   return (
     <>
       <Header type="center">
         <HeaderContent>
           <HeaderBrand iconAlt="it code circle icon" iconName="it-code-circle">
-            <h2>Schema Editor - 0.0.1 beta</h2>
+            <h2>Schema Editor - 0.0.2 beta</h2>
             <h3>Italian OpenAPI Schema Editor</h3>
           </HeaderBrand>
           <HeaderRightZone>
@@ -37,7 +40,7 @@ function App() {
       </Header>
 
       <div className="app-container">
-        <SchemaEditor url={schemaUrl} />
+        <SchemaEditor url={schemaUrl} spec={schemaSpec} />
       </div>
     </>
   );

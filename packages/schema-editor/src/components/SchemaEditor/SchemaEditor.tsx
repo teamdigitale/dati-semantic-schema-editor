@@ -2,8 +2,15 @@ import 'swagger-ui/dist/swagger-ui.css';
 import './SchemaEditor.scss';
 
 import { useEffect, useRef } from 'react';
-import type SwaggerUI from 'swagger-ui';
-import { EditorAutosuggestCustomPlugin, EditorThemePlugin, ErrorsPlugin, JSONSchema5Plugin, LayoutPlugin, OverviewPlugin } from '../../plugins';
+import SwaggerUI from 'swagger-ui';
+import {
+  EditorAutosuggestCustomPlugin,
+  EditorThemePlugin,
+  ErrorsPlugin,
+  JSONSchema5Plugin,
+  LayoutPlugin,
+  OverviewPlugin,
+} from '../../plugins';
 
 interface Props {
   spec?: string | object;
@@ -18,11 +25,9 @@ export function SchemaEditor({ spec, url }: Props) {
   useEffect(() => {
     async function loadInstance() {
       const SwaggerEditor = await import('swagger-editor').then((x) => x.default);
-      const SwaggerUI = await import('swagger-ui').then((x) => x.default);
 
       instance.current = new SwaggerUI({
-        ...(spec ? { spec } : {}),
-        ...(url ? { url } : {}),
+        ...(url && !spec ? { url } : {}),
         dom_id: '#schema-editor',
         layout: 'ItaliaSchemaEditorLayout',
         presets: [SwaggerUI.presets.apis],
@@ -45,6 +50,11 @@ export function SchemaEditor({ spec, url }: Props) {
         swagger2ConverterUrl: 'https://converter.swagger.io/api/convert',
         jsonldPlaygroundUrl: 'https://json-ld.org/playground/#startTab=tab-expand&json-ld=',
       });
+
+      // Update spec text
+      if (spec) {
+        instance.current.getSystem().specActions.updateSpec(spec);
+      }
     }
     if (document.readyState === 'complete') loadInstance();
     else window.onload = () => loadInstance();
@@ -52,12 +62,13 @@ export function SchemaEditor({ spec, url }: Props) {
 
   useEffect(() => {
     if (instance.current) {
+      console.log('Updating url');
       const prevStateUrl = instance.current?.specSelectors.url();
       if (url !== prevStateUrl || url !== prevUrl) {
-        instance.current?.specActions.updateSpec('');
+        instance.current.getSystem().specActions.updateSpec('');
         if (url) {
-          instance.current?.specActions.updateUrl(url);
-          instance.current?.specActions.download(url);
+          instance.current.specActions.updateUrl(url);
+          instance.current.specActions.download(url);
         }
       }
     }
@@ -65,10 +76,11 @@ export function SchemaEditor({ spec, url }: Props) {
 
   useEffect(() => {
     if (instance.current) {
-      const prevStateSpec = instance.current?.specSelectors.specStr();
+      console.log('Updating spec');
+      const prevStateSpec = instance.current.specSelectors.specStr();
       if (spec && spec !== SwaggerUI.config.defaults.spec && (spec !== prevStateSpec || spec !== prevSpec)) {
         const updatedSpec = typeof spec === 'object' ? JSON.stringify(spec) : spec;
-        instance.current?.specActions.updateSpec(updatedSpec);
+        instance.current.getSystem().specActions.updateSpec(updatedSpec);
       }
     }
   }, [instance.current, spec]);
