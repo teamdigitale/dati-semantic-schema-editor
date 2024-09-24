@@ -25,7 +25,13 @@ export function ExampleBlock({ depth, schema, jsonldContext, getConfigs }: Props
         rel="noreferrer"
         href={
           jsonldPlaygroundUrl +
-          encodeURIComponent(JSON.stringify({ '@context': jsonldContext.toJSON(), ...example.toJSON() }))
+          encodeURIComponent(JSON.stringify(
+            {
+              '@context': jsonldContext.toJSON(),
+              ...(schema?.get('x-jsonld-type') ? {'@type': schema.get('x-jsonld-type')} : {}),
+              ...example.toJSON()
+            }
+          ))
         }
       >
         <Icon icon="it-external-link" size="sm" title="Open in playground" />
