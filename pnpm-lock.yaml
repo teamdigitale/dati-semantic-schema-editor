@@ -205,6 +205,9 @@ importers:
       immutable:
         specifier: ^4.3.6
         version: 4.3.6
+      js-yaml:
+        specifier: ^4.1.0
+        version: 4.1.0
       jsonld:
         specifier: ^8.3.2
         version: 8.3.2(web-streams-polyfill@3.3.3)

@@ -34,6 +34,11 @@ const suggestionMap = {
       docHTML: "Learning Ontology",
       caption: "Learning",
       score: 50
+    }, {
+      snippet: "https://w3id.org/italia/onto/l0/",
+      docHTML: "Top level ontology",
+      caption: "l0",
+      score: 50
     }
   ],
   "x-jsonld-type": [
@@ -124,6 +129,14 @@ const suggestionMap = {
       caption: "Learning:Enrolment",
       meta: "class",
       score: 30
+    },
+    // l0
+    {
+      snippet: "https://w3id.org/italia/onto/l0/Location",
+      docHTML: "Location",
+      caption: "l0:Location",
+      meta: "class",
+      score: 50
     }
   ],
   "x-jsonld-context": [

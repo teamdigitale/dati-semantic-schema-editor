@@ -82,14 +82,15 @@ export function useRDFClassResolver(classUri: string | undefined) {
       FILTER(lang(?label) = 'en')
 
       OPTIONAL {
-        ?classUri  rdfs:comment ?comment
+        ?classUri
+          rdfs:comment ?comment
         .
         FILTER(lang(?comment) = 'en')
       }
 
       OPTIONAL {
         ?classUri
-          rdfs:subClassOf ?subClassOf
+          rdfs:subClassOf* ?subClassOf
         .
         FILTER(!isBlank(?subClassOf))
       }
@@ -108,37 +109,143 @@ export function useRDFClassResolver(classUri: string | undefined) {
       ontologicalClass: content?.classUri as string | undefined,
       ontologicalClassLabel: content?.label as string | undefined,
       ontologicalClassComment: content?.comment as string | undefined,
+      ontologicalClassSuperClasses: content?.superClasses?.split(",") as string[] | undefined,
     },
     status: sparqlStatus,
   };
 }
 
+/*
+  This hook resolves all the possible properties of a RDF class.
+*/
+export interface RDFClassProperties {
+  baseClass: string;
+  fieldUri: string;
+  classUri: string | undefined;
+  range: string | undefined;
+  label: string | undefined;
+  comment: string | undefined;
+  controlledVocabulary: string | undefined;
+}
 export function useRDFClassPropertiesResolver(classUri: string | undefined) {
   const { data: sparqlData, status: sparqlStatus } = useSparqlQuery(
     `
-    prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-    select distinct * where {
+    SELECT DISTINCT * WHERE {
+
+      VALUES ?classUri { <${classUri}> }
+
+      ?classUri
+        rdfs:subClassOf* ?baseClass
+      .
+      FILTER(!isBlank(?baseClass))
+
 
       ?fieldUri
-        rdfs:domain <${classUri}> ;
-        rdfs:range ?range
+        rdfs:domain ?baseClass
       .
+
+      OPTIONAL {
+        ?fieldUri
+          rdfs:range ?range
+      .
+        OPTIONAL {
+          ?range
+            <https://w3id.org/italia/onto/l0/controlledVocabulary> ?controlledVocabulary
+          .
+        }
+
+      }
+
+      OPTIONAL {
+        ?fieldUri
+          rdfs:label ?label
+        .
+        FILTER(lang(?label) = 'en')
+      }
+
+      OPTIONAL {
+        ?fieldUri
+          rdfs:comment ?comment
+        .
+        FILTER(lang(?comment) = 'en')
+      }
+
     }
   `,
     { skip: !classUri },
   );
 
   const content = sparqlData?.results?.bindings
-    ? Object.fromEntries(Object.entries(sparqlData.results.bindings[0] || {}).map(([k, v]: any[]) => [k, v.value]))
+    ? sparqlData.results.bindings.map((binding: any) =>
+      Object.fromEntries(Object.entries(binding).map(([k, v]: any[]) => [k, v.value]),)
+    )
     : undefined;
 
   return {
     data: {
-      ontologicalClass: classUri as string | undefined,
-      ontologicalProperty: content?.fieldUri as string | undefined,
-      ontologicalType: content?.range as string | undefined,
+      classUri: classUri as string | undefined,
+      classProperties: content as RDFClassProperties[] | undefined,
     },
+    status: sparqlStatus,
+  };
+}
+
+
+/*
+  This hook resolves all the possible properties of a RDF class.
+*/
+export interface RDFClassVocabularies {
+  subclass: string;
+  classUri: string | undefined;
+  controlledVocabulary: string | undefined;
+  api: string | undefined;
+}
+export function useRDFClassVocabulariesResolver(classUri: string | undefined) {
+  const { data: sparqlData, status: sparqlStatus } = useSparqlQuery(
+    `
+PREFIX CLV:	<https://w3id.org/italia/onto/CLV/>
+PREFIX CPV:	<https://w3id.org/italia/onto/CPV/>
+PREFIX NDC: <https://w3id.org/italia/onto/NDC/>
+
+SELECT DISTINCT
+
+  GROUP_CONCAT(DISTINCT ?subclass; separator=",") as ?subclass
+  ?controlledVocabulary
+  ?api
+
+ WHERE {
+
+  ?subclass
+    rdfs:subClassOf* <${classUri}>
+  .
+  FILTER ( ?subclass != skos:Concept )
+
+  _:b1
+    a ?subclass;
+    skos:inScheme ?controlledVocabulary
+  .
+
+  OPTIONAL {
+    _:b2
+      NDC:servesDataset  ?controlledVocabulary ;
+      NDC:endpointURL ?api
+    .
+  }
+}
+  `,
+    { skip: !classUri },
+  );
+
+  const content = sparqlData?.results?.bindings
+    ? sparqlData.results.bindings.map((binding: any) =>
+      Object.fromEntries(Object.entries(binding).map(([k, v]: any[]) => [k, v.value]),)
+    )
+    : undefined;
+
+  return {
+    data: content as RDFClassVocabularies[] | undefined,
     status: sparqlStatus,
   };
 }

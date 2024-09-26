@@ -13,6 +13,9 @@ import { RDFOntologicalClassPropertyBlock } from './common/rdf-ontological-class
 import { TypeFormatVocabularyBlock } from './common/type-format-vocabulary-block';
 import type { ModelCollapse as ModelCollapseComponent } from './model-collapse';
 import { useJsonLDResolver } from '../hooks';
+import { useState } from 'react';
+import RDFOntologicalClassModal from './common/rdf-helper-modal';
+import { Button } from 'design-react-kit';
 
 const braceOpen = '{';
 const braceClose = '}';
@@ -52,6 +55,10 @@ const ObjectModel = ({
 
   const Model = getComponent('Model');
   const ModelCollapse: typeof ModelCollapseComponent = getComponent('ModelCollapse', true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
 
   return (
     <div className="modello object-model">
@@ -67,6 +74,17 @@ const ObjectModel = ({
             <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} />
           </HeadingBlock>
         )}
+
+        <Button color="primary" onClick={toggleModal} style={{ marginLeft: '10px' }}>
+          Open RDF Helper
+        </Button>
+        <RDFOntologicalClassModal
+          getComponent={getComponent}
+          isOpen={isModalOpen}
+          toggle={toggleModal}
+          classUri={jsonldType}
+          schema={schema}
+        />
 
         <TypeFormatVocabularyBlock jsonldContext={jsonldContext} propertyName={propertyName} />
 

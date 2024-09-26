@@ -3,7 +3,6 @@ import { basename, useRDFClassResolver } from '../../hooks';
 
 export function RDFOntologicalClassBlock({ classUri }) {
   const { data, status } = useRDFClassResolver(classUri);
-
   return status === 'pending' ? (
     <span className="d-inline-block align-middle">
       <Spinner active small />
@@ -18,6 +17,7 @@ export function RDFOntologicalClassBlock({ classUri }) {
           </a>
         </>
       ]
+
     </span>
   ) : classUri ? <><span title="URI not found.">⚠</span></> : null;
 }

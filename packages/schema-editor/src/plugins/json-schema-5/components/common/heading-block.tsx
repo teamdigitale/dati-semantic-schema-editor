@@ -1,5 +1,6 @@
 import { RDFOntologicalClassBlock } from './rdf-ontological-class-block';
 
+
 interface Props {
   title: string;
   specPath: any;
@@ -16,7 +17,6 @@ export function HeadingBlock({ title, specPath, jsonldType, getComponent, childr
       <h4>
         {title} <RDFOntologicalClassBlock classUri={jsonldType} />
       </h4>
-
       <div className="d-flex align-items-center ms-auto">
         {children}
         <h4 className="model-jump-to-path m-0 ms-2">

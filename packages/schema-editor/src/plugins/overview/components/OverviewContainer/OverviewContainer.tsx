@@ -9,7 +9,6 @@ const OverviewContainer = ({ errSelectors, specSelectors, getComponent }) => {
   const Errors = getComponent('Errors', true);
   const InfoContainer = getComponent('InfoContainer', true);
   const TabHelp = getComponent('TabHelp', true);
-  const TabOperations = getComponent('TabOperations', true);
   const TabWebhooks = getComponent('TabWebhooks', true);
   const Models = getComponent('Models', true);
 
