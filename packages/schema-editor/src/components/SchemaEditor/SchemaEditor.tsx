@@ -15,9 +15,10 @@ import {
 interface Props {
   spec?: string | object;
   url?: string;
+  oasCheckerUrl?: string;
 }
 
-export function SchemaEditor({ spec, url }: Props) {
+export function SchemaEditor({ spec, url, oasCheckerUrl }: Props) {
   const instance = useRef<typeof SwaggerUI>(null);
   const prevSpec = usePrevious(spec);
   const prevUrl = usePrevious(url);
@@ -49,6 +50,7 @@ export function SchemaEditor({ spec, url }: Props) {
         oas3GeneratorUrl: 'https://generator3.swagger.io/openapi.json',
         swagger2ConverterUrl: 'https://converter.swagger.io/api/convert',
         jsonldPlaygroundUrl: 'https://json-ld.org/playground/#startTab=tab-expand&json-ld=',
+        ...(oasCheckerUrl ? { oasCheckerUrl } : {}),
       });
 
       // Update spec text

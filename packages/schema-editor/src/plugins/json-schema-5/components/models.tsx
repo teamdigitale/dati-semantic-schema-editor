@@ -15,7 +15,7 @@ export function Models({ getComponent, specSelectors, getConfigs }) {
   const specPathBase = isOAS3 ? ['components', 'schemas'] : ['definitions'];
 
   const definitions = specSelectors.definitions();
-  const { defaultModelsExpandDepth } = getConfigs();
+  const { defaultModelsExpandDepth, oasCheckerUrl } = getConfigs();
   if (!definitions.size || defaultModelsExpandDepth < 0) {
     return null;
   }
@@ -24,9 +24,9 @@ export function Models({ getComponent, specSelectors, getConfigs }) {
   const ModelCollapse: typeof ModelCollapseComponent = getComponent('ModelCollapse', true);
   const ModelRoot: typeof ModelRootComponent = getComponent('ModelRoot', true);
 
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = (text: string, prefix: string = "") => {
     const el = document.createElement('textarea');
-    el.value = `${window.location.origin}#oas:${compressAndBase64UrlSafe(text)}`;
+    el.value = `${prefix}${compressAndBase64UrlSafe(text)}`;
     document.body.appendChild(el);
     el.select();
     document.execCommand('copy');
@@ -35,9 +35,16 @@ export function Models({ getComponent, specSelectors, getConfigs }) {
 
   return (
     <div className="modelli">
-      <Button color="primary" onClick={() => copyToClipboard(specSelectors.specStr())}>
-        copy
+      <Button color="primary" onClick={() => copyToClipboard(specSelectors.specStr(), `${window.location.origin}#oas:`)}>
+        Copy as URL
       </Button>
+
+      {
+        oasCheckerUrl &&
+          <Button color="primary" onClick={() => copyToClipboard(specSelectors.specStr(), `${oasCheckerUrl}?text=`)}>
+            Copy as OAS Checker URL
+          </Button>
+      }
 
       <ModelsBreadcrumb specPathBase={specPathBase} />
 

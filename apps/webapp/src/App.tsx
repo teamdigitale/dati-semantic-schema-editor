@@ -40,7 +40,7 @@ function App() {
       </Header>
 
       <div className="app-container">
-        <SchemaEditor url={schemaUrl} spec={schemaSpec} />
+        <SchemaEditor url={schemaUrl} spec={schemaSpec} oasCheckerUrl={'https://italia.github.io/api-oas-checker'} />
       </div>
     </>
   );
