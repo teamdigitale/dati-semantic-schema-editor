@@ -1,7 +1,7 @@
 name: Deploy to GitHub Pages
 
 on:
-  push:
+  pull_request:
     branches:
       - main
   workflow_dispatch:
@@ -31,9 +31,15 @@ jobs:
       - name: Deploy
         run: pnpm deploy --filter=webapp --prod ./build
 
+      - name: Fixup
+        run: |
+          find build/ -type f -exec sed -i -e 's,="/assets,="assets,' -e 's,="/favicon,="favicon,' {} \;
+          sed -i -e "s,%version%,${{ github.head_ref }}," build/dist/index.html
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/dist
           publish_branch: gh-pages-new  # don't overwrite the existing gh-pages branch.
+          destination_dir: ${{ github.head_ref }}

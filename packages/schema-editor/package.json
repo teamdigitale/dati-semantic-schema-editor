@@ -31,6 +31,7 @@
     "design-react-kit": "^5.0.4",
     "immutable": "^4.3.6",
     "jsonld": "^8.3.2",
+    "lz-string": "^1.5.0",
     "react-collapse-pane": "^3.0.1",
     "react-dropzone": "^14.2.3",
     "styled-components": "^6.1.11"

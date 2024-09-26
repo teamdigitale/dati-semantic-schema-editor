@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      lz-string:
-        specifier: ^1.5.0
-        version: 1.5.0
     devDependencies:
       '@changesets/cli':
         specifier: ^2.27.5
@@ -212,6 +208,9 @@ importers:
       jsonld:
         specifier: ^8.3.2
         version: 8.3.2(web-streams-polyfill@3.3.3)
+      lz-string:
+        specifier: ^1.5.0
+        version: 1.5.0
       react-collapse-pane:
         specifier: ^3.0.1
         version: 3.0.1(@mui/material@5.15.20(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
