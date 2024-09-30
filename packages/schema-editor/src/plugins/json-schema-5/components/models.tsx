@@ -35,13 +35,18 @@ export function Models({ getComponent, specSelectors, getConfigs }) {
 
   return (
     <div className="modelli">
-      <Button color="primary" onClick={() => copyToClipboard(specSelectors.specStr(), `${window.location.origin}#oas:`)}>
+      <Button color="primary"
+        title='Copy the editor content as a shareable URL.'
+        onClick={() => copyToClipboard(specSelectors.specStr(), `${window.location.origin}#oas:`)}
+        >
         Copy as URL
       </Button>
 
       {
         oasCheckerUrl &&
-          <Button color="primary" onClick={() => copyToClipboard(specSelectors.specStr(), `${oasCheckerUrl}?text=`)}>
+          <Button color="primary"
+          title='Copy the editor content as an URL that opens in OAS Checker.'
+          onClick={() => copyToClipboard(specSelectors.specStr(), `${oasCheckerUrl}?text=`)}>
             Copy as OAS Checker URL
           </Button>
       }

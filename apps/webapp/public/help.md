@@ -1,6 +1,8 @@
 ###### 🇮🇹 ITALIAN
 
 Questa applicazione visualizza i tuoi schemi dati (modelli) in formato OpenAPI interrogando i dati presenti su <https://schema.gov.it>.
+Insieme al [validatore OpenAPI](https://italia.github.io/api-oas-checker/) supporta
+la progettazione di API conformi al Modello di Interoperablità.
 
 L'applicazione mostra:
 
@@ -29,6 +31,8 @@ e degli URI delle classi semantiche principali.
 ###### 🇬🇧 ENGLISH
 
 This application displays your data schemas (models) in OpenAPI format by querying the data on <https://schema.gov.it>.
+Together with the [OpenAPI validator](https://italia.github.io/api-oas-checker/) it supports
+the design of APIs compliant with the Italian Interoperability Model.
 
 The application shows:
 
