@@ -132,7 +132,17 @@ export function useRDFClassPropertiesResolver(classUri: string | undefined) {
     `
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-    SELECT DISTINCT * WHERE {
+    SELECT DISTINCT
+
+      ?baseClass
+      ?fieldUri
+      ?range
+      ?comment
+
+      GROUP_CONCAT(DISTINCT ?label; separator="; ") as ?label
+      GROUP_CONCAT(DISTINCT ?controlledVocabulary; separator=",") as ?controlledVocabulary
+
+    WHERE {
 
       VALUES ?classUri { <${classUri}> }
 
