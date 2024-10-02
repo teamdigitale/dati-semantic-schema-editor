@@ -232,7 +232,7 @@ function suggestContext(rdfProperty: RDFClassProperties): any {
           // Associate the value of the JSON Schema property with the controlled vocabulary prefixing it with the @base value.
           ['@type']: '@id',
           ['@context']: {
-            '@base': rdfProperty.controlledVocabulary,
+            '@base': rdfProperty.controlledVocabulary?.endsWith("/") ? rdfProperty.controlledVocabulary : rdfProperty.controlledVocabulary + "/",
           },
         }),
       },
