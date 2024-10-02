@@ -28,6 +28,12 @@ delle parole chiave OpenAPI
 (incluse quelle semantiche: `x-jsonld-type` e `x-jsonld-context`)
 e degli URI delle classi semantiche principali.
 
+L'editor supporta le seguenti scorciatoie da tastiera:
+
+- `CTRL+F` cerca nel testo;
+- `CTRL+H` sostituisci nel testo;
+- `ALT+E`  vai al prossimo errore.
+
 ###### 🇬🇧 ENGLISH
 
 This application displays your data schemas (models) in OpenAPI format by querying the data on <https://schema.gov.it>.
@@ -52,3 +58,9 @@ or download them by clicking on "From URL" (TODO) and modify them directly.
 Use `CTRL+Space` to activate the automatic completion
 of OpenAPI keywords
 and the URIs of the main semantic classes.
+
+The editor supports the following keyboard shortcuts:
+
+- `CTRL+F` search in the text;
+- `CTRL+H` replace in the text;
+- `ALT+E` go to the next error.
