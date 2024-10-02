@@ -1,3 +1,4 @@
+import { isUri } from '../utils';
 import { useSparqlQuery } from './use-sparql';
 
 export function basename(path: string) {
@@ -97,7 +98,7 @@ export function useRDFClassResolver(classUri: string | undefined) {
 
     }
   `,
-    { skip: !classUri },
+    { skip: !classUri || !isUri(classUri) },
   );
 
   const content = sparqlData?.results?.bindings
@@ -109,7 +110,7 @@ export function useRDFClassResolver(classUri: string | undefined) {
       ontologicalClass: content?.classUri as string | undefined,
       ontologicalClassLabel: content?.label as string | undefined,
       ontologicalClassComment: content?.comment as string | undefined,
-      ontologicalClassSuperClasses: content?.superClasses?.split(",") as string[] | undefined,
+      ontologicalClassSuperClasses: content?.superClasses?.split(',') as string[] | undefined,
     },
     status: sparqlStatus,
   };
@@ -189,8 +190,8 @@ export function useRDFClassPropertiesResolver(classUri: string | undefined) {
 
   const content = sparqlData?.results?.bindings
     ? sparqlData.results.bindings.map((binding: any) =>
-      Object.fromEntries(Object.entries(binding).map(([k, v]: any[]) => [k, v.value]),)
-    )
+        Object.fromEntries(Object.entries(binding).map(([k, v]: any[]) => [k, v.value])),
+      )
     : undefined;
 
   return {
@@ -201,7 +202,6 @@ export function useRDFClassPropertiesResolver(classUri: string | undefined) {
     status: sparqlStatus,
   };
 }
-
 
 /*
   This hook resolves all the possible properties of a RDF class.
@@ -250,8 +250,8 @@ SELECT DISTINCT
 
   const content = sparqlData?.results?.bindings
     ? sparqlData.results.bindings.map((binding: any) =>
-      Object.fromEntries(Object.entries(binding).map(([k, v]: any[]) => [k, v.value]),)
-    )
+        Object.fromEntries(Object.entries(binding).map(([k, v]: any[]) => [k, v.value])),
+      )
     : undefined;
 
   return {

@@ -7,22 +7,30 @@ components:
     ExportedSchemas:
       anyOf: []
     #
-    # Add your schemas here.
+    # Semantic information for primitive types in JSON-LD
+    #   are defined in the parent object.
     #
     Primitive:
       type: string
       description: >-
         JSON-LD does not support to attach a `@context` to a primitive type,
         and the x-jsonld-type would be something like `rdfs:Literal`, that
-        bear no semantic information.
+        bears no semantic information.
     Array:
       type: array
       description: >-
         JSON-LD does not support to attach a `@context` to a primitive type,
         and the x-jsonld-type would be something like `rdfs:Literal`, that
-        bear no semantic information.
+        bears no semantic information.
       items:
         type: string
+    #
+    # Test the context and type resolution.
+    #
+    Unannotated:
+      type: object
+      description: >-
+        Unannotated objects are rendered normally.
     NoContextNoParty:
       type: object
       x-jsonld-type: https://w3id.org/italia/onto/CPV/Alive
@@ -30,12 +38,64 @@ components:
         givenName:
           type: string
           description: >-
-            While CPV:Alive is a subclass of CPV:Person,
+            Without `x-jsonld-context`,
             [JSON-LD Framing](https://www.w3.org/TR/json-ld-framing/)
-            cannot resolve properties because
-            there's no `x-jsonld-context`.
+            cannot use any `@context` to resolve properties.
       example:
         givenName: John
+    TypeUseContext1:
+      type: object
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": "https://w3id.org/italia/onto/CPV/"
+      description: >-
+        The associated rdf:type is inferred from @vocab.
+        The editor shows only the rdf:type information,
+        since we have no properties.
+
+        Resulting RDF is:
+
+        ```turtle
+        _:b0 a <https://w3id.org/italia/onto/CPV/Person> .
+        ```
+      # Use an empty object to enable the JSON-LD playground.
+      example: {}
+    TypeUsesContext2:
+      type: object
+      x-jsonld-type: RPO:RegisteredResidentPerson
+      x-jsonld-context:
+        "@vocab": "https://w3id.org/italia/onto/CPV/"
+        RPO: https://w3id.org/italia/onto/RPO/
+      properties:
+        givenName:
+          type: string
+          description: >-
+            The associated rdf:Property is inferred from @vocab.
+            The editor shows the retrieved information.
+            Resulting RDF is:
+
+            ```turtle
+            _:b0 a <https://w3id.org/italia/onto/RPO/RegisteredResidentPerson> .
+            _:b0 <https://w3id.org/italia/onto/CPV/givenName> "John" .
+            ```
+      # Use an empty object to enable the JSON-LD playground.
+      example:
+        givenName: John
+    TypeUsesContext3:
+      type: object
+      x-jsonld-context:
+        "@vocab": "https://w3id.org/italia/onto/CPV/"
+      properties:
+        isParentOf:
+          type: object
+          x-jsonld-type: Person
+          description: >-
+            The rdf:type is resolved using the x-jsonld-context of the parent.
+          properties:
+            givenName:
+              type: string
+          example:
+            givenName: John
     Person:
       type: object
       x-jsonld-type: "https://w3id.org/italia/onto/CPV/Person"

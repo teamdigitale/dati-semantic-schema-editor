@@ -16,6 +16,7 @@ import { useJsonLDResolver } from '../hooks';
 import { useState } from 'react';
 import RDFOntologicalClassModal from './common/rdf-helper-modal';
 import { Button } from 'design-react-kit';
+import { isUri } from '../utils';
 
 const braceOpen = '{';
 const braceClose = '}';
@@ -60,6 +61,10 @@ const ObjectModel = ({
     setIsModalOpen(!isModalOpen);
   };
 
+  // Resolve class URI from jsonldType using jsonldContext.
+  const { data: classUriResolverResult } = useJsonLDResolver(jsonldContext, [jsonldType]);
+  const classUri = classUriResolverResult?.fieldUri && isUri(classUriResolverResult.fieldUri) ? classUriResolverResult?.fieldUri : jsonldType;
+
   return (
     <div className="modello object-model">
       {depth > 1 && (
@@ -70,7 +75,7 @@ const ObjectModel = ({
 
       <ModelCollapse title={title} specPath={specPath} expanded={expanded} schema={schema}>
         {depth === 1 && (
-          <HeadingBlock title={title} specPath={specPath} jsonldType={jsonldType} getComponent={getComponent}>
+          <HeadingBlock title={title} specPath={specPath} jsonldType={classUri} getComponent={getComponent}>
             <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} />
           </HeadingBlock>
         )}
@@ -82,7 +87,7 @@ const ObjectModel = ({
           getComponent={getComponent}
           isOpen={isModalOpen}
           toggle={toggleModal}
-          classUri={jsonldType}
+          classUri={classUri}
           schema={schema}
         />
 

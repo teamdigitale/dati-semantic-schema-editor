@@ -33,6 +33,8 @@ export const useJsonLDResolver = (jsonldContext: Map<any, any> | any, keysPath: 
         const key = keysPath[i];
         if (innerContext[key] === undefined) {
           console.log(`Property ${key} not found in inner @context. Resolving with default @vocab.`);
+          // XXX: We cannot check if @vocab is defined in the context
+          //      because it can be defined in the parent context.
           innerContext[key] = key;
         } else if (i < keysPath.length - 1 && !innerContext[key]['@context']) {
           throw new Error(`Missing inner @context for property ${key}`);
