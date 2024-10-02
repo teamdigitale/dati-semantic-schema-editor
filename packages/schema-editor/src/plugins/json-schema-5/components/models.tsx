@@ -37,7 +37,7 @@ export function Models({ getComponent, specSelectors, getConfigs }) {
     <div className="modelli">
       <Button color="primary"
         title='Copy the editor content as a shareable URL.'
-        onClick={() => copyToClipboard(specSelectors.specStr(), `${window.location.origin}#oas:`)}
+        onClick={() => copyToClipboard(specSelectors.specStr(), `${window.location.origin}${window.location.pathname}#oas:`)}
         >
         Copy as URL
       </Button>
