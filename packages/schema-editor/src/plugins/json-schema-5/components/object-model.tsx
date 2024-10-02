@@ -116,7 +116,7 @@ const ObjectModel = ({
                       );
                     })
                     .map(([key, value]) => {
-                      const isDeprecated = isOAS3 && value?.get('deprecated');
+                      const isDeprecated = isOAS3 && value?.get && value.get('deprecated');
                       const isRequired = List.isList(requiredProperties) && requiredProperties.contains(key);
                       const classNames = ['property-row'];
                       if (isDeprecated) {
