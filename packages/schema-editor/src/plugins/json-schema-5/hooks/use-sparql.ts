@@ -23,7 +23,7 @@ export function useSparqlQuery(query: string, options?: SparqlQueryOptions) {
       setData(data);
       setStatus('fulfilled');
     } catch (e: any) {
-      setError(e?.message || e || 'Unknown error');
+      setError(`${e?.message || e || 'Unknown error'} contacting ${BASE_URL}`);
       setStatus('error');
     }
   }, []);

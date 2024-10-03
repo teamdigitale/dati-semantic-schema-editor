@@ -15,7 +15,7 @@ export interface RDFProperty {
 }
 
 export function useRDFPropertyResolver(fieldUri: string | undefined): { data: RDFProperty; status: string } {
-  const { data: sparqlData, status: sparqlStatus } = useSparqlQuery(
+  const { data: sparqlData, status: sparqlStatus} = useSparqlQuery(
     `
     PREFIX RDFS: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -63,7 +63,7 @@ export function useRDFPropertyResolver(fieldUri: string | undefined): { data: RD
 }
 
 export function useRDFClassResolver(classUri: string | undefined) {
-  const { data: sparqlData, status: sparqlStatus } = useSparqlQuery(
+  const { data: sparqlData, status: sparqlStatus, error: error } = useSparqlQuery(
     `
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -113,6 +113,7 @@ export function useRDFClassResolver(classUri: string | undefined) {
       ontologicalClassSuperClasses: content?.superClasses?.split(',') as string[] | undefined,
     },
     status: sparqlStatus,
+    error: error,
   };
 }
 
