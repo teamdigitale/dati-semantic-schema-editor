@@ -4,7 +4,7 @@ import { useSchemaNavigation } from '../../overview/components/Navigation';
 import type { ModelCollapse as ModelCollapseComponent } from './model-collapse';
 import type { ModelRoot as ModelRootComponent } from './model-root';
 import type { ModelsBreadcrumb as ModelsBreadcrumbComponent } from './models-breadcrumb';
-import { Button } from 'design-react-kit';
+import { Button, Icon } from 'design-react-kit';
 import { compressAndBase64UrlSafe } from '../utils';
 
 export function Models({ getComponent, specSelectors, getConfigs }) {
@@ -15,7 +15,7 @@ export function Models({ getComponent, specSelectors, getConfigs }) {
   const specPathBase = isOAS3 ? ['components', 'schemas'] : ['definitions'];
 
   const definitions = specSelectors.definitions();
-  const { defaultModelsExpandDepth, oasCheckerUrl } = getConfigs();
+  const { defaultModelsExpandDepth, oasCheckerUrl, schemaEditorUrl, url, } = getConfigs();
   if (!definitions.size || defaultModelsExpandDepth < 0) {
     return null;
   }
@@ -40,6 +40,7 @@ export function Models({ getComponent, specSelectors, getConfigs }) {
         onClick={() => copyToClipboard(specSelectors.specStr(), `${window.location.origin}${window.location.pathname}#oas:`)}
         >
         Copy as URL
+        <Icon icon="it-copy" size="sm" title="Copy as URL" fill="currentColor" className="ms-2 mb-1" />
       </Button>
 
       {
@@ -48,6 +49,18 @@ export function Models({ getComponent, specSelectors, getConfigs }) {
           title='Copy the editor content as an URL that opens in OAS Checker.'
           onClick={() => copyToClipboard(specSelectors.specStr(), `${oasCheckerUrl}?text=`)}>
             Copy as OAS Checker URL
+            <Icon icon="it-copy" size="sm" title="Copy as OAS Checker URL" fill="currentColor" className="ms-2 mb-1" />
+          </Button>
+      }
+
+      {
+        schemaEditorUrl &&
+          <Button color="primary"
+          title='Open in Schema Editor.'
+          href={`${schemaEditorUrl}?url=${/^http/.test(url) ? url : `${window.location.origin}${url}` }`}
+          >
+            Open in Schema Editor
+            <Icon icon="it-external-link" size="sm" title="Open in Schema Editor" fill="currentColor" className="ms-2 mb-1" />
           </Button>
       }
 

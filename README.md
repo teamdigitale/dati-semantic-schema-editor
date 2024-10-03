@@ -33,9 +33,47 @@ open http://localhost:5000
 
 ### Local Usage
 
-To use Italia Schema Editor all you need to do is installing the `@italia/schema-editor` plugin and than use as follow:
+To use Italia Schema Editor all you need to do is installing the `@italia/schema-editor` plugin
+and use the component in your application.
 
-XXX
+```typescript
+import 'bootstrap-italia/dist/css/bootstrap-italia.min.css';
+import 'typeface-lora';
+import 'typeface-roboto-mono';
+import 'typeface-titillium-web';
+
+import './App.scss';
+
+import { SchemaEditor } from '@italia/schema-editor';
+import '@italia/schema-editor/dist/style.css';
+
+function App() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const schemaUrl = urlParams.get('url');
+
+  return (
+    <>
+      <div className="app-container">
+        <SchemaEditor
+            url={schemaUrl}
+            oasCheckerUrl={'https://italia.github.io/api-oas-checker/'}
+            schemaEditorUrl={'Your URL here'}
+        />
+      </div>
+    </>
+  );
+}
+
+export default App;
+
+```
+
+This repository contains various usage examples:
+
+- [apps/example/src/App.tsx](./apps/example/src/App.tsx) - Showcase webapp;
+- [apps/example/src/components/standalone](./apps/example/src/components/standalone) - Standalone editor;
+- [apps/example/src/components/swaggerui-plugins-collection](./apps/example/src/components/swaggerui-plugins-collection) - Use the SwaggerUI component only.
+
 
 ## Development
 

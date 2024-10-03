@@ -16,9 +16,10 @@ interface Props {
   spec?: string | object;
   url?: string;
   oasCheckerUrl?: string;
+  schemaEditorUrl?: string;
 }
 
-export function SchemaEditor({ spec, url, oasCheckerUrl }: Props) {
+export function SchemaEditor({ spec, url, oasCheckerUrl, schemaEditorUrl }: Props) {
   const instance = useRef<typeof SwaggerUI>(null);
   const prevSpec = usePrevious(spec);
   const prevUrl = usePrevious(url);
@@ -51,6 +52,7 @@ export function SchemaEditor({ spec, url, oasCheckerUrl }: Props) {
         swagger2ConverterUrl: 'https://converter.swagger.io/api/convert',
         jsonldPlaygroundUrl: 'https://json-ld.org/playground/#startTab=tab-expand&json-ld=',
         ...(oasCheckerUrl ? { oasCheckerUrl } : {}),
+        ...(schemaEditorUrl ? { schemaEditorUrl } : {}),
       });
 
       // Update spec text
