@@ -24,8 +24,15 @@ export const useJsonLDResolver = (jsonldContext: Map<any, any> | any, keysPath: 
         throw new Error('Invalid context or keys');
       }
 
-      const context =
+      const lastKey = keysPath[keysPath.length - 1];
+      if (lastKey.startsWith('@id')) {
+        setState({ status: 'fulfilled', data: { fieldName: "@id", fieldUri: "@id", vocabularyUri: undefined } });
+        return;
+      }
+
+      let context =
         typeof jsonldContext.toJSON !== 'undefined' ? JSON.parse(JSON.stringify(jsonldContext)) : jsonldContext;
+      context = context['@context'] ? context['@context'] : context;
 
       // Validate property path upon context
       let innerContext = context;

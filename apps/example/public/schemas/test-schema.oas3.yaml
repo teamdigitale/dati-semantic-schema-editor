@@ -4,6 +4,50 @@
 openapi: 3.0.3
 components:
   schemas:
+    ListPrimitive:
+      x-jsonld-context:
+        "@vocab": https://w3id.org/italia/onto/CPV/
+      type: object
+      properties:
+        hasLevelOfEducation:
+          description: >-
+            Array properties show the rdfs:comment too.
+          type: array
+          items:
+            type: string
+      example:
+        hasLevelOfEducation: [NED, L]
+    ListObject:
+      x-jsonld-context:
+        "@vocab": https://w3id.org/italia/onto/CLV/
+      type: object
+      properties:
+        hasAddress:
+          type: array
+          minItems: 0
+          maxItems: 2
+          items:
+            $ref: "#/components/schemas/B"
+      example:
+        hasAddress:
+          - hasCity: Rome
+          - hasCity: Milan
+    B:
+      type: object
+      x-jsonld-type: https://w3id.org/italia/onto/CLV/Address
+      x-jsonld-context:
+        "@vocab": https://w3id.org/italia/onto/CLV/
+      properties:
+        hasCity:
+          type: string
+    A:
+      type: object
+      x-jsonld-type: https://w3id.org/italia/onto/CPV/Person
+      x-jsonld-context:
+        "@vocab": https://w3id.org/italia/onto/CPV/
+      properties:
+        hasBirthPlace:
+          $ref: "#/components/schemas/B"
     ExportedSchemas:
       anyOf: []
     #
@@ -96,6 +140,29 @@ components:
               type: string
           example:
             givenName: John
+    Card:
+      x-jsonld-type: Person
+      x-jsonld-context:
+        "@vocab": "https://w3id.org/italia/onto/CPV/"
+        email: "@id"
+        "@base": "mailto:"
+      properties:
+        fullName:
+          type: string
+        email:
+          type: string
+      example:
+        email: a@b.c
+        fullName: Roberto Polli
+    Addressbook:
+      type: object
+      x-jsonld-type: "https://w3id.org/italia/onto/CPV/Addressbook"
+      x-jsonld-context:
+        "@vocab": "https://w3id.org/italia/onto/CPV/"
+      properties:
+        owner:
+          $ref: '#/components/schemas/Card'
+
     Person:
       type: object
       x-jsonld-type: "https://w3id.org/italia/onto/CPV/Person"

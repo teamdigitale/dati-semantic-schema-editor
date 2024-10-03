@@ -1,4 +1,5 @@
-import { List, Map } from 'immutable';
+import { List, Map, OrderedMap } from 'immutable';
+import { updateJsonldContext } from '../hooks/use-jsonld-bundler';
 
 export interface Props {
   name: string;
@@ -35,11 +36,13 @@ export const ModelRoot = ({
     specActions.requestResolvedSubtree(fullPath);
   }
 
-  const jsonldContext = jsonldContextFullPath
-    ? specSelectors.specResolvedSubtree(jsonldContextFullPath)?.get('x-jsonld-context')
-    : undefined;
+  const parentSchema = jsonldContextFullPath
+    ? specSelectors.specResolvedSubtree(jsonldContextFullPath)
+    : schema;
 
   const Model = getComponent('Model');
+
+  const updatedJsonldContext = updateJsonldContext(parentSchema).get('@context');
 
   return (
     <div className="d-block neutral-2-bg p-3 mb-3">
@@ -56,7 +59,7 @@ export const ModelRoot = ({
         includeWriteOnly={true}
         expanded={true}
         depth={1}
-        jsonldContext={jsonldContext}
+        jsonldContext={updatedJsonldContext}
       />
     </div>
   );

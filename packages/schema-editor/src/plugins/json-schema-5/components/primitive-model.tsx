@@ -4,7 +4,7 @@
 import './primitive-model.scss';
 
 import { useJsonLDResolver, useRDFPropertyResolver } from '../hooks';
-import { getExtensions } from '../utils';
+import { getExtensions, getParentType } from '../utils';
 import { DeprecatedBlock } from './common/deprecated-block';
 import { DescriptionBlock } from './common/description-block';
 import { ExampleBlock } from './common/example-block';
@@ -25,10 +25,11 @@ export const PrimitiveModel = ({
   jsonldContext,
   getComponent,
   getConfigs,
+  specSelectors,
 }) => {
   const { showExtensions } = getConfigs();
 
-  const specPathArray = Array.from(specPath);
+  const specPathArray = Array.from(specPath) as string[];
   const propertyName = specPathArray[specPathArray.length - 1] as string;
   const jsonldType = schema.get('x-jsonld-type');
   const title = (schema?.get('title') as string) || displayName || name || '';
@@ -43,17 +44,25 @@ export const PrimitiveModel = ({
     )
     .filterNot((_, key) => extensions.has(key));
 
-  const { data: jsonLDResolverResult } = useJsonLDResolver(jsonldContext, [propertyName]);
+  // Customize the view when parent type is array.
+  const isArrayElement = getParentType(specSelectors, specPathArray) === 'array' && propertyName === 'items';
+
+  //
+  // Ontological resolvers.
+  //
+  const findKey = specPathArray.slice(3).filter(x=> x !== 'properties');
+  const { data: jsonLDResolverResult } = useJsonLDResolver(jsonldContext, findKey);
   const { data: rdfProperty } = useRDFPropertyResolver(jsonLDResolverResult?.fieldUri);
 
+  console.log('Check parent type', type, );
   return (
     <div className="modello primitive-model">
       {depth === 1 ? (
         <HeadingBlock title={title} specPath={specPath} jsonldType={jsonldType} getComponent={getComponent}>
           {/* <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} /> */}
         </HeadingBlock>
-      ) : (
-        <RDFOntologicalClassPropertyBlock fieldUri={jsonLDResolverResult?.fieldUri} />
+      ) : ( !isArrayElement && (
+        <RDFOntologicalClassPropertyBlock fieldUri={jsonLDResolverResult?.fieldUri} /> )
       )}
 
       <TypeFormatVocabularyBlock
@@ -67,6 +76,7 @@ export const PrimitiveModel = ({
       {enumArray && <div className="prop-enum">Enum: [ {enumArray.join(', ')} ]</div>}
 
       <DeprecatedBlock schema={schema} />
+
       <DescriptionBlock schema={schema} getComponent={getComponent} />
 
       <SemanticDescriptionBlock getComponent={getComponent} description={rdfProperty?.ontologicalPropertyComment} />

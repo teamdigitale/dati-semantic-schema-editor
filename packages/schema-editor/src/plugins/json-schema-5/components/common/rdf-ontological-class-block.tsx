@@ -1,5 +1,6 @@
 import { Spinner } from 'design-react-kit';
 import { basename, useRDFClassResolver } from '../../hooks';
+import { isUri } from '../../utils';
 
 export function RDFOntologicalClassBlock({ classUri }) {
   const { data, status } = useRDFClassResolver(classUri);

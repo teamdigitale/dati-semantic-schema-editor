@@ -6,6 +6,16 @@ import { useJsonLDResolver } from './use-jsonld-resolver';
 describe('useSearch', () => {
   const jsonldContext = getJsonLDContext();
 
+  it('should not resolve jsonld keywords', async () => {
+    const { result } = renderHook(() => useJsonLDResolver(jsonldContext, ['@vocab']));
+    await waitFor(() => expect(result.current.status).toBe('fulfilled'));
+    expect(result.current.data).toEqual({
+      fieldName: "@vocab",
+      fieldUri: "@vocab",
+      vocabularyUri: undefined,
+    });
+  });
+
   it('should return details of simple property', async () => {
     const { result } = renderHook(() => useJsonLDResolver(jsonldContext, ['given_name']));
     await waitFor(() => expect(result.current.status).toBe('fulfilled'));

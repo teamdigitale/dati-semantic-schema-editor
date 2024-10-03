@@ -1,6 +1,10 @@
 import './object-model.scss';
 
+import { Button } from 'design-react-kit';
 import { List } from 'immutable';
+import { useState } from 'react';
+import { useJsonLDResolver, useRDFPropertyResolver } from '../hooks';
+import { getParentType, isUri } from '../utils';
 import { DeprecatedBlock } from './common/deprecated-block';
 import { DescriptionBlock } from './common/description-block';
 import { ExampleBlock } from './common/example-block';
@@ -9,14 +13,11 @@ import { HeadingBlock } from './common/heading-block';
 import { JsonLdContextBlock } from './common/jsonld-context-block';
 import { OntoScoreBlock } from './common/onto-score-block';
 import { PropertiesBlock } from './common/properties-block';
+import RDFOntologicalClassModal from './common/rdf-helper-modal';
 import { RDFOntologicalClassPropertyBlock } from './common/rdf-ontological-class-property-block';
+import { SemanticDescriptionBlock } from './common/semantic-description-block';
 import { TypeFormatVocabularyBlock } from './common/type-format-vocabulary-block';
 import type { ModelCollapse as ModelCollapseComponent } from './model-collapse';
-import { useJsonLDResolver } from '../hooks';
-import { useState } from 'react';
-import RDFOntologicalClassModal from './common/rdf-helper-modal';
-import { Button } from 'design-react-kit';
-import { isUri } from '../utils';
 
 const braceOpen = '{';
 const braceClose = '}';
@@ -36,7 +37,7 @@ const ObjectModel = ({
   const { specSelectors, includeReadOnly, includeWriteOnly } = otherProps;
   const { showExtensions } = getConfigs();
 
-  const specPathArray = Array.from(specPath);
+  const specPathArray = Array.from(specPath) as string[];
   const propertyName = specPathArray[specPathArray.length - 1] as string;
   const jsonldType = schema.get('x-jsonld-type');
   const title = (schema?.get('title') as string) || displayName || name || '';
@@ -52,8 +53,6 @@ const ObjectModel = ({
   const oneOf = isOAS3 ? schema.get('oneOf') : null;
   const not = isOAS3 ? schema.get('not') : null;
 
-  const { data: jsonLDResolverResult } = useJsonLDResolver(jsonldContext, [propertyName]);
-
   const Model = getComponent('Model');
   const ModelCollapse: typeof ModelCollapseComponent = getComponent('ModelCollapse', true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -61,16 +60,41 @@ const ObjectModel = ({
     setIsModalOpen(!isModalOpen);
   };
 
+  // Check if parent type is array.
+  const isArrayElement = getParentType(specSelectors, specPathArray) === 'array' && propertyName === 'items';
+  //
+  // Ontological resolvers.
+  //
+  const findKey = specPathArray.slice(3).filter(x=> x !== 'properties');
+  const { data: jsonLDResolverResult } = useJsonLDResolver(jsonldContext, findKey);
+  const { data: rdfProperty } = useRDFPropertyResolver(jsonLDResolverResult?.fieldUri);
+
   // Resolve class URI from jsonldType using jsonldContext.
-  const { data: classUriResolverResult } = useJsonLDResolver(jsonldContext, [jsonldType]);
-  const classUri = classUriResolverResult?.fieldUri && isUri(classUriResolverResult.fieldUri) ? classUriResolverResult?.fieldUri : jsonldType;
+  const { data: classUriResolverResult } = useJsonLDResolver(jsonldContext, [...findKey.slice(0, -1), jsonldType]);
+  const classUri =
+    classUriResolverResult?.fieldUri && isUri(classUriResolverResult.fieldUri)
+      ? classUriResolverResult?.fieldUri
+      : jsonldType;
 
   return (
     <div className="modello object-model">
-      {depth > 1 && (
+      {depth > 1 && !isArrayElement && (
         <div>
           <RDFOntologicalClassPropertyBlock fieldUri={jsonLDResolverResult?.fieldUri} />
         </div>
+      )}
+
+      {!expanded && (
+        <TypeFormatVocabularyBlock
+          type="object"
+          jsonldContext={jsonldContext}
+          propertyName={propertyName}
+          rdfProperty={rdfProperty}
+        />
+      )}
+
+      {!expanded && (
+        <SemanticDescriptionBlock getComponent={getComponent} description={rdfProperty?.ontologicalPropertyComment} />
       )}
 
       <ModelCollapse title={title} specPath={specPath} expanded={expanded} schema={schema}>
@@ -83,6 +107,7 @@ const ObjectModel = ({
         <Button color="primary" onClick={toggleModal} style={{ marginLeft: '10px' }}>
           Open RDF Helper
         </Button>
+
         <RDFOntologicalClassModal
           getComponent={getComponent}
           isOpen={isModalOpen}
@@ -90,8 +115,6 @@ const ObjectModel = ({
           classUri={classUri}
           schema={schema}
         />
-
-        <TypeFormatVocabularyBlock jsonldContext={jsonldContext} propertyName={propertyName} />
 
         <DeprecatedBlock schema={schema} />
 
@@ -125,6 +148,7 @@ const ObjectModel = ({
                       if (isRequired) {
                         classNames.push('required');
                       }
+
                       return (
                         <tr key={key} className={classNames.join(' ')}>
                           <td>

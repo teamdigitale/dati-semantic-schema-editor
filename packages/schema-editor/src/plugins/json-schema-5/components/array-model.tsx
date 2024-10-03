@@ -1,4 +1,4 @@
-import { useJsonLDResolver } from '../hooks';
+import { useJsonLDResolver, useRDFPropertyResolver } from '../hooks';
 import './array-model.scss';
 
 import { DeprecatedBlock } from './common/deprecated-block';
@@ -9,6 +9,7 @@ import { HeadingBlock } from './common/heading-block';
 import { JsonLdContextBlock } from './common/jsonld-context-block';
 import { PropertiesBlock } from './common/properties-block';
 import { RDFOntologicalClassPropertyBlock } from './common/rdf-ontological-class-property-block';
+import { SemanticDescriptionBlock } from './common/semantic-description-block';
 import { TypeFormatVocabularyBlock } from './common/type-format-vocabulary-block';
 
 export const ArrayModel = (props) => {
@@ -23,9 +24,13 @@ export const ArrayModel = (props) => {
     (v, key) => ['type', 'items', 'description', '$$ref', 'externalDocs', 'example'].indexOf(key) === -1,
   );
 
-  const { data: jsonLDResolverResult } = useJsonLDResolver(jsonldContext, [propertyName]);
-
   const Model = getComponent('Model');
+
+  //
+  // Ontological resolvers.
+  //
+  const { data: jsonLDResolverResult } = useJsonLDResolver(jsonldContext, [propertyName]);
+  const { data: rdfProperty } = useRDFPropertyResolver(jsonLDResolverResult?.fieldUri);
 
   return (
     <div className="modello array-model">
@@ -35,11 +40,18 @@ export const ArrayModel = (props) => {
         <RDFOntologicalClassPropertyBlock fieldUri={jsonLDResolverResult?.fieldUri} />
       )}
 
-      <TypeFormatVocabularyBlock type="array" jsonldContext={jsonldContext} propertyName={propertyName} />
+      <TypeFormatVocabularyBlock
+        type="array"
+        jsonldContext={jsonldContext}
+        propertyName={propertyName}
+        rdfProperty={rdfProperty}
+      />
 
       <DeprecatedBlock schema={schema} />
 
       <DescriptionBlock schema={schema} getComponent={getComponent} />
+
+      <SemanticDescriptionBlock getComponent={getComponent} description={rdfProperty?.ontologicalPropertyComment} />
 
       <ExternalDocsBlock schema={schema} getComponent={getComponent} />
 
@@ -57,7 +69,6 @@ export const ArrayModel = (props) => {
           jsonldContext={jsonldContext}
         />
       </div>
-
       <ExampleBlock schema={schema} jsonldContext={jsonldContext} depth={depth} getConfigs={getConfigs} />
 
       <JsonLdContextBlock jsonldContext={jsonldContext} depth={depth} />
