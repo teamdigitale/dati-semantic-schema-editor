@@ -1,6 +1,6 @@
 import { Icon, Spinner } from 'design-react-kit';
-import { basename, useRDFClassResolver } from '../../hooks';
-import { isUri } from '../../utils';
+import { useRDFClassResolver } from '../../hooks';
+import { basename } from '../../utils';
 
 export function RDFOntologicalClassBlock({ classUri }) {
   const { data, status, error } = useRDFClassResolver(classUri);
@@ -10,9 +10,8 @@ export function RDFOntologicalClassBlock({ classUri }) {
       <Spinner active small />
     </span>
   ) : status === 'error' ? (
-    <Icon icon="it-error" color="danger" title={`${error}.\nCheck console log.`}/>
-  ) :
-  data?.ontologicalClass ? (
+    <Icon icon="it-error" color="danger" title={`${error}.\nCheck console log.`} />
+  ) : data?.ontologicalClass ? (
     <span className="rdf-ontological-class-property">
       [
       <a

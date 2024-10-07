@@ -1,5 +1,6 @@
 import { Map } from 'immutable';
 import { expand } from 'jsonld';
+import { basename } from '../utils';
 import { useCallback, useEffect, useState } from 'react';
 
 class JsonLDResolverResult {
@@ -26,7 +27,16 @@ export const useJsonLDResolver = (jsonldContext: Map<any, any> | any, keysPath: 
 
       const lastKey = keysPath[keysPath.length - 1];
       if (lastKey.startsWith('@id')) {
-        setState({ status: 'fulfilled', data: { fieldName: "@id", fieldUri: "@id", vocabularyUri: undefined } });
+        setState({ status: 'fulfilled', data: { fieldName: '@id', fieldUri: '@id', vocabularyUri: undefined } });
+        return;
+      }
+
+      // Don't need to process full URIs.
+      if (/^https?:/.test(lastKey)) {
+        setState({
+          status: 'fulfilled',
+          data: { fieldName: basename(lastKey), fieldUri: lastKey, vocabularyUri: undefined },
+        });
         return;
       }
 
@@ -43,6 +53,13 @@ export const useJsonLDResolver = (jsonldContext: Map<any, any> | any, keysPath: 
           // XXX: We cannot check if @vocab is defined in the context
           //      because it can be defined in the parent context.
           innerContext[key] = key;
+        } else if (innerContext[key].startsWith && innerContext[key].startsWith('@')) {
+          console.log(`Property ${key} is a keyword. Don't resolve it.`);
+          setState({
+            status: 'fulfilled',
+            data: { fieldName: innerContext[key], fieldUri: innerContext[key], vocabularyUri: undefined },
+          });
+          return;
         } else if (i < keysPath.length - 1 && !innerContext[key]['@context']) {
           throw new Error(`Missing inner @context for property ${key}`);
         }

@@ -1,5 +1,6 @@
 import { Badge } from 'design-react-kit';
-import { basename, useJsonLDResolver, useRDFPropertyResolver} from '../../hooks';
+import { useJsonLDResolver, useRDFPropertyResolver } from '../../hooks';
+import { basename } from '../../utils';
 
 export const RDFOntologicalTypeBlock = ({ propertyName, jsonldContext, className }) => {
   const { data: jsonLDResolverResult } = useJsonLDResolver(jsonldContext, [propertyName]);

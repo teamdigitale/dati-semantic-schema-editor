@@ -1,5 +1,7 @@
 import LZString from 'lz-string';
 
+export * from './basename';
+
 export const getExtensions = (defObj) => defObj.filter((v, k) => /^x-/.test(k));
 
 export const compressAndBase64UrlSafe = (txt: string) => LZString.compressToEncodedURIComponent(txt);
@@ -12,7 +14,7 @@ export const isUri = (uri: string) => {
   } catch (e) {
     return false;
   }
-}
+};
 
 export function getKey(obj, path: Array<any>) {
   if (!obj || !Array.isArray(path)) {

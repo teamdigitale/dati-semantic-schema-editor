@@ -1,11 +1,6 @@
 import { isUri } from '../utils';
 import { useSparqlQuery } from './use-sparql';
 
-export function basename(path: string) {
-  const parts = path.split('/');
-  return parts[parts.length - 1];
-}
-
 export interface RDFProperty {
   ontologicalProperty?: string;
   ontologicalClass?: string;
@@ -15,7 +10,7 @@ export interface RDFProperty {
 }
 
 export function useRDFPropertyResolver(fieldUri: string | undefined): { data: RDFProperty; status: string } {
-  const { data: sparqlData, status: sparqlStatus} = useSparqlQuery(
+  const { data: sparqlData, status: sparqlStatus } = useSparqlQuery(
     `
     PREFIX RDFS: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -63,7 +58,11 @@ export function useRDFPropertyResolver(fieldUri: string | undefined): { data: RD
 }
 
 export function useRDFClassResolver(classUri: string | undefined) {
-  const { data: sparqlData, status: sparqlStatus, error: error } = useSparqlQuery(
+  const {
+    data: sparqlData,
+    status: sparqlStatus,
+    error: error,
+  } = useSparqlQuery(
     `
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 

@@ -1,8 +1,9 @@
 import { Badge, Button, Icon, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Table } from 'design-react-kit';
-import { RDFClassProperties, useRDFClassPropertiesResolver, basename } from '../../hooks';
-import React, { useState } from 'react';
+import { RDFClassProperties, useRDFClassPropertiesResolver } from '../../hooks';
+import { useState } from 'react';
 import yaml from 'js-yaml';
 import { RDFHelperClassVocabulariesBlock } from './rdf-helper-class-vocabularies-block';
+import { basename } from '../../utils';
 
 function formatUri(uri: string): string {
   try {
@@ -232,7 +233,9 @@ function suggestContext(rdfProperty: RDFClassProperties): any {
           // Associate the value of the JSON Schema property with the controlled vocabulary prefixing it with the @base value.
           ['@type']: '@id',
           ['@context']: {
-            '@base': rdfProperty.controlledVocabulary?.endsWith("/") ? rdfProperty.controlledVocabulary : rdfProperty.controlledVocabulary + "/",
+            '@base': rdfProperty.controlledVocabulary?.endsWith('/')
+              ? rdfProperty.controlledVocabulary
+              : rdfProperty.controlledVocabulary + '/',
           },
         }),
       },

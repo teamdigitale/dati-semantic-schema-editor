@@ -3,6 +3,30 @@ import { fromJS } from 'immutable';
 import { describe, expect, it } from 'vitest';
 import { useJsonLDResolver } from './use-jsonld-resolver';
 
+describe('useSearchJsonLDKeywords', () => {
+  const jsonldContext = getEducationLevelContext();
+
+  it('should resolve mapping keywords in root', async () => {
+    const { result } = renderHook(() => useJsonLDResolver(jsonldContext, ['description']));
+    await waitFor(() => expect(result.current.status).toBe('fulfilled'));
+    expect(result.current.data).toEqual({
+      fieldName: "educationLevelDesc",
+      fieldUri: "https://w3id.org/italia/onto/CPV/educationLevelDesc",
+      vocabularyUri: undefined,
+    });
+  });
+
+  it('should not resolve jsonld keywords in root', async () => {
+    const { result } = renderHook(() => useJsonLDResolver(jsonldContext, ['id']));
+    await waitFor(() => expect(result.current.status).toBe('fulfilled'));
+    expect(result.current.data).toEqual({
+      fieldName: "@id",
+      fieldUri: "@id",
+      vocabularyUri: undefined,
+    });
+  });
+});
+
 describe('useSearch', () => {
   const jsonldContext = getJsonLDContext();
 
@@ -65,7 +89,26 @@ describe('useSearch', () => {
       vocabularyUri: 'https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code',
     });
   });
+
+  it('should not process full URIs', async () => {
+    const { result } = renderHook(() => useJsonLDResolver(jsonldContext, ['https://w3id.org/italia/onto/CPV/Person']));
+    await waitFor(() => expect(result.current.status).toBe('fulfilled'));
+    expect(result.current.data).toEqual({
+      fieldName: 'Person',
+      fieldUri: 'https://w3id.org/italia/onto/CPV/Person',
+      vocabularyUri: undefined,
+    });
+  });
 });
+
+function getEducationLevelContext(){
+  return fromJS({
+    '@vocab': 'https://w3id.org/italia/onto/CPV/',
+    'id': '@id',
+    '@base': 'https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/',
+    'description': 'educationLevelDesc',
+});
+};
 
 function getJsonLDContext() {
   return fromJS({
