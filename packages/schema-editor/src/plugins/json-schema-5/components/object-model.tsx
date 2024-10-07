@@ -65,7 +65,7 @@ const ObjectModel = ({
   //
   // Ontological resolvers.
   //
-  const findKey = specPathArray.slice(3).filter(x=> x !== 'properties');
+  const findKey = specPathArray.slice(3).filter((x) => x !== 'properties');
   const { data: jsonLDResolverResult } = useJsonLDResolver(jsonldContext, findKey);
   const { data: rdfProperty } = useRDFPropertyResolver(jsonLDResolverResult?.fieldUri);
 
@@ -133,13 +133,14 @@ const ObjectModel = ({
                   properties.size &&
                   properties
                     .entrySeq()
+                    .filter(([key, value]) => value && typeof value.get === 'function')
                     .filter(([key, value]) => {
                       return (
-                        (!value?.get('readOnly') || includeReadOnly) && (!value?.get('writeOnly') || includeWriteOnly)
+                        (!value.get('readOnly') || includeReadOnly) && (!value.get('writeOnly') || includeWriteOnly)
                       );
                     })
                     .map(([key, value]) => {
-                      const isDeprecated = isOAS3 && value?.get && value.get('deprecated');
+                      const isDeprecated = isOAS3 && value.get && value.get('deprecated');
                       const isRequired = List.isList(requiredProperties) && requiredProperties.contains(key);
                       const classNames = ['property-row'];
                       if (isDeprecated) {

@@ -162,7 +162,6 @@ components:
       properties:
         owner:
           $ref: '#/components/schemas/Card'
-
     Person:
       type: object
       x-jsonld-type: "https://w3id.org/italia/onto/CPV/Person"
