@@ -43,6 +43,9 @@
   "lint-staged": {
     "**/src/**/*.{js,ts,jsx,tsx}": [
       "eslint --fix"
+    ],
+    "**/src/**/*.{json,js,ts,jsx,tsx}": [
+      "prettier --write --ignore-unknown"
     ]
   }
 }

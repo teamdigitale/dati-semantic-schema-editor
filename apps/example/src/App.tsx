@@ -54,28 +54,34 @@ function App() {
               <div className="menu-wrapper">
                 <Nav navbar>
                   <NavItem>
-                    <Link className='nav-link' to="/">Home</Link>
+                    <Link className="nav-link" to="/">
+                      Home
+                    </Link>
                   </NavItem>
                   <NavItem>
-                    <Link className='nav-link' to="/standalone?url=/schemas/example-schema.oas3.yaml">
+                    <Link className="nav-link" to="/standalone?url=/schemas/example-schema.oas3.yaml">
                       Standalone Schema
                     </Link>
                   </NavItem>
                   <NavItem>
-                    <Link className='nav-link' to="/standalone?url=/schemas/blank-template.yaml">
+                    <Link className="nav-link" to="/standalone?url=/schemas/blank-template.yaml">
                       Standalone Template
                     </Link>
                   </NavItem>
                   <NavItem>
-                    <Link className='nav-link' to="/standalone?url=/schemas/test-schema.oas3.yaml">
+                    <Link className="nav-link" to="/standalone?url=/schemas/test-schema.oas3.yaml">
                       Standalone Test
                     </Link>
                   </NavItem>
                   <NavItem>
-                    <Link className='nav-link' to="/swaggerui">SwaggerUI</Link>
+                    <Link className="nav-link" to="/swaggerui">
+                      SwaggerUI
+                    </Link>
                   </NavItem>
                   <NavItem>
-                    <Link className='nav-link' to="/ace">ACE editor</Link>
+                    <Link className="nav-link" to="/ace">
+                      ACE editor
+                    </Link>
                   </NavItem>
                 </Nav>
               </div>

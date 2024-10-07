@@ -10,8 +10,8 @@ describe('useSearchJsonLDKeywords', () => {
     const { result } = renderHook(() => useJsonLDResolver(jsonldContext, ['description']));
     await waitFor(() => expect(result.current.status).toBe('fulfilled'));
     expect(result.current.data).toEqual({
-      fieldName: "educationLevelDesc",
-      fieldUri: "https://w3id.org/italia/onto/CPV/educationLevelDesc",
+      fieldName: 'educationLevelDesc',
+      fieldUri: 'https://w3id.org/italia/onto/CPV/educationLevelDesc',
       vocabularyUri: undefined,
     });
   });
@@ -20,8 +20,8 @@ describe('useSearchJsonLDKeywords', () => {
     const { result } = renderHook(() => useJsonLDResolver(jsonldContext, ['id']));
     await waitFor(() => expect(result.current.status).toBe('fulfilled'));
     expect(result.current.data).toEqual({
-      fieldName: "@id",
-      fieldUri: "@id",
+      fieldName: '@id',
+      fieldUri: '@id',
       vocabularyUri: undefined,
     });
   });
@@ -34,8 +34,8 @@ describe('useSearch', () => {
     const { result } = renderHook(() => useJsonLDResolver(jsonldContext, ['@vocab']));
     await waitFor(() => expect(result.current.status).toBe('fulfilled'));
     expect(result.current.data).toEqual({
-      fieldName: "@vocab",
-      fieldUri: "@vocab",
+      fieldName: '@vocab',
+      fieldUri: '@vocab',
       vocabularyUri: undefined,
     });
   });
@@ -101,14 +101,14 @@ describe('useSearch', () => {
   });
 });
 
-function getEducationLevelContext(){
+function getEducationLevelContext() {
   return fromJS({
     '@vocab': 'https://w3id.org/italia/onto/CPV/',
-    'id': '@id',
+    id: '@id',
     '@base': 'https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/',
-    'description': 'educationLevelDesc',
-});
-};
+    description: 'educationLevelDesc',
+  });
+}
 
 function getJsonLDContext() {
   return fromJS({

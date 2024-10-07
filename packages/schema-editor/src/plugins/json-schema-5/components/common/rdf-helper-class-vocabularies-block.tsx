@@ -4,10 +4,10 @@ interface Props {
   classUri: string;
 }
 
-export const RDFHelperClassVocabulariesBlock = ({ classUri}: Props) => {
+export const RDFHelperClassVocabulariesBlock = ({ classUri }: Props) => {
   const { data } = useRDFClassVocabulariesResolver(classUri);
 
-  return data? (
+  return data ? (
     <div>
       <h6>Vocabularies for {uriToCurie(classUri)}</h6>
       <table>
@@ -24,17 +24,17 @@ export const RDFHelperClassVocabulariesBlock = ({ classUri}: Props) => {
               <td>{uriToCurie(item.controlledVocabulary)}</td>
               <td>{uriToCurie(item?.subclass)}</td>
               <td>
-                <a href={item?.api} target="_blank" rel="noreferrer">API endpoint</a>
+                <a href={item?.api} target="_blank" rel="noreferrer">
+                  API endpoint
+                </a>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
-
   ) : null;
 };
-
 
 const uriToCurie = (uri) => {
   const parts = uri.split(/[/#]/);

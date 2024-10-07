@@ -1,7 +1,6 @@
 import { Icon } from 'design-react-kit';
 import { RDFOntologicalClassBlock } from './rdf-ontological-class-block';
 
-
 interface Props {
   title: string;
   specPath: any;
@@ -16,12 +15,10 @@ export function HeadingBlock({ title, specPath, jsonldType, getComponent, childr
   return (
     <div className="d-flex">
       <h4>
-        <JumpToPath specPath={specPath} content={<Icon icon='it-pencil' size='sm' title='Go to definition'/>} />
+        <JumpToPath specPath={specPath} content={<Icon icon="it-pencil" size="sm" title="Go to definition" />} />
         {title} <RDFOntologicalClassBlock classUri={jsonldType} />
       </h4>
-      <div className="d-flex align-items-center ms-auto">
-        {children}
-      </div>
+      <div className="d-flex align-items-center ms-auto">{children}</div>
     </div>
   );
 }

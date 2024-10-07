@@ -50,19 +50,19 @@ export const PrimitiveModel = ({
   //
   // Ontological resolvers.
   //
-  const findKey = specPathArray.slice(3).filter(x=> x !== 'properties');
+  const findKey = specPathArray.slice(3).filter((x) => x !== 'properties');
   const { data: jsonLDResolverResult } = useJsonLDResolver(jsonldContext, findKey);
   const { data: rdfProperty } = useRDFPropertyResolver(jsonLDResolverResult?.fieldUri);
 
-  console.log('Check parent type', type, );
+  console.log('Check parent type', type);
   return (
     <div className="modello primitive-model">
       {depth === 1 ? (
         <HeadingBlock title={title} specPath={specPath} jsonldType={jsonldType} getComponent={getComponent}>
           {/* <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} /> */}
         </HeadingBlock>
-      ) : ( !isArrayElement && (
-        <RDFOntologicalClassPropertyBlock fieldUri={jsonLDResolverResult?.fieldUri} /> )
+      ) : (
+        !isArrayElement && <RDFOntologicalClassPropertyBlock fieldUri={jsonLDResolverResult?.fieldUri} />
       )}
 
       <TypeFormatVocabularyBlock

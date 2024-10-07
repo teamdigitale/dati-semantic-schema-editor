@@ -1,11 +1,10 @@
-import { fromJS, } from 'immutable';
+import { fromJS } from 'immutable';
 import { describe, expect, it } from 'vitest';
 
 import { updateJsonldContext } from './use-jsonld-bundler';
 
 describe('useSearch', () => {
   const schema = getSchema();
-
 
   it('should resolve a simple context', () => {
     const result = updateJsonldContext(schema.get('Place'));
@@ -26,13 +25,12 @@ describe('useSearch', () => {
         '@vocab': 'https://w3id.org/italia/onto/CPV/',
         given_name: 'givenName',
         birth_place: {
-          "@id": "hasBirthPlace",
-          "@context": "http://remote.example.org/context.json",
-        }
+          '@id': 'hasBirthPlace',
+          '@context': 'http://remote.example.org/context.json',
+        },
       },
     });
   });
-
 
   it('should resolve a nested context', () => {
     const result = updateJsonldContext(schema.get('A'));
@@ -93,138 +91,137 @@ describe('useSearch', () => {
       },
     });
   });
-
 });
 
 function getSchema() {
   return fromJS({
-    "Nested3": {
-      "x-jsonld-context": {
-        "@vocab": "https://w3id.org/italia/onto/CPV/",
-        "given_name": "givenName",
-        "birth_place": {
-          "@id": "hasBirthPlace",
-          },
+    Nested3: {
+      'x-jsonld-context': {
+        '@vocab': 'https://w3id.org/italia/onto/CPV/',
+        given_name: 'givenName',
+        birth_place: {
+          '@id': 'hasBirthPlace',
         },
-      "properties": {
-        "given_name": {
-          "type": "string",
+      },
+      properties: {
+        given_name: {
+          type: 'string',
         },
-        "birth_place": {
-          "x-jsonld-context": {
-            "@vocab": "https://w3id.org/italia/onto/CLV/",
-            "province": {
-              "@id": "hasProvince",
+        birth_place: {
+          'x-jsonld-context': {
+            '@vocab': 'https://w3id.org/italia/onto/CLV/',
+            province: {
+              '@id': 'hasProvince',
             },
           },
-          "properties": {
-            "province": {
-              "type": "object",
-              "x-jsonld-context": {
-                "@vocab": "https://w3id.org/italia/onto/l0/",
-                "sigla": {
-                  "@id": "hasSigla",
+          properties: {
+            province: {
+              type: 'object',
+              'x-jsonld-context': {
+                '@vocab': 'https://w3id.org/italia/onto/l0/',
+                sigla: {
+                  '@id': 'hasSigla',
                 },
               },
-              "properties": {
-                "sigla": {
-                  "type": "string",
+              properties: {
+                sigla: {
+                  type: 'string',
                 },
               },
             },
-          }
-        },
-      }
-    }
-    , "Place": {
-      "x-jsonld-context": {
-        "@vocab": "https://w3id.org/italia/onto/CLV/",
-        "province": {
-          "@id": "hasProvince",
-        },
-      },
-      "properties": {
-        "province": {
-          "type": "string",
-        },
-      }
-    }
-    , "A": {
-      "x-jsonld-context": {
-        "@vocab": "https://w3id.org/italia/onto/CPV/",
-        "given_name": "givenName",
-        "birth_place": {
-          "@id": "hasBirthPlace",
-        },
-      },
-      "properties": {
-        "given_name": {
-          "type": "string",
-        },
-        "birth_place": {
-          "x-jsonld-context": {
-            "@vocab": "https://w3id.org/italia/onto/CLV/",
           },
-          "properties": {
-            "province": {
-              "type": "string",
-            },
-          }
         },
-      }
-    }
-    , "PreserveId": {
-      "x-jsonld-context": {
-        "@vocab": "https://w3id.org/italia/onto/CPV/",
-        "given_name": "givenName",
-        "birth_place": "hasBirthPlace",
       },
-      "properties": {
-        "given_name": {
-          "type": "string",
+    },
+    Place: {
+      'x-jsonld-context': {
+        '@vocab': 'https://w3id.org/italia/onto/CLV/',
+        province: {
+          '@id': 'hasProvince',
         },
-        "birth_place": {
-          "x-jsonld-context": {
-            "@vocab": "https://w3id.org/italia/onto/CLV/",
-            "province": {
-              "@id": "hasProvince",
+      },
+      properties: {
+        province: {
+          type: 'string',
+        },
+      },
+    },
+    A: {
+      'x-jsonld-context': {
+        '@vocab': 'https://w3id.org/italia/onto/CPV/',
+        given_name: 'givenName',
+        birth_place: {
+          '@id': 'hasBirthPlace',
+        },
+      },
+      properties: {
+        given_name: {
+          type: 'string',
+        },
+        birth_place: {
+          'x-jsonld-context': {
+            '@vocab': 'https://w3id.org/italia/onto/CLV/',
+          },
+          properties: {
+            province: {
+              type: 'string',
             },
           },
-          "properties": {
-            "province": {
-              "type": "string",
-            },
-          }
-        },
-      }
-    }
-    , "DontOverWriteContext": {
-      "x-jsonld-context": {
-        "@vocab": "https://w3id.org/italia/onto/CPV/",
-        "given_name": "givenName",
-        "birth_place": {
-          "@id": "hasBirthPlace",
-          "@context": "http://remote.example.org/context.json",
         },
       },
-      "properties": {
-        "given_name": {
-          "type": "string",
+    },
+    PreserveId: {
+      'x-jsonld-context': {
+        '@vocab': 'https://w3id.org/italia/onto/CPV/',
+        given_name: 'givenName',
+        birth_place: 'hasBirthPlace',
+      },
+      properties: {
+        given_name: {
+          type: 'string',
         },
-        "birth_place": {
-          "x-jsonld-context": {
-            "@vocab": "https://w3id.org/italia/onto/CLV/",
-            "province": {
-              "@id": "hasProvince",
+        birth_place: {
+          'x-jsonld-context': {
+            '@vocab': 'https://w3id.org/italia/onto/CLV/',
+            province: {
+              '@id': 'hasProvince',
             },
           },
-          "properties": {
-            "province": {
-              "type": "string",
+          properties: {
+            province: {
+              type: 'string',
             },
-          }
+          },
         },
-      }
-    }
+      },
+    },
+    DontOverWriteContext: {
+      'x-jsonld-context': {
+        '@vocab': 'https://w3id.org/italia/onto/CPV/',
+        given_name: 'givenName',
+        birth_place: {
+          '@id': 'hasBirthPlace',
+          '@context': 'http://remote.example.org/context.json',
+        },
+      },
+      properties: {
+        given_name: {
+          type: 'string',
+        },
+        birth_place: {
+          'x-jsonld-context': {
+            '@vocab': 'https://w3id.org/italia/onto/CLV/',
+            province: {
+              '@id': 'hasProvince',
+            },
+          },
+          properties: {
+            province: {
+              type: 'string',
+            },
+          },
+        },
+      },
+    },
   });
 }

@@ -36,9 +36,7 @@ export const ModelRoot = ({
     specActions.requestResolvedSubtree(fullPath);
   }
 
-  const parentSchema = jsonldContextFullPath
-    ? specSelectors.specResolvedSubtree(jsonldContextFullPath)
-    : schema;
+  const parentSchema = jsonldContextFullPath ? specSelectors.specResolvedSubtree(jsonldContextFullPath) : schema;
 
   const Model = getComponent('Model');
 
