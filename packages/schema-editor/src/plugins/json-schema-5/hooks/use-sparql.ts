@@ -22,7 +22,7 @@ export function useSparqlQuery(query: string, options?: SparqlQueryOptions) {
       const data = await response.json();
       setData(data);
       setStatus('fulfilled');
-    } catch (e: any) {
+    } catch (e) {
       setError(`${e?.message || e || 'Unknown error'} contacting ${BASE_URL}`);
       setStatus('error');
     }

@@ -1,7 +1,8 @@
 import { Map } from 'immutable';
 import { expand } from 'jsonld';
-import { basename } from '../utils';
 import { useCallback, useEffect, useState } from 'react';
+import { AsyncState } from '../models';
+import { basename } from '../utils';
 
 class JsonLDResolverResult {
   fieldName: string | undefined;
@@ -10,14 +11,9 @@ class JsonLDResolverResult {
 }
 
 export const useJsonLDResolver = (jsonldContext: Map<any, any> | any, keysPath: string[]) => {
-  const [state, setState] = useState<{
-    data?: JsonLDResolverResult;
-    status: 'idle' | 'pending' | 'fulfilled' | 'error';
-    error?: string;
-  }>({ data: undefined, status: 'pending', error: undefined });
-  const keysPathDependency = JSON.stringify(keysPath);
+  const [state, setState] = useState<AsyncState<JsonLDResolverResult>>({ status: 'pending' });
 
-  const callback = useCallback(async (jsonldContext, keysPath) => {
+  const callback = useCallback(async (jsonldContext: Map<any, any> | any, keysPath: string[]) => {
     try {
       setState({ status: 'pending' });
 
@@ -87,14 +83,14 @@ export const useJsonLDResolver = (jsonldContext: Map<any, any> | any, keysPath: 
       }
 
       setState({ status: 'fulfilled', data: { fieldName, fieldUri, vocabularyUri } });
-    } catch (e: any) {
+    } catch (e) {
       setState({ status: 'error', error: e?.message || 'Exception' });
     }
   }, []);
 
   useEffect(() => {
     callback(jsonldContext, keysPath);
-  }, [callback, jsonldContext, keysPathDependency]);
+  }, [callback, jsonldContext]);
 
   return state;
 };

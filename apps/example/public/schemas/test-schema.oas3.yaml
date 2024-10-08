@@ -84,7 +84,11 @@ components:
           description: >-
             Without `x-jsonld-context`,
             [JSON-LD Framing](https://www.w3.org/TR/json-ld-framing/)
-            cannot use any `@context` to resolve properties.
+            cannot resolve properties because
+            there's no `x-jsonld-context`.
+
+            Moreover, the editor warns that to open the playground
+            the schema must have a `x-jsonld-context`.
       example:
         givenName: John
     TypeUseContext1:
@@ -125,6 +129,13 @@ components:
       # Use an empty object to enable the JSON-LD playground.
       example:
         givenName: John
+    NoExampleNoPlayground:
+      type: object
+      x-jsonld-context:
+        "@vocab": "https://w3id.org/italia/onto/CPV/"
+      description: >-
+            The editor warns that to open the playground
+            the schema must have an `example`.
     TypeUsesContext3:
       type: object
       x-jsonld-context:
