@@ -23,7 +23,7 @@ export function SwaggerUIPluginsCollection() {
         plugins={[ErrorsPlugin, JSONSchema5Plugin, OverviewPlugin, CustomLayoutPlugin]}
         layout={'CustomLayout'}
         oasCheckerUrl="https://italia.github.io/api-oas-checker/"
-        schemaEditorUrl="https://par-tec.github.io/dati-semantic-schema-editor/v0.0.2-preview/"
+        schemaEditorUrl="https://par-tec.github.io/dati-semantic-schema-editor/v0.0.3-preview/"
       />
     </div>
   );

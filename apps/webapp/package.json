@@ -14,8 +14,8 @@
   ],
   "dependencies": {
     "@italia/schema-editor": "workspace:*",
-    "bootstrap-italia": "^2.8.2",
-    "design-react-kit": "^5.0.4",
+    "bootstrap-italia": "^2.9.2",
+    "design-react-kit": "^5.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "typeface-lora": "^1.1.13",

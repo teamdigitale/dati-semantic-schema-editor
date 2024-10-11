@@ -63,11 +63,11 @@ importers:
         specifier: ^1.35.0
         version: 1.35.0
       bootstrap-italia:
-        specifier: ^2.8.2
-        version: 2.8.8
+        specifier: ^2.9.2
+        version: 2.9.2
       design-react-kit:
-        specifier: ^5.0.4
-        version: 5.0.4(@types/react@18.3.3)(bootstrap-italia@2.8.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^5.2.0
+        version: 5.2.0(bootstrap-italia@2.9.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -133,11 +133,11 @@ importers:
         specifier: workspace:*
         version: link:../../packages/schema-editor
       bootstrap-italia:
-        specifier: ^2.8.2
-        version: 2.8.8
+        specifier: ^2.9.2
+        version: 2.9.2
       design-react-kit:
-        specifier: ^5.0.4
-        version: 5.0.4(@types/react@18.3.3)(bootstrap-italia@2.8.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^5.2.0
+        version: 5.2.0(bootstrap-italia@2.9.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -197,11 +197,11 @@ importers:
         specifier: ^5.3.3
         version: 5.3.3(@popperjs/core@2.11.8)
       bootstrap-italia:
-        specifier: ^2.8.2
-        version: 2.8.8
+        specifier: ^2.9.2
+        version: 2.9.2
       design-react-kit:
-        specifier: ^5.0.4
-        version: 5.0.4(@types/react@18.3.3)(bootstrap-italia@2.8.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^5.2.0
+        version: 5.2.0(bootstrap-italia@2.9.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       immutable:
         specifier: ^4.3.6
         version: 4.3.6
@@ -1516,8 +1516,8 @@ packages:
   bl@4.1.0:
     resolution: {integrity: sha512-1W07cM9gS6DcLperZfFSj+bWLtaPGSOHWhPiGzXmvVJbRLdG82sH/Kn8EtW1VqWVA54AKf2h5k5BbnIbwF3h6w==}
 
-  bootstrap-italia@2.8.8:
-    resolution: {integrity: sha512-2NJqPQRnyO2hb5stRNRXk/kQku42vLBKC8CGgDoekD9Fb8UALfeicpZiL0wqDdT/MxFwbQNz3sDLGjJKcXesXA==}
+  bootstrap-italia@2.9.2:
+    resolution: {integrity: sha512-PPnN5XdXkh44IHqotctreIZw3xGHM5Mcitu0Fs7HanIyWDtVhV2GPW4f12sKtLgsig/09796SDksLYqh5w+dRQ==}
 
   bootstrap@5.2.3:
     resolution: {integrity: sha512-cEKPM+fwb3cT8NzQZYEu4HilJ3anCrWqh3CHAok1p9jXqMPsPTBhU25fBckEJHJ/p+tTxTFTsFQGM+gaHpi3QQ==}
@@ -1885,12 +1885,12 @@ packages:
   desandro-matches-selector@2.0.2:
     resolution: {integrity: sha512-+1q0nXhdzg1IpIJdMKalUwvvskeKnYyEe3shPRwedNcWtnhEKT3ZxvFjzywHDeGcKViIxTCAoOYQWP1qD7VNyg==}
 
-  design-react-kit@5.0.4:
-    resolution: {integrity: sha512-KwAwFmjMs3bBAvCti3wdEmVVRsJntpPI/ZfOBYxYh+4PMuhUVwJyBi5OFPU/apXS/yT0N/L7o6a+ole4VgxM6A==}
-    engines: {node: '>=14'}
+  design-react-kit@5.2.0:
+    resolution: {integrity: sha512-JjEWhCEy/OeawXwoEkoXRfANaquQd0tZ6gYTYL/PS2SrFaPGAqFx9CXHvvQPvEmab/Z9H87g1XO7/eftbcoyBw==}
+    engines: {node: '>=20'}
     peerDependencies:
-      bootstrap-italia: 2.8.2
-      react: '>=17.0.2'
+      bootstrap-italia: 2.8.8
+      react: '>=18.2.0'
 
   design-tokens-italia@1.1.1:
     resolution: {integrity: sha512-WCDGP1ASq8s0MlwoJLhBGBl/kX/4PFU93xEBXsFELyYgdaDQMg9qZJH379f1HktMNWnLmKCBqd8qZju/o+0wVA==}
@@ -3519,11 +3519,6 @@ packages:
       react: '>= 16.6'
       react-dom: '>= 16.6'
 
-  react-input-autosize@3.0.0:
-    resolution: {integrity: sha512-nL9uS7jEs/zu8sqwFE5MAPx6pPkNAriACQ2rGLlqmKr2sPGtN7TXTyDdQt4lbNXVx7Uzadb40x8qotIuru6Rhg==}
-    peerDependencies:
-      react: ^16.3.0 || ^17.0.0
-
   react-inspector@6.0.2:
     resolution: {integrity: sha512-x+b7LxhmHXjHoU/VrFAzw5iutsILRoYyDq97EDYdFpPLcvqtEzk4ZSZSQjnFPbr5T57tLXnHcqFYoN1pI6u8uQ==}
     peerDependencies:
@@ -3576,12 +3571,6 @@ packages:
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: '>=16.8'
-
-  react-select@4.3.1:
-    resolution: {integrity: sha512-HBBd0dYwkF5aZk1zP81Wx5UsLIIT2lSvAY2JiJo199LjoLHoivjn9//KsmvQMEFGNhe58xyuOITjfxKCcGc62Q==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0
-      react-dom: ^16.8.0 || ^17.0.0
 
   react-shallow-renderer@16.15.0:
     resolution: {integrity: sha512-oScf2FqQ9LFVQgA73vr86xl2NaOIX73rh+YFqcOp68CWj56tSfgtGKrEbyhCj0rSijyG9M1CYprTh39fBi5hzA==}
@@ -5022,6 +5011,7 @@ snapshots:
       stylis: 4.2.0
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@emotion/cache@11.11.0':
     dependencies:
@@ -5031,7 +5021,8 @@ snapshots:
       '@emotion/weak-memoize': 0.3.1
       stylis: 4.2.0
 
-  '@emotion/hash@0.9.1': {}
+  '@emotion/hash@0.9.1':
+    optional: true
 
   '@emotion/is-prop-valid@1.2.2':
     dependencies:
@@ -5054,6 +5045,7 @@ snapshots:
       '@types/react': 18.3.3
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@emotion/serialize@1.1.4':
     dependencies:
@@ -5062,6 +5054,7 @@ snapshots:
       '@emotion/unitless': 0.8.1
       '@emotion/utils': 1.2.1
       csstype: 3.1.3
+    optional: true
 
   '@emotion/sheet@1.2.2': {}
 
@@ -5070,6 +5063,7 @@ snapshots:
   '@emotion/use-insertion-effect-with-fallbacks@1.0.1(react@18.3.1)':
     dependencies:
       react: 18.3.1
+    optional: true
 
   '@emotion/utils@1.2.1': {}
 
@@ -5897,7 +5891,8 @@ snapshots:
 
   '@types/normalize-package-data@2.4.4': {}
 
-  '@types/parse-json@4.0.2': {}
+  '@types/parse-json@4.0.2':
+    optional: true
 
   '@types/prop-types@15.7.12': {}
 
@@ -6315,6 +6310,7 @@ snapshots:
       '@babel/runtime': 7.24.7
       cosmiconfig: 7.1.0
       resolve: 1.22.8
+    optional: true
 
   babel-polyfill@6.23.0:
     dependencies:
@@ -6344,7 +6340,7 @@ snapshots:
       readable-stream: 3.6.2
     optional: true
 
-  bootstrap-italia@2.8.8:
+  bootstrap-italia@2.9.2:
     dependencies:
       '@popperjs/core': 2.11.8
       '@splidejs/splide': 3.6.12
@@ -6588,7 +6584,8 @@ snapshots:
 
   confbox@0.1.7: {}
 
-  convert-source-map@1.9.0: {}
+  convert-source-map@1.9.0:
+    optional: true
 
   convert-source-map@2.0.0: {}
 
@@ -6611,6 +6608,7 @@ snapshots:
       parse-json: 5.2.0
       path-type: 4.0.0
       yaml: 1.10.2
+    optional: true
 
   cross-spawn@5.1.0:
     dependencies:
@@ -6730,22 +6728,19 @@ snapshots:
 
   desandro-matches-selector@2.0.2: {}
 
-  design-react-kit@5.0.4(@types/react@18.3.3)(bootstrap-italia@2.8.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  design-react-kit@5.2.0(bootstrap-italia@2.9.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
-      bootstrap-italia: 2.8.8
+      bootstrap-italia: 2.9.2
       classnames: 2.5.1
       is-number: 7.0.0
       react: 18.3.1
-      react-select: 4.3.1(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-stickup: 1.12.1(react@18.3.1)
       react-toastify: 7.0.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-transition-group: 4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       reactstrap: 9.2.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       webfontloader: 1.6.28
     transitivePeerDependencies:
-      - '@types/react'
       - react-dom
-      - supports-color
 
   design-tokens-italia@1.1.1: {}
 
@@ -7158,7 +7153,8 @@ snapshots:
     dependencies:
       to-regex-range: 5.0.1
 
-  find-root@1.1.0: {}
+  find-root@1.1.0:
+    optional: true
 
   find-up@4.1.0:
     dependencies:
@@ -7401,6 +7397,7 @@ snapshots:
   hoist-non-react-statics@3.3.2:
     dependencies:
       react-is: 16.13.1
+    optional: true
 
   hosted-git-info@2.8.9: {}
 
@@ -8533,11 +8530,6 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  react-input-autosize@3.0.0(react@18.3.1):
-    dependencies:
-      prop-types: 15.8.1
-      react: 18.3.1
-
   react-inspector@6.0.2(react@18.3.1):
     dependencies:
       react: 18.3.1
@@ -8580,21 +8572,6 @@ snapshots:
     dependencies:
       '@remix-run/router': 1.16.1
       react: 18.3.1
-
-  react-select@4.3.1(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
-    dependencies:
-      '@babel/runtime': 7.24.7
-      '@emotion/cache': 11.11.0
-      '@emotion/react': 11.11.4(@types/react@18.3.3)(react@18.3.1)
-      memoize-one: 5.2.1
-      prop-types: 15.8.1
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      react-input-autosize: 3.0.0(react@18.3.1)
-      react-transition-group: 4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-    transitivePeerDependencies:
-      - '@types/react'
-      - supports-color
 
   react-shallow-renderer@16.15.0(react@18.3.1):
     dependencies:
@@ -8996,7 +8973,8 @@ snapshots:
       source-map: 0.6.1
     optional: true
 
-  source-map@0.5.7: {}
+  source-map@0.5.7:
+    optional: true
 
   source-map@0.6.1: {}
 
@@ -9890,7 +9868,8 @@ snapshots:
 
   yaml-js@0.3.1: {}
 
-  yaml@1.10.2: {}
+  yaml@1.10.2:
+    optional: true
 
   yaml@2.4.5: {}
 

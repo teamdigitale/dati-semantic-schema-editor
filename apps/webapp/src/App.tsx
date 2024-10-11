@@ -40,7 +40,12 @@ function App() {
       </Header>
 
       <div className="app-container">
-        <SchemaEditor url={schemaUrl} spec={schemaSpec} oasCheckerUrl={'https://italia.github.io/api-oas-checker'} />
+        <SchemaEditor
+          url={schemaUrl}
+          spec={schemaSpec}
+          oasCheckerUrl={'https://italia.github.io/api-oas-checker'}
+          schemaEditorUrl="https://par-tec.github.io/dati-semantic-schema-editor/v0.0.3-preview/"
+        />
       </div>
     </>
   );

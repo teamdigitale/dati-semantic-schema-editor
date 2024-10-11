@@ -27,8 +27,8 @@
   "dependencies": {
     "@braintree/sanitize-url": "^7.0.2",
     "bootstrap": "^5.3.3",
-    "bootstrap-italia": "^2.8.2",
-    "design-react-kit": "^5.0.4",
+    "bootstrap-italia": "^2.9.2",
+    "design-react-kit": "^5.2.0",
     "immutable": "^4.3.6",
     "js-yaml": "^4.1.0",
     "jsonld": "^8.3.2",

@@ -15,8 +15,8 @@
   "dependencies": {
     "@italia/schema-editor": "workspace:*",
     "ace-builds": "^1.35.0",
-    "bootstrap-italia": "^2.8.2",
-    "design-react-kit": "^5.0.4",
+    "bootstrap-italia": "^2.9.2",
+    "design-react-kit": "^5.2.0",
     "react": "^18.2.0",
     "react-ace": "^11.0.1",
     "react-dom": "^18.2.0",
