@@ -5,7 +5,7 @@ import type { ModelCollapse as ModelCollapseComponent } from './model-collapse';
 import type { ModelRoot as ModelRootComponent } from './model-root';
 import type { ModelsBreadcrumb as ModelsBreadcrumbComponent } from './models-breadcrumb';
 import { Button, Icon } from 'design-react-kit';
-import { compressAndBase64UrlSafe } from '../utils';
+import { compressAndBase64UrlSafe, copyToClipboard } from '../utils';
 
 export function Models({ getComponent, specSelectors, getConfigs }) {
   const { history, jsonldContextFullPath } = useSchemaNavigation();
@@ -24,13 +24,8 @@ export function Models({ getComponent, specSelectors, getConfigs }) {
   const ModelCollapse: typeof ModelCollapseComponent = getComponent('ModelCollapse', true);
   const ModelRoot: typeof ModelRootComponent = getComponent('ModelRoot', true);
 
-  const copyToClipboard = (text: string, prefix: string = '') => {
-    const el = document.createElement('textarea');
-    el.value = `${prefix}${compressAndBase64UrlSafe(text)}`;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
+  const copyAsB64zipToClipboard = (text: string, prefix: string = '') => {
+    copyToClipboard(`${prefix}${compressAndBase64UrlSafe(text)}`);
   };
 
   return (
@@ -39,7 +34,7 @@ export function Models({ getComponent, specSelectors, getConfigs }) {
         color="primary"
         title="Copy the editor content as a shareable URL."
         onClick={() =>
-          copyToClipboard(specSelectors.specStr(), `${window.location.origin}${window.location.pathname}#oas:`)
+          copyAsB64zipToClipboard(specSelectors.specStr(), `${window.location.origin}${window.location.pathname}#oas:`)
         }
       >
         Copy as URL
@@ -50,7 +45,7 @@ export function Models({ getComponent, specSelectors, getConfigs }) {
         <Button
           color="primary"
           title="Copy the editor content as an URL that opens in OAS Checker."
-          onClick={() => copyToClipboard(specSelectors.specStr(), `${oasCheckerUrl}?text=`)}
+          onClick={() => copyAsB64zipToClipboard(specSelectors.specStr(), `${oasCheckerUrl}?text=`)}
         >
           Copy as OAS Checker URL
           <Icon icon="it-copy" size="sm" title="Copy as OAS Checker URL" fill="currentColor" className="ms-2 mb-1" />

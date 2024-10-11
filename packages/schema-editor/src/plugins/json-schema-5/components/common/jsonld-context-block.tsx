@@ -1,5 +1,6 @@
 import { Accordion, AccordionItem, AccordionHeader, AccordionBody, Icon } from 'design-react-kit';
 import { useState } from 'react';
+import { copyToClipboard } from '../../utils';
 
 export function JsonLdContextBlock({ jsonldContext, depth }) {
   const [isOpenedJsonLd, setIsOpenedJsonLd] = useState(false);
@@ -9,7 +10,19 @@ export function JsonLdContextBlock({ jsonldContext, depth }) {
       <AccordionItem className="mt-3">
         <AccordionHeader active={isOpenedJsonLd} onToggle={() => setIsOpenedJsonLd(!isOpenedJsonLd)}>
           JSON+LD Context
-          {jsonldContext ? null : (
+          {jsonldContext ? (
+            <Icon
+              icon="it-copy"
+              size="sm"
+              fill="currentColor"
+              className="ms-2 mb-1"
+              title="Copy to clipboard"
+              onClick={(evt) => {
+                copyToClipboard(JSON.stringify(jsonldContext, null, 2));
+                evt.stopPropagation();
+              }}
+            />
+          ) : (
             <Icon
               icon="it-warning-circle"
               size="sm"
