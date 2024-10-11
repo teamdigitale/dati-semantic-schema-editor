@@ -1,6 +1,7 @@
 import './models.scss';
 
 import { Dropdown, DropdownMenu, DropdownToggle, Icon, LinkList, LinkListItem } from 'design-react-kit';
+import { useConfiguration } from '../../configuration';
 import { useSchemaNavigation } from '../../overview/components/Navigation';
 import { compressAndBase64UrlSafe, copyToClipboard } from '../utils';
 import type { ModelCollapse as ModelCollapseComponent } from './model-collapse';
@@ -8,6 +9,7 @@ import type { ModelRoot as ModelRootComponent } from './model-root';
 import type { ModelsBreadcrumb as ModelsBreadcrumbComponent } from './models-breadcrumb';
 
 export function Models({ getComponent, specSelectors, getConfigs }) {
+  const { oasCheckerUrl, schemaEditorUrl } = useConfiguration();
   const { history, jsonldContextFullPath } = useSchemaNavigation();
   const currentHistoryItem = history[history.length - 1];
 
@@ -15,7 +17,7 @@ export function Models({ getComponent, specSelectors, getConfigs }) {
   const specPathBase = isOAS3 ? ['components', 'schemas'] : ['definitions'];
 
   const definitions = specSelectors.definitions();
-  const { defaultModelsExpandDepth, oasCheckerUrl, schemaEditorUrl, url } = getConfigs();
+  const { defaultModelsExpandDepth, url } = getConfigs();
   if (!definitions.size || defaultModelsExpandDepth < 0) {
     return null;
   }

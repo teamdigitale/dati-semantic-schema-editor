@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
-
-const BASE_URL = 'https://virtuoso-dev-external-service-ndc-dev.apps.cloudpub.testedev.istat.it/sparql';
+import { useConfiguration } from '../../configuration';
 
 interface SparqlQueryOptions {
   skip?: boolean;
 }
 
 export function useSparqlQuery(query: string, options?: SparqlQueryOptions) {
+  const { sparqlUrl } = useConfiguration();
   const [status, setStatus] = useState<'idle' | 'pending' | 'fulfilled' | 'error'>('idle');
   const [error, setError] = useState<string | undefined>(undefined);
   const [data, setData] = useState<any | undefined>(undefined);
@@ -14,7 +14,7 @@ export function useSparqlQuery(query: string, options?: SparqlQueryOptions) {
   const callback = useCallback(async (query: string) => {
     try {
       setStatus('pending');
-      const endpoint = `${BASE_URL}?format=json&query=${encodeURIComponent(query)}`;
+      const endpoint = `${sparqlUrl}?format=json&query=${encodeURIComponent(query)}`;
       const response = await fetch(endpoint, { cache: 'force-cache' });
       if (!response.ok) {
         throw new Error(response.statusText);
@@ -23,7 +23,8 @@ export function useSparqlQuery(query: string, options?: SparqlQueryOptions) {
       setData(data);
       setStatus('fulfilled');
     } catch (e) {
-      setError(`${e?.message || e || 'Unknown error'} contacting ${BASE_URL}`);
+      console.error(e);
+      setError(e?.message || e || 'Unknown error');
       setStatus('error');
     }
   }, []);

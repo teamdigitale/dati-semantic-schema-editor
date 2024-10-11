@@ -10,16 +10,16 @@ import {
   JSONSchema5Plugin,
   LayoutPlugin,
   OverviewPlugin,
+  ConfigurationPlugin,
+  ConfigurationProperties,
 } from '../../plugins';
 
-interface Props {
+type Props = ConfigurationProperties & {
   spec?: string | object;
   url?: string;
-  oasCheckerUrl?: string;
-  schemaEditorUrl?: string;
-}
+};
 
-export function SchemaEditor({ spec, url, oasCheckerUrl, schemaEditorUrl }: Props) {
+export function SchemaEditor({ spec, url, sparqlUrl, oasCheckerUrl, schemaEditorUrl }: Props) {
   const instance = useRef<typeof SwaggerUI>(null);
   const prevSpec = usePrevious(spec);
   const prevUrl = usePrevious(url);
@@ -41,6 +41,7 @@ export function SchemaEditor({ spec, url, oasCheckerUrl, schemaEditorUrl }: Prop
           JSONSchema5Plugin,
           OverviewPlugin,
           LayoutPlugin,
+          ConfigurationPlugin,
           SwaggerUI.plugins.SafeRender({
             fullOverride: true,
             componentList: ['ItaliaSchemaEditorLayout', 'Topbar', 'EditorContainer'],
@@ -51,6 +52,7 @@ export function SchemaEditor({ spec, url, oasCheckerUrl, schemaEditorUrl }: Prop
         oas3GeneratorUrl: 'https://generator3.swagger.io/openapi.json',
         swagger2ConverterUrl: 'https://converter.swagger.io/api/convert',
         jsonldPlaygroundUrl: 'https://json-ld.org/playground/#startTab=tab-expand&json-ld=',
+        sparqlUrl: sparqlUrl ?? 'https://virtuoso-dev-external-service-ndc-dev.apps.cloudpub.testedev.istat.it/sparql',
         ...(oasCheckerUrl ? { oasCheckerUrl } : {}),
         ...(schemaEditorUrl ? { schemaEditorUrl } : {}),
       });
