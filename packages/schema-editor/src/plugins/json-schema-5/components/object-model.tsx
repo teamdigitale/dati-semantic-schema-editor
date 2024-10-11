@@ -55,6 +55,8 @@ const ObjectModel = ({
 
   const Model = getComponent('Model');
   const ModelCollapse: typeof ModelCollapseComponent = getComponent('ModelCollapse', true);
+  const JumpToPath = getComponent('JumpToPath', true);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -140,6 +142,7 @@ const ObjectModel = ({
                       );
                     })
                     .map(([key, value]) => {
+                      const childSpecPath = specPath.push('properties', key);
                       const isDeprecated = isOAS3 && value.get && value.get('deprecated');
                       const isRequired = List.isList(requiredProperties) && requiredProperties.contains(key);
                       const classNames = ['property-row'];
@@ -152,8 +155,8 @@ const ObjectModel = ({
 
                       return (
                         <tr key={key} className={classNames.join(' ')}>
-                          <td>
-                            {key}
+                          <td className="break-word">
+                            <JumpToPath specPath={childSpecPath} size="xs" /> {key}
                             {isRequired && <span className="star">*</span>}
                           </td>
                           <td>
@@ -163,7 +166,7 @@ const ObjectModel = ({
                               name={key}
                               required={isRequired}
                               getComponent={getComponent}
-                              specPath={specPath.push('properties', key)}
+                              specPath={childSpecPath}
                               getConfigs={getConfigs}
                               schema={value}
                               depth={depth + 1}

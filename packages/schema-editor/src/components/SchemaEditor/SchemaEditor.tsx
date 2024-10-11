@@ -4,14 +4,15 @@ import './SchemaEditor.scss';
 import { useEffect, useRef } from 'react';
 import SwaggerUI from 'swagger-ui';
 import {
+  ConfigurationPlugin,
+  ConfigurationProperties,
   EditorAutosuggestCustomPlugin,
   EditorThemePlugin,
   ErrorsPlugin,
   JSONSchema5Plugin,
+  JumpToPathOverridePlugin,
   LayoutPlugin,
   OverviewPlugin,
-  ConfigurationPlugin,
-  ConfigurationProperties,
 } from '../../plugins';
 
 type Props = ConfigurationProperties & {
@@ -39,6 +40,7 @@ export function SchemaEditor({ spec, url, sparqlUrl, oasCheckerUrl, schemaEditor
           EditorAutosuggestCustomPlugin,
           ErrorsPlugin,
           JSONSchema5Plugin,
+          JumpToPathOverridePlugin,
           OverviewPlugin,
           LayoutPlugin,
           ConfigurationPlugin,

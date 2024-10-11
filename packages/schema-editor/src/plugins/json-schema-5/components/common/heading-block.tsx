@@ -15,8 +15,9 @@ export function HeadingBlock({ title, specPath, jsonldType, getComponent, childr
   return (
     <div className="d-flex">
       <h4>
-        <JumpToPath specPath={specPath} content={<Icon icon="it-pencil" size="sm" title="Go to definition" />} />
-        {title} <RDFOntologicalClassBlock classUri={jsonldType} />
+        <JumpToPath specPath={specPath} size="sm" />
+        {title}
+        <RDFOntologicalClassBlock classUri={jsonldType} />
       </h4>
       <div className="d-flex align-items-center ms-auto">{children}</div>
     </div>
