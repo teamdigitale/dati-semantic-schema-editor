@@ -32,6 +32,16 @@ describe('useSearch', () => {
     });
   });
 
+  it('should not overwrite a null parent context', () => {
+    const result = updateJsonldContext(schema.get('DontOverrideNullParentContext'));
+    expect(result.toJS()).toEqual({
+      '@context': {
+        '@vocab': 'https://w3id.org/italia/onto/CPV/',
+        other: null,
+      },
+    });
+  });
+
   it('should resolve a nested context', () => {
     const result = updateJsonldContext(schema.get('A'));
     expect(result.toJS()).toEqual({
@@ -217,6 +227,24 @@ function getSchema() {
           },
           properties: {
             province: {
+              type: 'string',
+            },
+          },
+        },
+      },
+    },
+    DontOverrideNullParentContext: {
+      'x-jsonld-context': {
+        '@vocab': 'https://w3id.org/italia/onto/CPV/',
+        other: null,
+      },
+      properties: {
+        other: {
+          'x-jsonld-context': {
+            '@vocab': 'https://w3id.org/italia/onto/CPV/',
+          },
+          properties: {
+            givenName: {
               type: 'string',
             },
           },

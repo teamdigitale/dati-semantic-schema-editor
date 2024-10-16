@@ -26,8 +26,12 @@ export const updateJsonldContext = (schema, jsonldContext = OrderedMap()) => {
                 subKeyContext = c0.get(subKey);
               }
             }
-            console.log('subKeyContext: ', subKeyContext.toJS());
-            if (subKeyContext.has('@context')) {
+            console.log('subKeyContext: ', subKeyContext?.toJS());
+            if (subKeyContext === null) {
+              console.log(`Don't overwrite an explicit parent's context`);
+              return;
+            }
+            if (subKeyContext?.has('@context')) {
               console.log(`Don't overwrite an explicit parent's context`);
               return;
             }
