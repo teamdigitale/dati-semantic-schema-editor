@@ -5,6 +5,9 @@ import 'typeface-titillium-web';
 
 import {
   Collapse,
+  Dropdown,
+  DropdownMenu,
+  DropdownToggle,
   Header,
   HeaderBrand,
   HeaderContent,
@@ -13,6 +16,8 @@ import {
   HeaderToggler,
   Headers,
   Icon,
+  LinkList,
+  LinkListItem,
   Nav,
   NavItem,
 } from 'design-react-kit';
@@ -21,6 +26,53 @@ import { Home } from './components/home/Home';
 import { Standalone } from './components/standalone/Standalone';
 import { SwaggerUIPluginsCollection } from './components/swaggerui-plugins-collection/SwaggerUIPluginsCollection';
 
+const SamplesMenu = () => {
+  const items = [
+    {
+      text: 'Blank Template',
+      url: '/standalone?url=/schemas/blank-template.oas3.yaml',
+    },
+    {
+      text: 'Tutorial',
+      url: '/standalone?url=/schemas/tutorial.oas3.yaml',
+    },
+    {
+      text: 'Example Schema',
+      url: '/standalone?url=/schemas/example-schema.oas3.yaml',
+    },
+    {
+      text: 'Test Schema Base',
+      url: '/standalone?url=/schemas/test-schema-base.oas3.yaml',
+    },
+    {
+      text: 'Test Schema Object',
+      url: '/standalone?url=/schemas/test-schema-object.oas3.yaml',
+    },
+    {
+      text: 'Test Schema Expanded',
+      url: '/standalone?url=/schemas/test-schema-expanded.oas3.yaml',
+    },
+    {
+      text: 'Test Context',
+      url: '/standalone?url=/schemas/test-context.oas3.yaml',
+    },
+  ];
+  return (
+    <Dropdown>
+      <DropdownToggle color="primary">Standalone Samples</DropdownToggle>
+
+      <DropdownMenu>
+        <LinkList>
+          {items.map(({ text, url }, index) => (
+            <LinkListItem key={index} inDropdown href={url}>
+              <span>{text}</span>
+            </LinkListItem>
+          ))}
+        </LinkList>
+      </DropdownMenu>
+    </Dropdown>
+  );
+};
 function App() {
   return (
     <BrowserRouter basename="/">
@@ -44,7 +96,6 @@ function App() {
             </HeaderRightZone>
           </HeaderContent>
         </Header>
-
         <Header type="navbar">
           <HeaderContent expand="lg" megamenu>
             <HeaderToggler aria-controls="nav1" aria-expanded="false" aria-label="Toggle navigation" onClick={() => {}}>
@@ -64,14 +115,7 @@ function App() {
                     </Link>
                   </NavItem>
                   <NavItem>
-                    <Link className="nav-link" to="/standalone?url=/schemas/blank-template.yaml">
-                      Standalone Template
-                    </Link>
-                  </NavItem>
-                  <NavItem>
-                    <Link className="nav-link" to="/standalone?url=/schemas/test-schema.oas3.yaml">
-                      Standalone Test
-                    </Link>
+                    <SamplesMenu />
                   </NavItem>
                   <NavItem>
                     <Link className="nav-link" to="/swaggerui">

@@ -1,0 +1,67 @@
+#
+# This is a blank template for a schema collection.
+#
+openapi: 3.0.3
+info:
+  title: Schema Template
+  version: 202108.01.00
+  x-summary: A schema collection based on the CPV ontology.
+  license:
+    name: BSD3
+    url: https://opensource.org/licenses/BSD-3-Clause
+  termsOfService: https://opensource.org/licenses/BSD-3-Clause
+  contact:
+    name: Roberto Polli
+    email: robipolli@gmail.com
+    url: http://spcdata.digitpa.gov.it/Amministrazione/agid
+  description: |-
+    ## Welcome!
+    These schemas,
+    annotated with x-jsonld-context and x-jsonld-type,
+    use the Europa SPARQL endpoint: https://data.europa.eu/sparql.
+components:
+  schemas:
+    Country:
+      description: |-
+        A test entry for https://data.europa.eu/sparql
+      x-jsonld-type: "http://purl.org/dc/terms/Location"
+      x-jsonld-context:
+        "@base": http://publications.europa.eu/resource/authority/country
+        id: "@id"
+      properties:
+        id:
+          type: string
+      example:
+        id: ITA
+      x-rdf: |-
+        @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+        @prefix authority: <http://publications.europa.eu/resource/authority/> .
+        @prefix terms: <http://purl.org/dc/terms/> .
+
+        authority:ITA rdf:type terms:Location .
+
+    Person:
+      x-jsonld-type: 'https://w3id.org/italia/onto/CPV/Person'
+      x-jsonld-context:
+        '@vocab': 'https://w3id.org/italia/onto/CPV/'
+      type: object
+      properties:
+        givenName:
+          type: string
+          description: The given name of the person.
+          example: John
+        familyName:
+          type: string
+          description: The family name of the person.
+          example: Doe
+      example:
+        givenName: John
+        familyName: Doe
+
+#
+# If this is a schema-only file, you can leave the following sections empty.
+# Do not remove them, as they are required by the OpenAPI 3.0 specification.
+#
+paths: {}
+servers: []
+tags: []
