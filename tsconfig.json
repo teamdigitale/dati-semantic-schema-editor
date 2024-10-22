@@ -17,6 +17,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "declaration": true,
+    "declarationMap": true,
     "jsx": "react-jsx",
     "typeRoots": [
       "./dist/index.d.ts"
