@@ -1,0 +1,91 @@
+#
+# Schema to test the editor.
+#
+openapi: 3.0.3
+components:
+  schemas:
+    Address:
+      type: object
+      x-jsonld-type: https://w3id.org/italia/onto/CLV/Address
+      x-jsonld-context:
+        '@vocab': https://w3id.org/italia/onto/CLV/
+      properties:
+        hasCity:
+          type: string
+    Person:
+      type: object
+      x-jsonld-type: https://w3id.org/italia/onto/CPV/Person
+      x-jsonld-context:
+        '@vocab': https://w3id.org/italia/onto/CPV/
+      properties:
+        hasBirthPlace:
+          $ref: '#/components/schemas/Address'
+    #
+    # Semantic information for primitive types in JSON-LD
+    #   are defined in the parent object.
+    #
+    Primitive:
+      type: string
+      description: >-
+        JSON-LD does not support to attach a `@context` to a primitive type,
+        and the x-jsonld-type would be something like `rdfs:Literal`, that
+        bears no semantic information.
+    Array:
+      type: array
+      description: >-
+        JSON-LD does not support to attach a `@context` to a primitive type,
+        and the x-jsonld-type would be something like `rdfs:Literal`, that
+        bears no semantic information.
+      items:
+        type: string
+    ListPrimitive:
+      x-jsonld-context:
+        '@vocab': https://w3id.org/italia/onto/CPV/
+      type: object
+      properties:
+        hasLevelOfEducation:
+          description: >-
+            Array properties show the rdfs:comment too.
+          type: array
+          items:
+            type: string
+      example:
+        hasLevelOfEducation: [NED, L]
+    ListObject:
+      x-jsonld-context:
+        '@vocab': https://w3id.org/italia/onto/CLV/
+      type: object
+      properties:
+        hasAddress:
+          type: array
+          minItems: 0
+          maxItems: 2
+          items:
+            $ref: '#/components/schemas/Person'
+      example:
+        hasAddress:
+          - hasCity: Rome
+          - hasCity: Milan
+info:
+  title: Test Basic Schema
+  version: 202409.01.00
+  x-summary: Test basic schemas.
+  license:
+    name: BSD3
+    url: https://opensource.org/licenses/BSD-3-Clause
+  termsOfService: https://opensource.org/licenses/BSD-3-Clause
+  contact:
+    name: Roberto Polli
+    email: roberto.polli@par-tec.it
+    url: https://www.par-tec.it
+  description: |-
+
+    ## Welcome!
+    This schema is used to test the editor functionalities.
+#
+# If this is a schema-only file, you can leave the following sections empty.
+# Do not remove them, as they are required by the OpenAPI 3.0 specification.
+#
+paths: {}
+servers: []
+tags: []

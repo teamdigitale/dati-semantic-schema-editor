@@ -1,0 +1,549 @@
+openapi: 3.0.3
+info:
+  title: Schema del Servizio di Notifica Generalità
+  description: |-
+    Lo schema dati del servizio che viene invocato per ottenere le generalità, l’esistenza in vita, la residenza, l’eventuale domicilio digitale presenti in ANPR per un cittadino, alla data di riferimento della richiesta
+    Pattern Model applicati:
+    - [AUDIT_REST_02 ] Inoltro dati tracciati nel dominio del Fruitore REST con correlazione
+    - [BLOCK_REST] Blocking REST
+    - [INTEGRITY_REST_02] Integrità del payload messaggio REST in PDND
+  version: '1.0.0'
+  contact:
+    name: Segreteria Tecnica Istat - Progetto PNRR National Data Catalog
+    email: ndc-segr-tec@istat.it
+  termsOfService: 'http://swagger.io/terms/'
+  x-api-id: C001
+  x-summary: Schema del Servizio di Notifica Generalità
+paths: {}
+servers: []
+tags: []
+components:
+  schemas:
+    ANPRId:
+      title: codice persona
+      description: |
+        Codice identificativo univoco attribuito dall'ANPR a ciascun cittadino per garantire la circolarità dei dati anagrafici e l'interoperabilità con le altre banche dati delle pubbliche amministrazioni e dei gestori di servizi pubblici. L’ID ANPR è attribuito ad ogni individuo all’atto della sua iscrizione in anagrafe e conseguente registrazione in ANPR [art. 62, c.3, ultimo periodo, CAD; DM Ministero Interno 18.4.2023; artt. 7 e 17 DPR 223/1989].
+        Il codice si contraddistingue per le seguenti caratteristiche:
+        a. è alfanumerico con lunghezza di 9 caratteri compreso il check digit;
+        b. è attribuito e associato univocamente ad ogni individuo già registrato in ANPR ovvero ad ogni individuo in fase di registrazione nell’ANPR;
+        c. può essere generato soltanto dal sistema ANPR;
+        d. non è ricavato dai dati anagrafici della persona a cui è attribuito;
+        e. non contiene elementi identificativi dei dati anagrafici della persona a cui è attribuito;
+        f. non può essere riassegnato;
+        g. garantisce l’associazione immutabile al soggetto cui è attribuito;
+        h. non fornisce evidenza di alcuna sequenzialità, tantomeno temporale;
+        i. è dotato di check digit (il check digit è l’ultimo carattere dell’ID ANPR calcolato tramite uno specifico algoritmo per consentire di verificare la validità dei numeri che lo precedono);
+        j. è possibile la ricostruzione del check digit’ID ANPR è attribuito ad ogni individuo all’atto della sua iscrizione in anagrafe e conseguente registrazione in ANPR.
+      type: string
+      maxLength: 9
+      minLength: 9
+      pattern: >-
+        [A-Z0-9]{9}
+    NomeProprio:
+      title: nome proprio
+      description: |
+        Il nome di una persona.
+      type: string
+    Cognome:
+      title: cognome
+      description: |
+        Il cognome di una persona.
+      type: string
+    Sesso:
+      title: ha sesso
+      description: |
+        La relazione che lega una persona al suo sesso
+      type: string
+      enum:
+        - M
+        - F
+    TaxCode:
+      title: codice fiscale
+      description: |
+        Il codice fiscale di una persona.
+      type: string
+      maxLength: 16
+      minLength: 11
+      pattern: >-
+        ^(?:(?:[B-DF-HJ-NP-TV-Z]|[AEIOU])[AEIOU][AEIOUX]|[B-DF-HJ-NP-TV-Z]{2}[A-Z]){2}[\dLMNP-V]{2}(?:[A-EHLMPR-T](?:[04LQ][1-9MNP-V]|[1256LMRS][\dLMNP-V])|[DHPS][37PT][0L]|[ACELMRT][37PT][01LM])(?:[A-MZ][1-9MNP-V][\dLMNP-V]{2}|[A-M][0L](?:[1-9MNP-V][\dLMNP-V]|[0L][1-9MNP-V]))[A-Z]$
+      example: MRORSS77T05E472W
+    DataDiNascita:
+      title: data di nascita
+      description: |
+        La data di nascita della persona naturale
+      type: string
+      format: date
+      pattern: ([0-9]{4})-([0-1][0-9])-([0-3][0-9])
+    Richiesta:
+      type: object
+      required:
+        - idOperazioneClient
+        - criteriRicerca
+        - datiRichiesta
+      properties:
+        idOperazioneClient:
+          type: string
+          description: Identificativo univoco attribuito all'operazione dall'ente. Deve essere numerico e crescente. Se esiste in ANPR, l'ente riceve come esito la risposta in precedenza fornita da ANPR con lo stesso ID; se non esiste ed e' inferiore all'ultimo inviato, l'elaborazione termina con errore.
+        criteriRicerca:
+          $ref: '#/components/schemas/PersonaAnagraficamenteResidente'
+        datiRichiesta:
+          $ref: '#/components/schemas/TipoDatiRichiesta'
+    LuogoDiNascita:
+      title: luogo di nascita
+      description: |
+        Il luogo di nascita di una persona.
+      type: string
+      pattern: >-
+        [A-Z0-9]{6}
+
+    PersonaAnagraficamenteResidente:
+      title: Persona anagraficamente residente
+      description: |
+        Persona fisica avente dimora abituale in un determinato Comune come risultante nell'anagrafe della popolazione residente (artt. 3 e 7 DPR n. 223/1989; art. 43 cc).
+      type: object
+      x-jsonld-type: 'RPO:RegisteredResidentPerson'
+      x-jsonld-context:
+        '@vocab': 'https://w3id.org/italia/onto/CPV/'
+        RPO: https://w3id.org/italia/onto/RPO/
+        SM: https://w3id.org/italia/onto/SM/
+        codiceFiscale: 'taxCode'
+        idANPR: '@id'
+        '@base': 'urn:anpr:'
+        nomeProprio: 'givenName'
+        cognome: 'familyName'
+        haSesso:
+          '@id': hasSex
+          '@type': '@id'
+          '@context':
+            '@base': 'https://w3id.org/italia/controlled-vocabulary/classifications-for-people/sex/'
+        dataDiNascita: dateOfBirth
+        luogoDiNascita:
+          '@id': hasBirthPlace
+          '@type': '@id'
+          '@context':
+            '@base': 'https://w3id.org/italia/controlled-vocabulary/territorial-classifications/cities/'
+        haResidenzaAnagrafica: 'RPO:hasRegisteredResidence'
+        haPuntoDiContattoOnline: 'SM:hasOnlineContactPoint'
+      properties:
+        codiceFiscale:
+          $ref: '#/components/schemas/TaxCode'
+        idANPR:
+          $ref: '#/components/schemas/ANPRId'
+        nomeProprio:
+          $ref: '#/components/schemas/NomeProprio'
+        cognome:
+          $ref: '#/components/schemas/Cognome'
+        haSesso:
+          $ref: '#/components/schemas/Sesso'
+        dataDiNascita:
+          $ref: '#/components/schemas/DataDiNascita'
+        luogoDiNascita:
+          $ref: '#/components/schemas/LuogoDiNascita'
+        haResidenzaAnagrafica:
+          $ref: '#/components/schemas/ResidenzaAnagrafica'
+        haPuntoDiContattoOnline:
+          $ref: '#/components/schemas/PuntoDiContattoOnline'
+      example:
+        nomeProprio: Mario
+        cognome: Rossi
+        dataDiNascita: '1977-07-01'
+        codiceFiscale: RSSMRA75L01H501A
+        luogoDiNascita: '001001'
+        haSesso: M
+        idANPR: A8D40R2PL
+        haPuntoDiContattoOnline:
+          haEmail:
+            email: maito@pec.example.com
+            tipo: PEC
+    PersonaInVita:
+      title: Persona in Vita
+      description: |
+        Una persona in vita
+      type: object
+      x-jsonld-type: 'Alive'
+      x-jsonld-context:
+        '@vocab': 'https://w3id.org/italia/onto/CPV/'
+        RPO: https://w3id.org/italia/onto/RPO/
+        SM: https://w3id.org/italia/onto/SM/
+        codiceFiscale: 'taxCode'
+        idANPR: 'personID'
+        nomeProprio: 'givenName'
+        cognome: 'familyName'
+        haSesso:
+          '@id': hasSex
+          '@type': '@id'
+          '@context':
+            '@base': 'https://w3id.org/italia/controlled-vocabulary/classifications-for-people/sex/'
+        dataDiNascita: dateOfBirth
+        luogoDiNascita:
+          '@id': hasBirthPlace
+          '@type': '@id'
+          '@context':
+            '@base': 'https://w3id.org/italia/controlled-vocabulary/territorial-classifications/cities'
+        haPuntoDiContattoOnline: 'SM:hasOnlineContactPoint'
+      properties:
+        codiceFiscale:
+          $ref: '#/components/schemas/TaxCode'
+        idANPR:
+          $ref: '#/components/schemas/ANPRId'
+        nomeProprio:
+          $ref: '#/components/schemas/NomeProprio'
+        cognome:
+          $ref: '#/components/schemas/Cognome'
+        haSesso:
+          $ref: '#/components/schemas/Sesso'
+        dataDiNascita:
+          $ref: '#/components/schemas/DataDiNascita'
+        luogoDiNascita:
+          $ref: '#/components/schemas/LuogoDiNascita'
+        haPuntoDiContattoOnline:
+          $ref: '#/components/schemas/PuntoDiContattoOnline'
+
+    PuntoDiContattoOnline:
+      $ref: https://gist.githubusercontent.com/ioggstream/865c550a68e686b2854324efc0ae7dd5/raw/8ad5710c2297d76dafb440a944dfc0b352150e7d/prova.yaml#/components/schemas/PuntoDiContattoOnline
+    Email:
+      $ref: https://gist.githubusercontent.com/ioggstream/865c550a68e686b2854324efc0ae7dd5/raw/8ad5710c2297d76dafb440a944dfc0b352150e7d/prova.yaml#/components/schemas/Email
+
+    ResidenzaAnagrafica:
+      title: Residenza anagrafica
+      description: |
+        Luogo in cui una persona ha fissato la dimora abituale (art. 43 c.c.) come risultante in anagrafe.
+      type: object
+      x-jsonld-type: 'https://w3id.org/italia/onto/RPO/RegisteredResidence'
+      x-jsonld-context:
+        '@vocab': 'https://w3id.org/italia/onto/RPO/'
+        residenzaInIndirizzo:
+          '@id': residenceInAddress
+        residenzaInComune:
+          '@id': registeredResidenceInCity
+          '@type': '@id'
+          '@context':
+            '@base': 'https://w3id.org/italia/controlled-vocabulary/territorial-classifications/cities'
+      properties:
+        residenzaInIndirizzo:
+          $ref: '#/components/schemas/Indirizzo'
+        residenzaInComune:
+          type: string
+          pattern: >-
+            [A-Z0-9]{6}
+      example:
+        residenzaInIndirizzo:
+          haComune: '058091'
+          haNumeroCivico:
+            valoreCivico: 20
+          haAccessoInterno:
+            scala: D
+            interno: 8
+        residenzaInComune: '058091'
+    Indirizzo:
+      title: Indirizzo
+      description: |
+        Questa classe rappresenta un oggetto spaziale indirizzabile o una rappresentazione indirizzabile. In particolare, nel contesto italiano, essa rappresenta l'accesso esterno da un'area di circolazione a una unità ecografica semplice (abitazioni, uffici, locali in cui sono ubicate attività economiche, ecc.).
+      type: object
+      x-jsonld-type: 'https://w3id.org/italia/onto/CLV/Address'
+      x-jsonld-context:
+        '@vocab': 'https://w3id.org/italia/onto/CLV/'
+        haComune:
+          '@id': hasCity
+          '@type': '@id'
+          '@context':
+            '@base': 'https://w3id.org/italia/controlled-vocabulary/territorial-classifications/cities'
+        haNumeroCivico:
+          '@id': hasNumber
+        haOdonimo:
+          '@id': hasStreetToponym
+        haSezioneCensimento:
+          '@id': hasCensusSection
+        haAccessoInterno:
+          '@id': hasInternalAccess
+        indirizzoCompleto: fullAddress
+        cap: postCode
+      properties:
+        haComune:
+          title: ha comune
+          description: |
+            Questa proprietà è usata per collegare l'indirizzo al comune dello stesso. Esempio di comune: Roma, Bologna, Palermo, Milano, ecc.
+          type: string
+          pattern: >-
+            [A-Z0-9]{6}
+        haNumeroCivico:
+          $ref: '#/components/schemas/NumeroCivico'
+        haAccessoInterno:
+          $ref: '#/components/schemas/AccessoInterno'
+        haOdonimo:
+          $ref: '#/components/schemas/Odonimo'
+        haSezioneCensimento:
+          $ref: '#/components/schemas/SezioneDiCensimento'
+        indirizzoCompleto:
+          title: indirizzo completo
+          description: |
+            L'indirizzo completo scritto come una stringa. L'uso di questa proprietà aiuta a comprendere l'indirizzo completo evitando possibili errori derivanti dal frazionamento dello stesso nelle sue rispettive componenti.
+          type: string
+        cap:
+          title: Codice Avviamento Postale
+          description: |
+            Questa proprietà rappresenta il CAP in un indirizzo.
+          type: string
+          maxLength: 6
+      example:
+        haComune: '058091'
+        haNumeroCivico:
+          valoreCivico: 20
+        haAccessoInterno:
+          scala: D
+          interno: 8
+
+    AccessoInterno:
+      title: Accesso Interno
+      description: |
+        Questa classe rappresenta i numeri interni, relativi alll'accesso interno associato all'accesso esterno. Gli accessi interni sono quelli che da spazi privati o da scale immettono direttamente alle unità ecografiche semplici ossia abitazioni, esercizi commerciali, uffici e simili.
+      type: object
+      x-jsonld-type: 'https://w3id.org/italia/onto/CLV/InternalAccess'
+      x-jsonld-context:
+        '@vocab': 'https://w3id.org/italia/onto/CLV/'
+        scala: staircase
+        interno: flatNumber
+        edificio: building
+        esponente: exponent
+        piano: floor
+        cortile: yard
+      properties:
+        scala:
+          title: scala
+          description: |
+            Parte letterale dell'accesso interno (numero interno) assegnata alla scala, ove presente.
+          type: string
+        interno:
+          title: interno
+          description: |
+            Valore del numero interno assegnato all'accesso interno secondo la successione naturale dei numeri.
+          type: integer
+          format: int64
+        edificio:
+          title: edificio
+          description: |
+            Numero arabo assegnato all'edificio cui si accede alle scale o agli accessi interni, ove presente. Questa proprietà potrebbe essere utilizzata anche per identificare un numero di padiglione.
+          type: string
+        esponente:
+          title: esponente
+          description: |
+            Parte letterale del numero civico, ove presente o eventuale esponente attribuito al numero interno. In quest'ultimo caso, l'utilizzo va preventivamente concordato con l'Istat
+          type: string
+        piano:
+          title: piano
+          description: |
+            Numero del piano su cui è ubicato l'accesso interno, ove presente.
+          type: string
+        cortile:
+          title: cortile
+          description: |
+            Numero romano assegnato a ciascun spazio privato (cortile, corte e simili) cui si accede agli edifici o agli accessi interni, ove presente.
+          type: string
+
+    A:
+      type: object
+      x-jsonld-type: CPV:Person
+      x-jsonld-context:
+        '@vocab': https://w3id.org/italia/onto/CLV/
+        CPV: https://w3id.org/italia/onto/CPV/
+        hasCensusSection: hasCensusSection
+      properties:
+        hasCensusSection:
+          $ref: '#/components/schemas/SezioneDiCensimento'
+      example:
+        hasCensusSection:
+          id: '00100112345'
+    SezioneDiCensimento:
+      title: Sezione di Censimento
+      description: |
+        Porzione di territorio su cui sono effettuate le rilevazioni dell'Istat in occasione dei censimenti. La popolazione media è di circa 170 individui.
+      type: object
+      x-jsonld-type: 'https://w3id.org/italia/onto/CLV/CensusSection'
+      x-jsonld-context:
+        id: '@id'
+        '@base': 'https://identificativo-censimenti.istat.it#'
+      properties:
+        id:
+          type: string
+          description: Identificativo della sezione di censimento
+      example:
+        id: '00100212345'
+
+    A2:
+      type: object
+      x-jsonld-type: CPV:Person
+      x-jsonld-context:
+        '@vocab': https://w3id.org/italia/onto/CLV/
+        CPV: https://w3id.org/italia/onto/CPV/
+        hasCensusSection:
+          '@id': hasCensusSection
+          '@type': '@id'
+          '@context':
+            '@base': 'https://identificativo-censimenti.istat.it#'
+      properties:
+        hasCensusSection:
+          $ref: '#/components/schemas/SezioneDiCensimentoString'
+      example:
+        hasCensusSection: '00100112345'
+    SezioneDiCensimentoString:
+      title: Sezione di Censimento
+      x-jsonld-type: 'xsd:string'
+      description: |
+        Porzione di territorio su cui sono effettuate le rilevazioni dell'Istat in occasione dei censimenti. La popolazione media è di circa 170 individui.
+
+        _:b0 ... "00100212345"^^<https://w3id.org/italia/onto/CLV/CensusSection>
+      type: string
+      pattern: ^[0-9]{11}$
+      example: '00100212345'
+
+    Odonimo:
+      title: Toponimo Stradale
+      description: |
+        Questa classe rappresenta il toponimo stradale. Esso consiste nel nome dalla strada o denominazione urbanistica ufficiale - DUF (rappresentato attraverso la proprietà nome della strada) e della denominazione urbanistica generica (DUG) o qualitficatore del toponimo (e.g., via, viale, piazza, ecc.). La parte DUF può comprendere l'eventuale complemento alla specie (preposizioni non strettamente legate alla denominazione del toponimo come dei, di, delle, la, il, eccetera) e gli eventual complementi alla denominazione (esempio i titoli onorifici per i nomi propri) Esempi: 1) Via San Donato: Via (DUG o qualificatore del toponimo), San Donato (DUF - o nome della strada) 2) Via dei tulipani: Via (DUG), dei Tulipani (DUF) 3) Via A GENERALE CARLO ALBERTO DALLA CHIESA: Via (DUG) Generale Carlo Alberto Dalla Chiesa (DUF) Nel complesso questa componente spaziale dell'indirizzo può essere vista come il nome dell'area di circolazione ovvero il nome dell'area che individua ogni spazio del suolo pubblico, o aperto al pubblico, destinato alla viabilità. DUF e DUG sono due proprietà obbligatorie per la classe ed è possibile specificare un valore delle stesse valido per ciascuna lingua. L'odonimo infatti può essere registrato in lingue differenti, secondo quanto previsto dalle norme in materia di bilinguismo e sull'uso delle lingue delle minoranze linguistiche riconosciute.
+      type: object
+      x-jsonld-type: 'https://w3id.org/italia/onto/CLV/StreetToponym'
+      x-jsonld-context:
+        '@vocab': 'https://w3id.org/italia/onto/CLV/'
+        duf: officialStreetName
+        dug: toponymQualifier
+      properties:
+        duf:
+          title: DUF (Denominazione Urbanistica uFficiale) nome della strada
+          description: |
+            Proprietà che identifica la parte di toponimo stradale chiamata DUF - Denominazione Urbanistica uFficiale
+          type: string
+        dug:
+          title: denominazione urbanistica generica (DUG)
+          description: |
+            Questa proprietà è utilizzata per specificare il DUG (Denominazione Urbanistica Generica) o qualificatore di toponimo (e.g., via, vicolo, viale, piazza, ecc.) dell'odonimo/toponimo
+          type: string
+    NumeroCivico:
+      title: Numero Civico
+      description: |
+        Questa classe rappresenta il numero civico dell'indirizzo che individua l' ACCESSO ESTERNO, cioè quello che dall'area di circolazione immette, direttamente o indirettamente, alle unità ecografiche semplici ossia abitazioni, esercizi commerciali, uffici e simili.
+      type: object
+      x-jsonld-type: 'https://w3id.org/italia/onto/CLV/CivicNumbering'
+      x-jsonld-context:
+        '@vocab': 'https://w3id.org/italia/onto/CLV/'
+        valoreCivico: streetNumber
+        esponente: exponent
+        valoreMetrico: metric
+        specificita: peculiarity
+      properties:
+        valoreCivico:
+          title: valore civico
+          description: |
+            Valore del numero civico assegnato all'accesso esterno secondo la successione naturale dei numeri.
+          type: integer
+          format: int64
+        esponente:
+          title: esponente
+          description: |
+            Parte letterale del numero civico, ove presente o eventuale esponente attribuito al numero interno. In quest'ultimo caso, l'utilizzo va preventivamente concordato con l'Istat
+          type: string
+        valoreMetrico:
+          title: valore metrico
+          description: |
+            Valore del numero civico assegnato all'accesso esterno espresso in metri, utilizzato in caso di adozione del sistema metrico anziché della successione naturale dei numeri.
+          type: string
+        specificita:
+          title: specificità
+          description: |
+            Valore utilizzato in presenza di uno specifico metodo di classificazione della numerazione civica, validata dall'Istat (es. ROSSO e NERO); Potrebbe forse essere utilizzato anche per indicare A, B , bis che si riferiscono ai numeri civici di accesso esterno.
+          type: string
+    CertificatoAnagrafico:
+      title: Certificato anagrafico
+      description: |
+        Certificato rilasciato dal Ministero dell'Interno in cui si attesta quanto risulta in anagrafe.
+      type: object
+      x-jsonld-type: 'https://w3id.org/italia/onto/ACO/RegistrationCertificate'
+      x-jsonld-context:
+        '@vocab': 'https://w3id.org/italia/onto/ACO/'
+        protocolloANPR: ANPRProtocol
+      properties:
+        protocolloANPR:
+          title: protocollo ANPR
+          description: |
+            Numero progressivo, unico e obbligatorio, che viene assegnato a ciascun documento registrato sul registro di protocollo, nel quale si classificano e annotano giornalmente i varî documenti e la corrispondenza ufficiale in partenza e in arrivo presso l'Anagrafe nazionale della popolazione residente.
+          type: string
+    TipoDatiRichiesta:
+      type: object
+      required:
+        - dataRiferimentoRichiesta
+        - casoUso
+        - motivoRichiesta
+      properties:
+        dataRiferimentoRichiesta:
+          type: string
+          description: Data cui deve essere riferita la versione della scheda anagrafica
+          format: date
+          example: '2021-11-15'
+        motivoRichiesta:
+          type: string
+          description: campo per l’indicazione obbligatoria del numero di riferimento della pratica per quale è effettuata l’interrogazione (es. numero di protocollo, fascicolo, verbale, etc.)
+        casoUso:
+          type: string
+          description: caso d'uso (es. C001)
+    RispostaOK:
+      type: object
+      properties:
+        idOperazioneANPR:
+          type: string
+        listaSoggetti:
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonaAnagraficamenteResidente'
+        listaAnomalie:
+          type: array
+          items:
+            $ref: '#/components/schemas/TipoErroriAnomalia'
+    RispostaKO:
+      type: object
+      properties:
+        idOperazioneANPR:
+          type: string
+        listaErrori:
+          type: array
+          items:
+            $ref: '#/components/schemas/TipoErroriAnomalia'
+    TipoErroriAnomalia:
+      type: object
+      properties:
+        codiceErroreAnomalia:
+          type: string
+        tipoErroreAnomalia:
+          type: string
+        testoErroreAnomalia:
+          type: string
+        oggettoErroreAnomalia:
+          type: string
+        campoErroreAnomalia:
+          type: string
+        valoreErroreAnomalia:
+          type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      description: 'A bearer token in the format of a JWS and conformed to the specifications included in [RFC8725](https://tools.ietf.org/html/RFC8725).'
+      scheme: bearer
+      bearerFormat: JWT
+    Agid-JWT-Signature:
+      type: apiKey
+      in: header
+      name: Agid-JWT-Signature
+      description: |-
+        Header della firma di JWS.
+        Il valore di questo header è una firma JWS.
+        Vedere Modi  [integrity_rest_02] Integrità del payload del messaggio REST in PDND
+    Agid-JWT-TrackingEvidence:
+      type: apiKey
+      in: header
+      name: Agid-JWT-TrackingEvidence
+      description: |-
+        Header della firma di JWS.
+        Il valore di questo header è una firma JWS.
+        Vedere Modi  [audit_rest_02] Inoltro dati tracciati nel dominio del Fruitore REST con correlazione
+        Claim da includere:
+            userID, un identificativo univoco dell'utente interno al dominio del fruitore che ha determinato l'esigenza della request di accesso all'e-service dell'erogatore;
+            userLocation, un identificativo univoco della postazione interna al dominio del fruitore da cui è avviata l'esigenza della request di accesso all'e-service dell'erogatore;
+            LoA, livello di sicurezza o di garanzia adottato nel processo di autenticazione informatica nel dominio del fruitore.
