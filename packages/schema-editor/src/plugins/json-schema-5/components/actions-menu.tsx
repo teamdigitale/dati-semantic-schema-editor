@@ -73,7 +73,7 @@ export const ActionsMenu = ({ specSelectors, url }) => {
               className="right-icon justify-content-between d-flex"
               inDropdown
               href="#"
-              onClick={() => copyAsB64zipToClipboard(specSelectors.specStr(), `${oasCheckerUrl}?text=`)}
+              onClick={() => copyAsB64zipToClipboard(specSelectors.specStr(), `${oasCheckerUrl}#text=`)}
             >
               <span>Copy as OAS Checker URL</span>
               <Icon icon="it-copy" size="sm" className="right" />
@@ -84,7 +84,7 @@ export const ActionsMenu = ({ specSelectors, url }) => {
             <LinkListItem
               className="right-icon justify-content-between d-flex"
               inDropdown
-              href={`${schemaEditorUrl}?url=${/^http/.test(url) ? url : `${window.location.origin}${url}`}`}
+              href={`${schemaEditorUrl}?url=${/^http/.test(url) ? url : `${window.location.origin}/${window.location.pathname}/${url}`}`}
             >
               <span>Open in Schema Editor</span>
               <Icon icon="it-external-link" size="sm" className="right" />
