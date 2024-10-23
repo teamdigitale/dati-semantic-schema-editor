@@ -4,4 +4,7 @@ export interface Config {
   schemaEditorUrl?: string;
 }
 
-export type IConfigurationContext = () => Config;
+export interface IConfigurationContext {
+  config: Config;
+  setConfig: (config: Config) => void;
+}

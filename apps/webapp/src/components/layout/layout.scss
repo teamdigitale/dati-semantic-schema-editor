@@ -1,0 +1,29 @@
+.app-container {
+  height: calc(100vh - 120px);
+  overflow: hidden;
+}
+
+.col-0 {
+  flex: 0 0 auto;
+  max-width: 0%;
+}
+
+.hamburger-button-wrapper {
+  padding: 0 2rem;
+  min-width: 6rem;
+  display: flex;
+  align-items: center;
+}
+
+.inner-header {
+  padding: 0;
+
+  .container {
+    max-width: unset;
+  }
+}
+
+.animate {
+  overflow: hidden;
+  transition: 0.3s ease-in-out;
+}

@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 import SwaggerUI from 'swagger-ui';
 import {
   ConfigurationPlugin,
-  ConfigurationProperties,
+  Config,
   EditorAutosuggestCustomPlugin,
   EditorThemePlugin,
   ErrorsPlugin,
@@ -13,17 +13,29 @@ import {
   JumpToPathOverridePlugin,
   LayoutPlugin,
   OverviewPlugin,
+  CONFIG_STATE_KEY,
 } from '../../plugins';
 
-type Props = ConfigurationProperties & {
+type Props = Config & {
   spec?: string | object;
   url?: string;
 };
 
-export function SchemaEditor({ spec, url, sparqlUrl, oasCheckerUrl, schemaEditorUrl }: Props) {
+export function SchemaEditor({ spec, url, ...otherConfig }: Props) {
   const instance = useRef<typeof SwaggerUI>(null);
   const prevSpec = usePrevious(spec);
   const prevUrl = usePrevious(url);
+
+  const setConfig = () => {
+    if (instance.current) {
+      instance.current.getSystem().configsActions.update(CONFIG_STATE_KEY, {
+        ...otherConfig,
+        sparqlUrl:
+          otherConfig.sparqlUrl ??
+          'https://virtuoso-dev-external-service-ndc-dev.apps.cloudpub.testedev.istat.it/sparql',
+      });
+    }
+  };
 
   useEffect(() => {
     async function loadInstance() {
@@ -54,10 +66,10 @@ export function SchemaEditor({ spec, url, sparqlUrl, oasCheckerUrl, schemaEditor
         oas3GeneratorUrl: 'https://generator3.swagger.io/openapi.json',
         swagger2ConverterUrl: 'https://converter.swagger.io/api/convert',
         jsonldPlaygroundUrl: 'https://json-ld.org/playground/#startTab=tab-expand&json-ld=',
-        sparqlUrl: sparqlUrl ?? 'https://virtuoso-dev-external-service-ndc-dev.apps.cloudpub.testedev.istat.it/sparql',
-        ...(oasCheckerUrl ? { oasCheckerUrl } : {}),
-        ...(schemaEditorUrl ? { schemaEditorUrl } : {}),
       });
+
+      // Update config
+      setConfig();
 
       // Update spec text
       if (spec) {
@@ -92,6 +104,10 @@ export function SchemaEditor({ spec, url, sparqlUrl, oasCheckerUrl, schemaEditor
       }
     }
   }, [instance.current, spec]);
+
+  useEffect(() => {
+    setConfig();
+  }, [instance.current, otherConfig]);
 
   return <div id="schema-editor" className="schema-editor" />;
 }

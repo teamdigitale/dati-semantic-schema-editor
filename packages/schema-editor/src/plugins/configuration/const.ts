@@ -1,0 +1,1 @@
+export const CONFIG_STATE_KEY = 'SCHEMA_EDITOR_CONFIG';

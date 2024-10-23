@@ -1,4 +1,4 @@
 import { useContext } from 'react';
 import { ConfigurationContext } from './context';
 
-export const useConfiguration = () => useContext(ConfigurationContext)();
+export const useConfiguration = () => useContext(ConfigurationContext);

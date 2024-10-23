@@ -15,9 +15,11 @@
   "dependencies": {
     "@italia/schema-editor": "workspace:*",
     "bootstrap-italia": "^2.9.2",
+    "classnames": "^2.5.1",
     "design-react-kit": "^5.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.53.1",
     "typeface-lora": "^1.1.13",
     "typeface-roboto-mono": "^1.1.13",
     "typeface-titillium-web": "^1.1.13"
