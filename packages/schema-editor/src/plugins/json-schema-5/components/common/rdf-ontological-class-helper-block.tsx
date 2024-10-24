@@ -3,7 +3,7 @@ import { RDFClassProperties, useRDFClassPropertiesResolver } from '../../hooks';
 import { useState } from 'react';
 import yaml from 'js-yaml';
 import { RDFHelperClassVocabulariesBlock } from './rdf-helper-class-vocabularies-block';
-import { basename } from '../../utils';
+import { RDFOntologicalClassBlock } from './rdf-ontological-class-block';
 
 function formatUri(uri: string): string {
   try {
@@ -94,7 +94,7 @@ export function RDFOntologicalClassHelperBlock({ getComponent, classUri, schema 
       {schema?.get('x-jsonld-type') ? null : <>Warning: Missing type</>}
 
       <h4>
-        [<span title={data?.classUri}>{formatUri(data?.classUri)}</span>]
+        <RDFOntologicalClassBlock classUri={data?.classUri} />
         {superClasses?.length ? (
           <>
             inherits from

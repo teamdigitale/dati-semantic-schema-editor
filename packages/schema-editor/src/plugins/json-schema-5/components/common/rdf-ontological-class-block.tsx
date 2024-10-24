@@ -5,6 +5,22 @@ import { basename } from '../../utils';
 export function RDFOntologicalClassBlock({ classUri }) {
   const { data, status, error } = useRDFClassResolver(classUri);
 
+  interface OntologicalClassProps {
+    uri: string;
+    comment: string | undefined;
+    error?: boolean;
+  }
+  const OntologicalClass = ({ uri, comment, error }: OntologicalClassProps) => {
+    return (
+      <span className="rdf-ontological-class-property">
+        [{error ? '⚠' : ''}
+        <a key={uri} href={uri} target="_blank" rel="noreferrer" title={comment}>
+          {basename(uri)}
+        </a>
+        ]
+      </span>
+    );
+  };
   return status === 'pending' ? (
     <span className="d-inline-block align-middle">
       <Spinner active small />
@@ -12,20 +28,10 @@ export function RDFOntologicalClassBlock({ classUri }) {
   ) : status === 'error' ? (
     <Icon icon="it-error" color="danger" title={`${error}.\nCheck console log.`} />
   ) : data?.ontologicalClass ? (
-    <span className="rdf-ontological-class-property">
-      [
-      <a
-        key={data.ontologicalClass}
-        href={data.ontologicalClass}
-        target="_blank"
-        rel="noreferrer"
-        title={data?.ontologicalClassComment}
-      >
-        {basename(data?.ontologicalClass)}
-      </a>
-      ]
-    </span>
+    <OntologicalClass uri={data.ontologicalClass} comment={data?.ontologicalClassComment} />
   ) : classUri ? (
-    <span title={`URI not found: ${classUri}.`}>⚠</span>
+    <>
+      <OntologicalClass uri={classUri} comment={`URI not found: ${classUri}`} error />
+    </>
   ) : null;
 }
