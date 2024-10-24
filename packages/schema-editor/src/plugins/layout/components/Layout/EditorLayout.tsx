@@ -3,7 +3,7 @@ import './_layout.scss';
 import { SplitPane } from 'react-collapse-pane';
 import Dropzone from '../Dropzone/Dropzone';
 
-const EditorLayout = ({ specActions, getComponent }) => {
+export const EditorLayout = ({ specActions, getComponent }) => {
   const ConfigurationProvider = getComponent('ConfigurationProvider', true);
   const OverviewContainer = getComponent('OverviewContainer', true);
   const EditorContainer = getComponent('EditorContainer', true);
@@ -38,5 +38,3 @@ const EditorLayout = ({ specActions, getComponent }) => {
     </ConfigurationProvider>
   );
 };
-
-export default EditorLayout;

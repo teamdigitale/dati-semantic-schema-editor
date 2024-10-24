@@ -14,9 +14,9 @@ export function Home() {
           Standalone Test
         </Button>
       </Link>
-      <Link to="/swaggerui">
+      <Link to="/schema-viewer">
         <Button className="me-2" color="primary" size="lg">
-          SwaggerUI
+          Schema Viewer
         </Button>
       </Link>
 

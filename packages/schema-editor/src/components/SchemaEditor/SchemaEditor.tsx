@@ -1,8 +1,9 @@
 import 'swagger-ui/dist/swagger-ui.css';
 import './SchemaEditor.scss';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import SwaggerUI from 'swagger-ui';
+import SwaggerEditor from 'swagger-editor';
 import {
   Config,
   ConfigurationPlugin,
@@ -12,104 +13,103 @@ import {
   JSONSchema5Plugin,
   JumpToPathOverridePlugin,
   LayoutPlugin,
+  LayoutTypes,
   OverviewPlugin,
 } from '../../plugins';
 
 type Props = Config & {
   spec?: string | object;
   url?: string;
+  layout?: LayoutTypes;
 };
 
 export function SchemaEditor({
   spec,
   url,
+  layout = LayoutTypes.EDITOR,
   sparqlUrl = 'https://virtuoso-dev-external-service-ndc-dev.apps.cloudpub.testedev.istat.it/sparql',
   oasCheckerUrl,
   schemaEditorUrl,
 }: Props) {
-  const instance = useRef<typeof SwaggerUI>(null);
+  const [system, setSystem] = useState<typeof SwaggerUI>(null);
+  const SwaggerUIComponent = system?.getComponent('App', 'root');
   const prevSpec = usePrevious(spec);
   const prevUrl = usePrevious(url);
 
   useEffect(() => {
-    async function loadInstance() {
-      const SwaggerEditor = await import('swagger-editor').then((x) => x.default);
+    const systemInstance = SwaggerUI({
+      ...(url && !spec ? { url } : {}),
+      layout,
+      presets: [SwaggerUI.presets.apis],
+      plugins: [
+        ...Object.values(SwaggerEditor.plugins),
+        EditorThemePlugin,
+        EditorAutosuggestCustomPlugin,
+        ErrorsPlugin,
+        JSONSchema5Plugin,
+        JumpToPathOverridePlugin,
+        OverviewPlugin,
+        LayoutPlugin,
+        ConfigurationPlugin,
+        SwaggerUI.plugins.SafeRender({
+          fullOverride: true,
+          componentList: ['ItaliaSchemaEditorLayout', 'Topbar', 'EditorContainer'],
+        }),
+      ],
+      showExtensions: false, // Avoid showing properties starting with x-
+      swagger2GeneratorUrl: 'https://generator.swagger.io/api/swagger.json',
+      oas3GeneratorUrl: 'https://generator3.swagger.io/openapi.json',
+      swagger2ConverterUrl: 'https://converter.swagger.io/api/convert',
+      // Schema editor configs:
+      jsonldPlaygroundUrl: 'https://json-ld.org/playground/#startTab=tab-expand&json-ld=',
+      sparqlUrl,
+      oasCheckerUrl,
+      schemaEditorUrl,
+    });
 
-      instance.current = new SwaggerUI({
-        ...(url && !spec ? { url } : {}),
-        dom_id: '#schema-editor',
-        layout: 'ItaliaSchemaEditorLayout',
-        presets: [SwaggerUI.presets.apis],
-        plugins: [
-          ...Object.values(SwaggerEditor.plugins),
-          EditorThemePlugin,
-          EditorAutosuggestCustomPlugin,
-          ErrorsPlugin,
-          JSONSchema5Plugin,
-          JumpToPathOverridePlugin,
-          OverviewPlugin,
-          LayoutPlugin,
-          ConfigurationPlugin,
-          SwaggerUI.plugins.SafeRender({
-            fullOverride: true,
-            componentList: ['ItaliaSchemaEditorLayout', 'Topbar', 'EditorContainer'],
-          }),
-        ],
-        showExtensions: false, // Avoid showing properties starting with x-
-        swagger2GeneratorUrl: 'https://generator.swagger.io/api/swagger.json',
-        oas3GeneratorUrl: 'https://generator3.swagger.io/openapi.json',
-        swagger2ConverterUrl: 'https://converter.swagger.io/api/convert',
-        // Schema editor configs:
-        jsonldPlaygroundUrl: 'https://json-ld.org/playground/#startTab=tab-expand&json-ld=',
-        sparqlUrl,
-        oasCheckerUrl,
-        schemaEditorUrl,
-      });
-
-      // Update spec text
-      if (spec) {
-        instance.current.getSystem().specActions.updateSpec(spec);
-      }
+    // Update spec text
+    if (spec) {
+      systemInstance.getSystem().specActions.updateSpec(spec);
     }
-    if (document.readyState === 'complete') loadInstance();
-    else window.onload = () => loadInstance();
+
+    setSystem(systemInstance);
   }, []);
 
   useEffect(() => {
-    if (instance.current) {
+    if (system) {
       console.log('Updating url');
-      const prevStateUrl = instance.current?.specSelectors.url();
+      const prevStateUrl = system?.specSelectors.url();
       if (url !== prevStateUrl || url !== prevUrl) {
-        instance.current.getSystem().specActions.updateSpec('');
+        system.getSystem().specActions.updateSpec('');
         if (url) {
-          instance.current.specActions.updateUrl(url);
-          instance.current.specActions.download(url);
+          system.specActions.updateUrl(url);
+          system.specActions.download(url);
         }
       }
     }
-  }, [instance.current, url]);
+  }, [system, url]);
 
   useEffect(() => {
-    if (instance.current) {
+    if (system) {
       console.log('Updating spec');
-      const prevStateSpec = instance.current.specSelectors.specStr();
+      const prevStateSpec = system.specSelectors.specStr();
       if (spec && spec !== SwaggerUI.config.defaults.spec && (spec !== prevStateSpec || spec !== prevSpec)) {
         const updatedSpec = typeof spec === 'object' ? JSON.stringify(spec) : spec;
-        instance.current.getSystem().specActions.updateSpec(updatedSpec);
+        system.getSystem().specActions.updateSpec(updatedSpec);
       }
     }
-  }, [instance.current, spec]);
+  }, [system, spec]);
 
   useEffect(() => {
-    if (instance.current) {
-      const configs = instance.current.getConfigs();
+    if (system) {
+      const configs = system.getConfigs();
       configs.sparqlUrl = sparqlUrl;
       configs.oasCheckerUrl = oasCheckerUrl;
       configs.schemaEditorUrl = schemaEditorUrl;
     }
-  }, [instance.current, sparqlUrl, oasCheckerUrl, schemaEditorUrl]);
+  }, [system, sparqlUrl, oasCheckerUrl, schemaEditorUrl]);
 
-  return <div id="schema-editor" className="schema-editor" />;
+  return SwaggerUIComponent ? <SwaggerUIComponent /> : null;
 }
 
 const usePrevious = (value) => {

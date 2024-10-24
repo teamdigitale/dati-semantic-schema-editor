@@ -56,6 +56,9 @@ function App() {
   const params = {
     url: 'https://raw.githubusercontent.com/samchungy/zod-openapi/master/examples/simple/openapi.yml', // OPTIONAL: an OpenAPI file url
     schema: '...', // OPTIONAL: an OpenAPI schema definition
+    oasCheckerUrl: '...', // OPTIONAL
+    schemaEditorUrl: '...', // OPTIONAL
+    sparqlUrl: '...', // OPTIONAL
   };
 
   return (
@@ -66,59 +69,24 @@ function App() {
 }
 ```
 
-### SwaggerUI plugins collection
-
-This is an example of using only the right-column layout (without editor):
+### View only component
 
 ```js
-import SwaggerUI from 'swagger-ui-react';
-import { ErrorsPlugin, JSONSchema5Plugin, OverviewPlugin } from '@italia/schema-editor';
+import { LayoutTypes, SchemaEditor } from '@italia/schema-editor';
 import '@italia/schema-editor/dist/style.css';
-
-const CustomLayoutPlugin = () => ({
-  components: {
-    CustomLayout: ({ getComponent }) => {
-      const OverviewContainer = getComponent('OverviewContainer', true);
-      return <OverviewContainer />;
-    },
-  },
-});
 
 function App() {
+  // By omitting both params the editor will be loaded as empty
+  const params = {
+    url: 'https://raw.githubusercontent.com/ioggstream/draft-polli-restapi-ld-keywords/refs/heads/main/tests/test-context.oas3.yaml', // OPTIONAL: an OpenAPI file url
+    schema: '...', // OPTIONAL: an OpenAPI schema definition
+  };
+
   return (
-    <SwaggerUI
-      plugins={[ErrorsPlugin, JSONSchema5Plugin, OverviewPlugin, CustomLayoutPlugin]}
-      layout={'CustomLayout'}
-    />
-  );
-}
-```
-
-This is an example of using only the models tab:
-
-```js
-import SwaggerUI from 'swagger-ui-react';
-import { OverviewPlugin } from '@italia/schema-editor';
-import '@italia/schema-editor/dist/style.css';
-
-function CustomLayout({ getComponent }) {
-  const TabModels = getComponent('TabModels', true);
-  return (
-    <div>
-      <h1>Preview of schema models only</h1>
-      <TabModels />
+    <div className="app-container">
+      <SchemaEditor layout={LayoutTypes.VIEWER} {...params} />
     </div>
   );
-}
-
-const CustomLayoutPlugin = () => ({
-  components: {
-    CustomLayout,
-  },
-});
-
-function App() {
-  return <SwaggerUI plugins={[OverviewPlugin, CustomLayoutPlugin]} layout={'CustomLayout'} />;
 }
 ```
 

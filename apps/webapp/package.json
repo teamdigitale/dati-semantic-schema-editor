@@ -14,27 +14,27 @@
   ],
   "dependencies": {
     "@italia/schema-editor": "workspace:*",
-    "bootstrap-italia": "^2.9.2",
+    "bootstrap-italia": "^2.10.0",
     "classnames": "^2.5.1",
     "design-react-kit": "^5.2.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.1",
     "typeface-lora": "^1.1.13",
     "typeface-roboto-mono": "^1.1.13",
     "typeface-titillium-web": "^1.1.13"
   },
   "devDependencies": {
-    "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^4.3.3",
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
     "sass": "^1.77.4",
     "typescript": "^5.2.2",
-    "vite": "^5.2.14"
+    "vite": "^5.4.10"
   }
 }

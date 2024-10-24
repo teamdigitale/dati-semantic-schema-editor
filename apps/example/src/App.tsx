@@ -24,7 +24,7 @@ import {
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import { Home } from './components/home/Home';
 import { Standalone } from './components/standalone/Standalone';
-import { SwaggerUIPluginsCollection } from './components/swaggerui-plugins-collection/SwaggerUIPluginsCollection';
+import { SchemaViewer } from './components/viewer/SchemaViewer';
 
 const SamplesMenu = () => {
   const items = [
@@ -122,8 +122,8 @@ function App() {
                     <SamplesMenu />
                   </NavItem>
                   <NavItem>
-                    <Link className="nav-link" to="/swaggerui">
-                      SwaggerUI
+                    <Link className="nav-link" to="/schema-viewer">
+                      Schema Viewer
                     </Link>
                   </NavItem>
                   <NavItem>
@@ -140,7 +140,7 @@ function App() {
 
       <Routes>
         <Route path="/standalone" element={<Standalone />} />
-        <Route path="/swaggerui" element={<SwaggerUIPluginsCollection />} />
+        <Route path="/schema-viewer" element={<SchemaViewer />} />
         {/* <Route path="/ace" element={<AceTheme />} /> */}
         <Route path="/" element={<Home />} />
       </Routes>

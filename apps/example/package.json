@@ -7,7 +7,8 @@
     "dev": "vite --host",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run"
   },
   "files": [
     "dist"
@@ -15,28 +16,31 @@
   "dependencies": {
     "@italia/schema-editor": "workspace:*",
     "ace-builds": "^1.35.0",
-    "bootstrap-italia": "^2.9.2",
+    "bootstrap-italia": "^2.10.0",
     "design-react-kit": "^5.2.0",
-    "react": "^18.2.0",
+    "react": "^18.3.1",
     "react-ace": "^11.0.1",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.23.1",
-    "swagger-ui-react": "^5.17.14",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.27.0",
     "typeface-lora": "^1.1.13",
     "typeface-roboto-mono": "^1.1.13",
     "typeface-titillium-web": "^1.1.13"
   },
   "devDependencies": {
-    "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
+    "@testing-library/jest-dom": "^6.6.2",
+    "@testing-library/react": "^16.0.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^4.3.3",
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
+    "jsdom": "^25.0.1",
     "sass": "^1.77.4",
     "typescript": "^5.2.2",
-    "vite": "^5.2.14"
+    "vite": "^5.4.10",
+    "vitest": "^2.1.3"
   }
 }
