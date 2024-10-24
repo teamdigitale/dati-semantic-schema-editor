@@ -56,6 +56,10 @@ const SamplesMenu = () => {
       text: 'Test Context',
       url: '/standalone?url=/schemas/test-context.oas3.yaml',
     },
+    {
+      text: 'Test data.europa.eu/sparql',
+      url: '/standalone?url=/schemas/europa.oas3.yaml&eu=true',
+    },
   ];
   return (
     <Dropdown>

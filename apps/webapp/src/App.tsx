@@ -14,7 +14,7 @@ function App() {
       config={{
         sparqlUrl: 'https://virtuoso-dev-external-service-ndc-dev.apps.cloudpub.testedev.istat.it/sparql',
         oasCheckerUrl: 'https://italia.github.io/api-oas-checker',
-        schemaEditorUrl: 'https://par-tec.github.io/dati-semantic-schema-editor/v0.0.3-preview/',
+        schemaEditorUrl: 'https://par-tec.github.io/dati-semantic-schema-editor/latest/',
       }}
     >
       <Layout>

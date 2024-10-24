@@ -51,8 +51,18 @@ export function RDFOntologicalClassHelperBlock({ getComponent, classUri, schema 
     setSelectedSuperClass(event.target.value);
   };
 
+  // Add schema attribute to each class property
+  const classPropertiesWithSchema =
+    data?.classProperties?.map((property) => ({
+      ...property,
+    })) || [];
+
+  const sortedOptions = classPropertiesWithSchema.sort(
+    (a, b) => a.baseClass.localeCompare(b.baseClass) || a.fieldUri.localeCompare(b.fieldUri),
+  );
+
   const filteredOptions =
-    data?.classProperties?.filter((property) => {
+    sortedOptions.filter((property) => {
       const formattedFieldUri = formatUri(property.fieldUri);
       const formattedRange = property?.range ? formatUri(property?.range) : '';
 
@@ -84,15 +94,20 @@ export function RDFOntologicalClassHelperBlock({ getComponent, classUri, schema 
       {schema?.get('x-jsonld-type') ? null : <>Warning: Missing type</>}
 
       <h4>
-        Class: {formatUri(data?.classUri)} inherits from
-        <select value={selectedSuperClass} onChange={handleSuperClassChange}>
-          <option value="">All</option>
-          {superClasses?.map((superClass) => (
-            <option key={superClass} value={superClass}>
-              {formatUri(superClass)}
-            </option>
-          ))}
-        </select>
+        [<span title={data?.classUri}>{formatUri(data?.classUri)}</span>]
+        {superClasses?.length ? (
+          <>
+            inherits from
+            <select value={selectedSuperClass} onChange={handleSuperClassChange}>
+              <option value="">All</option>
+              {superClasses?.map((superClass) => (
+                <option key={superClass} value={superClass}>
+                  {formatUri(superClass)}
+                </option>
+              ))}
+            </select>
+          </>
+        ) : null}
       </h4>
 
       <RDFHelperClassVocabulariesBlock classUri={classUri} />
@@ -136,7 +151,6 @@ export function RDFOntologicalClassHelperBlock({ getComponent, classUri, schema 
                     rel="noopener noreferrer"
                     style={{
                       textDecoration: 'none',
-                      color: schema?.hasIn(['properties', basename(option.fieldUri)]) ? 'red' : 'inherit',
                     }}
                   >
                     {formatUri(option.fieldUri)}

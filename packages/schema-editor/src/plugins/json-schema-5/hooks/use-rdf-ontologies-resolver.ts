@@ -213,7 +213,11 @@ export interface RDFClassVocabularies {
   api: string | undefined;
 }
 export function useRDFClassVocabulariesResolver(classUri: string | undefined) {
-  const { data: sparqlData, status: sparqlStatus } = useSparqlQuery(
+  const {
+    data: sparqlData,
+    status: sparqlStatus,
+    error: error,
+  } = useSparqlQuery(
     `
 PREFIX CLV:	<https://w3id.org/italia/onto/CLV/>
 PREFIX CPV:	<https://w3id.org/italia/onto/CPV/>
@@ -257,5 +261,6 @@ SELECT DISTINCT
   return {
     data: content as RDFClassVocabularies[] | undefined,
     status: sparqlStatus,
+    error: error,
   };
 }
