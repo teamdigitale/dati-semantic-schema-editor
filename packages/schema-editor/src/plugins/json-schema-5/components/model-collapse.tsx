@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { useSchemaNavigation } from '../../overview/components/Navigation';
+import { Icon } from 'design-react-kit';
 
 interface Props {
   title: string;
@@ -32,9 +33,9 @@ export function ModelCollapse({ children, expanded, title, specPath, schema }: P
       {!expanded ? (
         <>
           {title && (
-            <a href="#" className="text-primary" onClick={handleClick}>
+            <a href="#" className="d-flex justify-content-between text-primary" onClick={handleClick}>
               <strong>{title || 'Show'}</strong>
-              <span className="model-toggle collapsed"></span>
+              <Icon icon="it-chevron-right" size="sm" />
             </a>
           )}
         </>
