@@ -4,6 +4,7 @@ import { SplitPane } from 'react-collapse-pane';
 import Dropzone from '../Dropzone/Dropzone';
 
 const EditorLayout = ({ specActions, getComponent }) => {
+  const ConfigurationProvider = getComponent('ConfigurationProvider', true);
   const OverviewContainer = getComponent('OverviewContainer', true);
   const EditorContainer = getComponent('EditorContainer', true);
 
@@ -12,27 +13,29 @@ const EditorLayout = ({ specActions, getComponent }) => {
   };
 
   return (
-    <div className="schema-editor">
-      <Dropzone onDrop={handleChange}>
-        <SplitPane
-          split="vertical"
-          resizerOptions={{
-            css: {
-              width: '5px',
-              background: '#e6ecf2',
-            },
-            hoverCss: {
-              width: '5px',
-              background: '#e6ecf2',
-            },
-            grabberSize: '1.5rem',
-          }}
-        >
-          <EditorContainer onChange={handleChange} />
-          <OverviewContainer />
-        </SplitPane>
-      </Dropzone>
-    </div>
+    <ConfigurationProvider>
+      <div className="schema-editor">
+        <Dropzone onDrop={handleChange}>
+          <SplitPane
+            split="vertical"
+            resizerOptions={{
+              css: {
+                width: '5px',
+                background: '#e6ecf2',
+              },
+              hoverCss: {
+                width: '5px',
+                background: '#e6ecf2',
+              },
+              grabberSize: '1.5rem',
+            }}
+          >
+            <EditorContainer onChange={handleChange} />
+            <OverviewContainer />
+          </SplitPane>
+        </Dropzone>
+      </div>
+    </ConfigurationProvider>
   );
 };
 

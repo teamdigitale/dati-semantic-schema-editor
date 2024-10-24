@@ -4,8 +4,8 @@ import './SchemaEditor.scss';
 import { useEffect, useRef } from 'react';
 import SwaggerUI from 'swagger-ui';
 import {
-  ConfigurationPlugin,
   Config,
+  ConfigurationPlugin,
   EditorAutosuggestCustomPlugin,
   EditorThemePlugin,
   ErrorsPlugin,
@@ -13,7 +13,6 @@ import {
   JumpToPathOverridePlugin,
   LayoutPlugin,
   OverviewPlugin,
-  CONFIG_STATE_KEY,
 } from '../../plugins';
 
 type Props = Config & {
@@ -21,21 +20,16 @@ type Props = Config & {
   url?: string;
 };
 
-export function SchemaEditor({ spec, url, ...otherConfig }: Props) {
+export function SchemaEditor({
+  spec,
+  url,
+  sparqlUrl = 'https://virtuoso-dev-external-service-ndc-dev.apps.cloudpub.testedev.istat.it/sparql',
+  oasCheckerUrl,
+  schemaEditorUrl,
+}: Props) {
   const instance = useRef<typeof SwaggerUI>(null);
   const prevSpec = usePrevious(spec);
   const prevUrl = usePrevious(url);
-
-  const setConfig = () => {
-    if (instance.current) {
-      instance.current.getSystem().configsActions.update(CONFIG_STATE_KEY, {
-        ...otherConfig,
-        sparqlUrl:
-          otherConfig.sparqlUrl ??
-          'https://virtuoso-dev-external-service-ndc-dev.apps.cloudpub.testedev.istat.it/sparql',
-      });
-    }
-  };
 
   useEffect(() => {
     async function loadInstance() {
@@ -65,11 +59,12 @@ export function SchemaEditor({ spec, url, ...otherConfig }: Props) {
         swagger2GeneratorUrl: 'https://generator.swagger.io/api/swagger.json',
         oas3GeneratorUrl: 'https://generator3.swagger.io/openapi.json',
         swagger2ConverterUrl: 'https://converter.swagger.io/api/convert',
+        // Schema editor configs:
         jsonldPlaygroundUrl: 'https://json-ld.org/playground/#startTab=tab-expand&json-ld=',
+        sparqlUrl,
+        oasCheckerUrl,
+        schemaEditorUrl,
       });
-
-      // Update config
-      setConfig();
 
       // Update spec text
       if (spec) {
@@ -106,8 +101,13 @@ export function SchemaEditor({ spec, url, ...otherConfig }: Props) {
   }, [instance.current, spec]);
 
   useEffect(() => {
-    setConfig();
-  }, [instance.current, otherConfig]);
+    if (instance.current) {
+      const configs = instance.current.getConfigs();
+      configs.sparqlUrl = sparqlUrl;
+      configs.oasCheckerUrl = oasCheckerUrl;
+      configs.schemaEditorUrl = schemaEditorUrl;
+    }
+  }, [instance.current, sparqlUrl, oasCheckerUrl, schemaEditorUrl]);
 
   return <div id="schema-editor" className="schema-editor" />;
 }
