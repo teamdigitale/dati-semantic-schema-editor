@@ -56,6 +56,15 @@ importers:
 
   apps/example:
     dependencies:
+      '@fontsource/lora':
+        specifier: ^5.1.0
+        version: 5.1.0
+      '@fontsource/roboto-mono':
+        specifier: ^5.1.0
+        version: 5.1.0
+      '@fontsource/titillium-web':
+        specifier: ^5.1.0
+        version: 5.1.0
       '@italia/schema-editor':
         specifier: workspace:*
         version: link:../../packages/schema-editor
@@ -80,15 +89,6 @@ importers:
       react-router-dom:
         specifier: ^6.27.0
         version: 6.27.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      typeface-lora:
-        specifier: ^1.1.13
-        version: 1.1.13
-      typeface-roboto-mono:
-        specifier: ^1.1.13
-        version: 1.1.13
-      typeface-titillium-web:
-        specifier: ^1.1.13
-        version: 1.1.13
     devDependencies:
       '@testing-library/jest-dom':
         specifier: ^6.6.2
@@ -138,6 +138,15 @@ importers:
 
   apps/webapp:
     dependencies:
+      '@fontsource/lora':
+        specifier: ^5.1.0
+        version: 5.1.0
+      '@fontsource/roboto-mono':
+        specifier: ^5.1.0
+        version: 5.1.0
+      '@fontsource/titillium-web':
+        specifier: ^5.1.0
+        version: 5.1.0
       '@italia/schema-editor':
         specifier: workspace:*
         version: link:../../packages/schema-editor
@@ -159,15 +168,6 @@ importers:
       react-hook-form:
         specifier: ^7.53.1
         version: 7.53.1(react@18.3.1)
-      typeface-lora:
-        specifier: ^1.1.13
-        version: 1.1.13
-      typeface-roboto-mono:
-        specifier: ^1.1.13
-        version: 1.1.13
-      typeface-titillium-web:
-        specifier: ^1.1.13
-        version: 1.1.13
     devDependencies:
       '@types/react':
         specifier: ^18.3.12
@@ -725,6 +725,15 @@ packages:
 
   '@floating-ui/utils@0.2.2':
     resolution: {integrity: sha512-J4yDIIthosAsRZ5CPYP/jQvUAQtlZTTD/4suA08/FEnlxqW3sKS9iAhgsa9VYLZ6vDHn/ixJgIqRQPotoBjxIw==}
+
+  '@fontsource/lora@5.1.0':
+    resolution: {integrity: sha512-kHhtKc/ETrNN0X+TsfSAqeE/WQcazkSa97Sxzkg/Uo2rZ+O3kCts595Cmu116O5gw4z0Bc37voD67rEA6iRv/w==}
+
+  '@fontsource/roboto-mono@5.1.0':
+    resolution: {integrity: sha512-7lIxTeanF2XrwAIukUrOUvO9veGkQiG7L7vizMxVjl+lrTwS4GAYyOvziyGZ6/3kU80K3lGd/FnWrmoTud0V6A==}
+
+  '@fontsource/titillium-web@5.1.0':
+    resolution: {integrity: sha512-nPlPyuRjmZYwvWJ647mkqlhuPS1P8MuizYUgBLHcn9vzliZTS0DTIkwV550zQV4XqQrWf7YtkDbbnTFCuiWgsA==}
 
   '@humanwhocodes/config-array@0.11.14':
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
@@ -4374,15 +4383,6 @@ packages:
     resolution: {integrity: sha512-8WbVAQAUlENo1q3c3zZYuy5k9VzBQvp8AX9WOtbvyWlLM1v5JaSRmjubLjzHF4JFtptjH/5c/i95yaElvcjC0A==}
     engines: {node: '>= 0.4'}
 
-  typeface-lora@1.1.13:
-    resolution: {integrity: sha512-Y02iTW9l8PzGWkEVPqFJ4lVfckZHbYB+CZLKb5WsVRWjkKn/wo1X5OwlOwdKr8Tt+HzcgkOzwbdqY6CMgVO0tw==}
-
-  typeface-roboto-mono@1.1.13:
-    resolution: {integrity: sha512-pnzDc70b7ywJHin/BUFL7HZX8DyOTBLT2qxlJ92eH1UJOFcENIBXa9IZrxsJX/gEKjbEDKhW5vz/TKRBNk/ufQ==}
-
-  typeface-titillium-web@1.1.13:
-    resolution: {integrity: sha512-R21mXf9hoqle+dgR7k6C6QUN2XElopQNsTDYI5DoU1buuYayVvzn2jd2ihKJTwM/hJsltLrlJUkyumc3FFgevA==}
-
   types-ramda@0.30.0:
     resolution: {integrity: sha512-oVPw/KHB5M0Du0txTEKKM8xZOG9cZBRdCVXvwHYuNJUVkAiJ9oWyqkA+9Bj2gjMsHgkkhsYevobQBWs8I2/Xvw==}
 
@@ -5260,6 +5260,12 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
 
   '@floating-ui/utils@0.2.2': {}
+
+  '@fontsource/lora@5.1.0': {}
+
+  '@fontsource/roboto-mono@5.1.0': {}
+
+  '@fontsource/titillium-web@5.1.0': {}
 
   '@humanwhocodes/config-array@0.11.14':
     dependencies:
@@ -9593,12 +9599,6 @@ snapshots:
       es-errors: 1.3.0
       typed-array-buffer: 1.0.2
       typed-array-byte-offset: 1.0.2
-
-  typeface-lora@1.1.13: {}
-
-  typeface-roboto-mono@1.1.13: {}
-
-  typeface-titillium-web@1.1.13: {}
 
   types-ramda@0.30.0:
     dependencies:

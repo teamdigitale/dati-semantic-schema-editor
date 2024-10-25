@@ -1,8 +1,4 @@
 import 'bootstrap-italia/dist/css/bootstrap-italia.min.css';
-import 'typeface-lora';
-import 'typeface-roboto-mono';
-import 'typeface-titillium-web';
-
 import '@italia/schema-editor/dist/style.css';
 import { Editor } from './components/editor/editor';
 import { Layout } from './components/layout/layout';

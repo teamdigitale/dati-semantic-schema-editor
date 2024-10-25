@@ -1,7 +1,7 @@
 {
   "name": "example",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.4",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
@@ -22,9 +22,9 @@
     "react-ace": "^11.0.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.27.0",
-    "typeface-lora": "^1.1.13",
-    "typeface-roboto-mono": "^1.1.13",
-    "typeface-titillium-web": "^1.1.13"
+    "@fontsource/lora": "^5.1.0",
+    "@fontsource/roboto-mono": "^5.1.0",
+    "@fontsource/titillium-web": "^5.1.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.2",

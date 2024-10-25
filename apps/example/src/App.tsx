@@ -1,7 +1,4 @@
 import 'bootstrap-italia/dist/css/bootstrap-italia.min.css';
-import 'typeface-lora';
-import 'typeface-roboto-mono';
-import 'typeface-titillium-web';
 
 import {
   Collapse,

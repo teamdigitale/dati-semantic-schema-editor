@@ -14,7 +14,7 @@ Italia OpenAPI Schema Editor npm package is a [SwaggerUI](https://github.com/swa
 First of all install peer dependencies for styles and swagger ui
 
 ```bash
-npm install swagger-editor bootstrap-italia typeface-lora typeface-roboto-mono typeface-titillium-web
+npm install swagger-editor bootstrap-italia @fontsource/lora @fontsource/roboto-mono @fontsource/titillium-web
 ```
 
 Then apply the downloaded css as below:
@@ -22,9 +22,9 @@ Then apply the downloaded css as below:
 ```js
 import React from 'react';
 import 'bootstrap-italia/dist/css/bootstrap-italia.min.css';
-import 'typeface-titillium-web';
-import 'typeface-roboto-mono';
-import 'typeface-lora';
+import '@fontsource/titillium-web';
+import '@fontsource/roboto-mono';
+import '@fontsource/lora';
 
 function App() {
   return <div>This is an example</div>;

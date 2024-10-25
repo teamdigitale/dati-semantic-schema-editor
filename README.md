@@ -23,8 +23,9 @@ This repository uses [PNPM](https://pnpm.io) and [turborepo](https://turbo.build
 ### Usage with Docker
 
 To launch the application, just run docker compose
+
 - that will build and deploy the app - and
-open the browser
+  open the browser
 
 ```bash
 docker compose up -d app
@@ -38,9 +39,9 @@ and use the component in your application.
 
 ```typescript
 import 'bootstrap-italia/dist/css/bootstrap-italia.min.css';
-import 'typeface-lora';
-import 'typeface-roboto-mono';
-import 'typeface-titillium-web';
+import '@fontsource/lora';
+import '@fontsource/roboto-mono';
+import '@fontsource/titillium-web';
 
 import './App.scss';
 
@@ -73,7 +74,6 @@ This repository contains various usage examples:
 - [apps/example/src/App.tsx](./apps/example/src/App.tsx) - Showcase webapp;
 - [apps/example/src/components/standalone](./apps/example/src/components/standalone) - Standalone editor;
 - [apps/example/src/components/swaggerui-plugins-collection](./apps/example/src/components/swaggerui-plugins-collection) - Use the SwaggerUI component only.
-
 
 ## Development
 

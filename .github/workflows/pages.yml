@@ -22,6 +22,18 @@ jobs:
         with:
           node-version: 20
 
+      - name: Set version based on head_ref when pull or ref_name when tag.
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        run: echo "EDITOR_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+
+      - name: Set version based on head_ref when pull or ref_name when tag.
+        if: github.event_name == 'pull_request'
+        run: echo "EDITOR_VERSION=${{ github.head_ref }}" >> $GITHUB_ENV
+
+      - name: Set BASE_URL
+        run: |
+          echo "BASE_URL=/${{ github.event.repository.name }}/${{ env.EDITOR_VERSION }}" >> $GITHUB_ENV
+
       - name: Install pnpm
         run: npm install -g pnpm
 
@@ -29,23 +41,15 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build project
+        env:
+          BASE_URL: ${{ env.BASE_URL }}
         run: pnpm run -r build
 
       - name: Deploy
         run: pnpm deploy --filter=webapp --prod ./build
 
-      - name: Set version based on head_ref when pull or ref_name when tag.
-        if: github.event_name ==  'push' && startsWith(github.ref, 'refs/tags/')
-        run: echo "EDITOR_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
-
-      - name: Set version based on head_ref when pull or ref_name when tag.
-        if: github.event_name == 'pull_request'
-        run: echo "EDITOR_VERSION=${{ github.head_ref }}" >> $GITHUB_ENV
-
       - name: Fixup
-        run: |
-          find build/ -type f -exec sed -i -e 's,="/assets,="assets,' -e 's,="/favicon,="favicon,' {} \;
-          sed -i -e "s,%version%,${{ env.EDITOR_VERSION }}," build/dist/index.html
+        run: sed -i -e "s,%version%,${{ env.EDITOR_VERSION }}," build/dist/index.html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

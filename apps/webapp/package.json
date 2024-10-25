@@ -1,7 +1,7 @@
 {
   "name": "webapp",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.4",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
@@ -20,9 +20,9 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.1",
-    "typeface-lora": "^1.1.13",
-    "typeface-roboto-mono": "^1.1.13",
-    "typeface-titillium-web": "^1.1.13"
+    "@fontsource/lora": "^5.1.0",
+    "@fontsource/roboto-mono": "^5.1.0",
+    "@fontsource/titillium-web": "^5.1.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.12",
