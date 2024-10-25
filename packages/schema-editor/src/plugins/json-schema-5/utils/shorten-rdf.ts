@@ -1,12 +1,8 @@
+import { prefix_cc } from './curie';
+
 function extractNamespacesFromURIs(turtleText: string): Record<string, string> {
   const uriPattern = /<([^>]+)>/g;
-  const namespaces = {
-    rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-    rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
-    xsd: 'http://www.w3.org/2001/XMLSchema#',
-    owl: 'http://www.w3.org/2002/07/owl#',
-    skos: 'http://www.w3.org/2004/02/skos/core#',
-  };
+  const namespaces = prefix_cc;
 
   let match: RegExpExecArray | null;
   while ((match = uriPattern.exec(turtleText)) !== null) {

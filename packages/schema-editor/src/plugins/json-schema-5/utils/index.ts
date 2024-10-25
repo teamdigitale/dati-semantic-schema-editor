@@ -2,6 +2,7 @@ import LZString from 'lz-string';
 
 export * from './basename';
 export * from './shorten-rdf';
+export * from './curie';
 
 export const getExtensions = (defObj) => defObj.filter((v, k) => /^x-/.test(k));
 

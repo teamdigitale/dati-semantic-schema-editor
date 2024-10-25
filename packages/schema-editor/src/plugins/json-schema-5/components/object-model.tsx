@@ -1,8 +1,6 @@
 import './object-model.scss';
 
-import { Button } from 'design-react-kit';
 import { List } from 'immutable';
-import { useState } from 'react';
 import { useJsonLDResolver, useRDFPropertyResolver } from '../hooks';
 import { getParentType, isUri } from '../utils';
 import { DeprecatedBlock } from './common/deprecated-block';
@@ -13,7 +11,7 @@ import { HeadingBlock } from './common/heading-block';
 import { JsonLdContextBlock } from './common/jsonld-context-block';
 import { OntoScoreBlock } from './common/onto-score-block';
 import { PropertiesBlock } from './common/properties-block';
-import RDFOntologicalClassModal from './common/rdf-helper-modal';
+import { RDFHelperButtonWithModal } from './common/helper';
 import { RDFOntologicalClassPropertyBlock } from './common/rdf-ontological-class-property-block';
 import { SemanticDescriptionBlock } from './common/semantic-description-block';
 import { TypeFormatVocabularyBlock } from './common/type-format-vocabulary-block';
@@ -57,11 +55,6 @@ const ObjectModel = ({
   const ModelCollapse: typeof ModelCollapseComponent = getComponent('ModelCollapse', true);
   const JumpToPath = getComponent('JumpToPath', true);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
-  };
-
   // Check if parent type is array.
   const isArrayElement = getParentType(specSelectors, specPathArray) === 'array' && propertyName === 'items';
   //
@@ -102,21 +95,12 @@ const ObjectModel = ({
       <ModelCollapse title={title} specPath={specPath} expanded={expanded} schema={schema}>
         {depth === 1 && (
           <HeadingBlock title={title} specPath={specPath} jsonldType={classUri} getComponent={getComponent}>
-            <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} />
+            <>
+              <RDFHelperButtonWithModal getComponent={getComponent} classUri={classUri} schema={schema} />
+              <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} />
+            </>
           </HeadingBlock>
         )}
-
-        <Button color="primary" onClick={toggleModal} style={{ marginLeft: '10px' }}>
-          Open RDF Helper
-        </Button>
-
-        <RDFOntologicalClassModal
-          getComponent={getComponent}
-          isOpen={isModalOpen}
-          toggle={toggleModal}
-          classUri={classUri}
-          schema={schema}
-        />
 
         <DeprecatedBlock schema={schema} />
 
