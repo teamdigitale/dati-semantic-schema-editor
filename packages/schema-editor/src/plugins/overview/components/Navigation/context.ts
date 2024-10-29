@@ -6,6 +6,7 @@ export interface ISchemaNavigationContext {
   jsonldContextFullPath: string[] | undefined;
   push: (item: NavigationItem) => void;
   go: (index: number) => void;
+  back: () => void;
 }
 
 export const SchemaNavigationContext = createContext<ISchemaNavigationContext>(null as never);

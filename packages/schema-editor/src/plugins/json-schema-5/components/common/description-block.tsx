@@ -3,5 +3,5 @@ export function DescriptionBlock({ schema, getComponent }) {
 
   const Markdown = getComponent('Markdown', true);
 
-  return description ? <Markdown source={description} /> : null;
+  return description ? <Markdown source={description} /> : <i>No description provided</i>;
 }

@@ -1,25 +1,11 @@
-import { Icon } from 'design-react-kit';
-import { RDFOntologicalClassBlock } from './rdf-ontological-class-block';
-
-interface Props {
-  title: string;
-  specPath: any;
-  jsonldType: string;
-  getComponent: any;
-  children?: JSX.Element;
+export function HeadingBlock({ children }: { children: JSX.Element | JSX.Element[] }) {
+  return <div className="d-flex align-items-center justify-content-between">{children}</div>;
 }
 
-export function HeadingBlock({ title, specPath, jsonldType, getComponent, children }: Props) {
-  const JumpToPath = getComponent('JumpToPath', true);
+export function HeadingBlockLeft({ children }: { children: JSX.Element | JSX.Element[] }) {
+  return <div className="d-flex align-items-center gap-2 text-primary">{children}</div>;
+}
 
-  return (
-    <div className="d-flex">
-      <h4>
-        <JumpToPath specPath={specPath} size="sm" />
-        {title}
-        <RDFOntologicalClassBlock classUri={jsonldType} />
-      </h4>
-      <div className="d-flex align-items-center ms-auto">{children}</div>
-    </div>
-  );
+export function HeadingBlockRight({ children }: { children: JSX.Element | JSX.Element[] }) {
+  return <div className="d-flex align-items-center gap-2">{children}</div>;
 }

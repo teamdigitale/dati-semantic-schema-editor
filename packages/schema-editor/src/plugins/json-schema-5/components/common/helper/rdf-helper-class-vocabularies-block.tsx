@@ -1,4 +1,4 @@
-import { Icon, Spinner, Table } from 'design-react-kit';
+import { Badge, Spinner, Table } from 'design-react-kit';
 import { useRDFClassVocabulariesResolver } from '../../../hooks';
 import { uri2shortUri } from '../../../utils';
 
@@ -7,48 +7,56 @@ interface Props {
 }
 
 export const RDFHelperClassVocabulariesBlock = ({ classUri }: Props) => {
-  const { data, status, error } = useRDFClassVocabulariesResolver(classUri);
+  const { data, status } = useRDFClassVocabulariesResolver(classUri);
 
-  return status === 'pending' ? (
-    <span className="d-inline-block align-middle">
-      <Spinner active small />
-    </span>
-  ) : status === 'error' ? (
-    <Icon icon="it-error" color="danger" title={`${error}.\nCheck console log.`} />
-  ) : data?.length ? (
-    <div>
-      <Table>
-        <thead>
-          <tr>
-            <th>Controlled Vocabulary for {uri2shortUri(classUri)}</th>
-            <th>Subclasses</th>
-            <th>API</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item, index) =>
-            item?.controlledVocabulary ? (
-              <tr key={index}>
-                <td>
-                  <a href={item.controlledVocabulary} target="_blank" rel="noreferrer">
-                    {uri2shortUri(item.controlledVocabulary)}
-                  </a>
-                </td>
-                <td>{uri2shortUri(item?.subclass)}</td>
-                <td>
-                  {item?.api ? (
-                    <a href={item?.api} target="_blank" rel="noreferrer">
-                      API endpoint
+  return (
+    <div className="lightgrey-bg-b4 p-3 mb-4">
+      <h6>
+        Vocabularies for <Badge color="primary">{uri2shortUri(classUri)}</Badge>
+      </h6>
+
+      {status === 'pending' ? (
+        <div className="d-flex align-middle">
+          <Spinner active small />
+        </div>
+      ) : status === 'error' ? (
+        <div>There was en error trying to load vocabularies</div>
+      ) : !data?.length ? (
+        <div>No vocabularies to show</div>
+      ) : (
+        <Table>
+          <thead>
+            <tr>
+              <th>Controlled vocabulary</th>
+              <th>Subclasses</th>
+              <th>API</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data
+              .filter((x) => x?.controlledVocabulary)
+              .map((item, index) => (
+                <tr key={index}>
+                  <td>
+                    <a href={item.controlledVocabulary} target="_blank" rel="noreferrer">
+                      {uri2shortUri(item.controlledVocabulary as string)}
                     </a>
-                  ) : (
-                    <>-</>
-                  )}
-                </td>
-              </tr>
-            ) : null,
-          )}
-        </tbody>
-      </Table>
+                  </td>
+                  <td>{uri2shortUri(item?.subclass)}</td>
+                  <td>
+                    {item?.api ? (
+                      <a href={item.api} target="_blank" rel="noreferrer">
+                        API endpoint
+                      </a>
+                    ) : (
+                      '-'
+                    )}
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </Table>
+      )}
     </div>
-  ) : null;
+  );
 };

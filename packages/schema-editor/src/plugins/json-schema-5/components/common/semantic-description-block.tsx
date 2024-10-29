@@ -7,7 +7,7 @@ export function SemanticDescriptionBlock({ getComponent, description }) {
   const truncatedDescription = description?.length > 64 ? description.substring(0, 64) + '...' : description;
 
   return (
-    <span className="rdf-ontological-class-property bg-primary badge">
+    <span>
       <Markdown source={truncatedDescription} />
     </span>
   );

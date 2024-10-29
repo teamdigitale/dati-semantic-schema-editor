@@ -7,14 +7,19 @@ import { useJsonLDResolver, useRDFPropertyResolver } from '../hooks';
 import { getExtensions, getParentType } from '../utils';
 import { DeprecatedBlock } from './common/deprecated-block';
 import { DescriptionBlock } from './common/description-block';
-import { ExampleBlock } from './common/example-block';
+import { ExampleAccordion } from './common/example-accordion';
 import { ExternalDocsBlock } from './common/external-docs-block';
-import { HeadingBlock } from './common/heading-block';
-import { JsonLdContextBlock } from './common/jsonld-context-block';
+import { HeadingBlock, HeadingBlockLeft, HeadingBlockRight } from './common/heading-block';
+import { JsonLdContextAccordion } from './common/jsonld-context-accordion';
 import { PropertiesBlock } from './common/properties-block';
 import { RDFOntologicalClassPropertyBlock } from './common/rdf-ontological-class-property-block';
 import { SemanticDescriptionBlock } from './common/semantic-description-block';
 import { TypeFormatVocabularyBlock } from './common/type-format-vocabulary-block';
+import JumpToPath from '../../jump-to-path';
+import { ModelTitle } from './common/model-title';
+import { NavigateBack } from './common/navigate-back';
+import { OntoScoreBlock } from './common/onto-score-block';
+import { RDFOntologicalClassBlock } from './common/rdf-ontological-class-block';
 
 export const PrimitiveModel = ({
   schema,
@@ -47,20 +52,32 @@ export const PrimitiveModel = ({
   // Customize the view when parent type is array.
   const isArrayElement = getParentType(specSelectors, specPathArray) === 'array' && propertyName === 'items';
 
-  //
   // Ontological resolvers.
-  //
   const findKey = specPathArray.slice(3).filter((x) => x !== 'properties');
   const { data: jsonLDResolverResult } = useJsonLDResolver(jsonldContext, findKey);
   const { data: rdfProperty } = useRDFPropertyResolver(jsonLDResolverResult?.fieldUri);
 
-  console.log('Check parent type', type);
+  // View models
+  const JumpToPath = getComponent('JumpToPath', true);
+
   return (
     <div className="modello primitive-model">
       {depth === 1 ? (
-        <HeadingBlock title={title} specPath={specPath} jsonldType={jsonldType} getComponent={getComponent}>
-          {/* <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} /> */}
-        </HeadingBlock>
+        <>
+          <HeadingBlock>
+            <HeadingBlockLeft>
+              <NavigateBack />
+              <ModelTitle title={title} />
+              <RDFOntologicalClassBlock classUri={jsonldType} />
+            </HeadingBlockLeft>
+            <HeadingBlockRight>
+              <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} />
+              <JumpToPath specPath={specPath} />
+            </HeadingBlockRight>
+          </HeadingBlock>
+
+          <hr />
+        </>
       ) : (
         !isArrayElement && <RDFOntologicalClassPropertyBlock fieldUri={jsonLDResolverResult?.fieldUri} />
       )}
@@ -103,9 +120,8 @@ export const PrimitiveModel = ({
         </span>
       ) : null}
 
-      <ExampleBlock schema={schema} jsonldContext={jsonldContext} depth={depth} getConfigs={getConfigs} />
-
-      <JsonLdContextBlock jsonldContext={jsonldContext} depth={depth} />
+      <ExampleAccordion schema={schema} jsonldContext={jsonldContext} depth={depth} getConfigs={getConfigs} />
+      <JsonLdContextAccordion jsonldContext={jsonldContext} depth={depth} />
     </div>
   );
 };

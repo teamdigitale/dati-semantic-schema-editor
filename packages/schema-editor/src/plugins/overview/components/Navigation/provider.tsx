@@ -17,8 +17,12 @@ export function SchemaNavigationProvider({ children }) {
     setHistory((currentHistory) => currentHistory.slice(0, index));
   };
 
+  const back = () => {
+    setHistory((currentHistory) => currentHistory.slice(0, currentHistory.length - 1));
+  };
+
   return (
-    <SchemaNavigationContext.Provider value={{ history, jsonldContextFullPath, push, go }}>
+    <SchemaNavigationContext.Provider value={{ history, jsonldContextFullPath, push, go, back }}>
       {children}
     </SchemaNavigationContext.Provider>
   );

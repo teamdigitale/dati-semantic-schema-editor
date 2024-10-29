@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import { Icon } from 'design-react-kit';
+import { Button } from 'design-react-kit';
 import { List } from 'immutable';
 import { resolveSpecPathRefs } from './utils';
 
@@ -18,12 +18,14 @@ export const JumpToPathOverridePlugin = () => {
     wrapComponents: {
       JumpToPath: (Original, system) => (props) => {
         return (
-          <a className="pointer" style={{ wordBreak: 'break-word' }}>
-            <Original
-              {...props}
-              content={<Icon icon="it-pencil" size={props.size || 'sm'} title="Jump to definition" />}
-            />
-          </a>
+          <Original
+            content={
+              <Button color="primary" size="xs" outline className="py-1 px-3">
+                <h6 className="m-0">#</h6>
+              </Button>
+            }
+            {...props}
+          />
         );
       },
     },

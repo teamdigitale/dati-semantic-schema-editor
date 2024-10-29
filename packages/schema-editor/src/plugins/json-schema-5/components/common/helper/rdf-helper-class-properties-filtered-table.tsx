@@ -35,14 +35,20 @@ export const ClassPropertiesFilteredTable = ({ properties, superClass }) => {
 
   return sortedOptions.length ? (
     <span className="modelli">
-      <input
-        type="text"
-        placeholder="Search rdf:Properties ..."
-        value={searchTerm}
-        onChange={handleSearchChange}
-        style={{ marginBottom: '10px', width: '100%' }}
-      />
-      <Table bordered responsive>
+      <div className="input-group mb-3">
+        <span className="input-group-text">
+          <Icon icon="it-search" />
+        </span>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          placeholder="Search"
+          className="form-control"
+        />
+      </div>
+
+      <Table responsive>
         <thead className="table-dark">
           <tr>
             <th>Baseclass</th>
@@ -55,28 +61,18 @@ export const ClassPropertiesFilteredTable = ({ properties, superClass }) => {
           {filteredOptions.map((option: RDFClassProperties) => (
             <tr key={option.fieldUri} title={option?.comment}>
               <td className="align-middle">
-                <a
-                  href={option.baseClass}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  //                  style={{ textDecoration: 'none' }}
-                >
+                <a href={option.baseClass} target="_blank" rel="noopener noreferrer">
                   {uri2shortUri(option.baseClass)}
                 </a>
               </td>
 
               <td className="align-middle">
+                <a href={option.fieldUri} target="_blank" rel="noopener noreferrer">
+                  {uri2shortUri(option.fieldUri)}
+                </a>
                 <Button color="link" onClick={() => toggleModal(option)} size="xs">
                   <Icon icon="it-help-circle" size="xs" color="primary"></Icon>
                 </Button>
-                <a
-                  href={option.fieldUri}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  //                  style={{ textDecoration: 'none' }}
-                >
-                  {uri2shortUri(option.fieldUri)}
-                </a>
               </td>
 
               <td className="align-middle">
@@ -96,15 +92,17 @@ export const ClassPropertiesFilteredTable = ({ properties, superClass }) => {
                 )}
               </td>
 
-              <td className="align-middle">{option.label || 'No comment'}</td>
+              <td className="align-middle">{option.label || ''}</td>
             </tr>
           ))}
         </tbody>
       </Table>
-      <Modal isOpen={isModalOpen} toggle={() => toggleModal(null)} size="xl" style={{ height: '90%' }}>
+
+      <Modal isOpen={isModalOpen} toggle={() => toggleModal(null)} size="xl">
         <ModalHeader toggle={() => toggleModal(null)}>
           RDF Help for {selectedOption ? uri2shortUri(selectedOption.fieldUri) : null}
         </ModalHeader>
+
         <ModalBody>
           {selectedOption ? (
             <div>
@@ -132,8 +130,9 @@ export const ClassPropertiesFilteredTable = ({ properties, superClass }) => {
             <p>No option selected.</p>
           )}
         </ModalBody>
+
         <ModalFooter>
-          <Button color="secondary" onClick={() => toggleModal(null)}>
+          <Button color="primary" onClick={() => toggleModal(null)}>
             Close
           </Button>
         </ModalFooter>

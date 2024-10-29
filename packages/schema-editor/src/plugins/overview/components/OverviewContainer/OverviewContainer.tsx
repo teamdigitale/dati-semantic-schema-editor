@@ -9,12 +9,10 @@ const OverviewContainer = ({ errSelectors, specSelectors, getComponent }) => {
   const Errors = getComponent('Errors', true);
   const InfoContainer = getComponent('InfoContainer', true);
   const TabHelp = getComponent('TabHelp', true);
-  const TabWebhooks = getComponent('TabWebhooks', true);
   const Models = getComponent('Models', true);
 
   const isSwagger2 = specSelectors.isSwagger2();
   const isOAS3 = specSelectors.isOAS3();
-  const isOAS31 = specSelectors.isOAS31();
 
   const [activeTab, toggleTab] = useState('models');
 
@@ -69,8 +67,6 @@ const OverviewContainer = ({ errSelectors, specSelectors, getComponent }) => {
     { id: 'models', title: 'Data Models', Component: Models },
     { id: 'information', title: 'Information', Component: InfoContainer },
     { id: 'help', title: 'Help', Component: TabHelp },
-    // { id: 'operations', title: 'Operations', Component: TabOperations },
-    ...(isOAS31 ? [{ id: 'webhooks', title: 'Webhooks', Component: TabWebhooks }] : []),
   ];
 
   return (
@@ -81,7 +77,7 @@ const OverviewContainer = ({ errSelectors, specSelectors, getComponent }) => {
 
           <div>
             {tabs.length > 0 && (
-              <Nav pills className="mb-3">
+              <Nav fill className="mb-4">
                 {tabs.map((x) => (
                   <NavItem key={x.id}>
                     <NavLink
@@ -92,21 +88,20 @@ const OverviewContainer = ({ errSelectors, specSelectors, getComponent }) => {
                         toggleTab(x.id);
                       }}
                     >
-                      {x.title}
+                      <strong>{x.title}</strong>
                     </NavLink>
                   </NavItem>
                 ))}
               </Nav>
             )}
-            <div className="swagger-ui">
-              <TabContent activeTab={activeTab}>
-                {tabs.map((x) => (
-                  <TabPane key={x.id} tabId={x.id}>
-                    <x.Component />
-                  </TabPane>
-                ))}
-              </TabContent>
-            </div>
+
+            <TabContent activeTab={activeTab}>
+              {tabs.map((x) => (
+                <TabPane key={x.id} tabId={x.id}>
+                  <x.Component />
+                </TabPane>
+              ))}
+            </TabContent>
           </div>
         </VersionPragmaFilter>
       </div>

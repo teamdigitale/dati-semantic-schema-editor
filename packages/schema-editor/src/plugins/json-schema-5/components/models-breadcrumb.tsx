@@ -1,4 +1,4 @@
-import { Breadcrumb, BreadcrumbItem, Icon } from 'design-react-kit';
+import { Breadcrumb, BreadcrumbItem } from 'design-react-kit';
 import React from 'react';
 import { useSchemaNavigation } from '../../overview/components/Navigation';
 
@@ -16,12 +16,6 @@ export const ModelsBreadcrumb = ({ specPathBase }: Props) => {
 
   return (
     <Breadcrumb>
-      <BreadcrumbItem className="pe-1">
-        <a href="#" onClick={(e) => handleClick(e, history.length - 1)}>
-          <Icon icon="it-arrow-up" size="sm" title="Go back" />
-        </a>
-      </BreadcrumbItem>
-
       <BreadcrumbItem>
         <a href="#" onClick={(e) => handleClick(e, 0)}>
           {specPathBase.map((x, i) => {

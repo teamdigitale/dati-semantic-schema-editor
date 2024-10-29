@@ -26,12 +26,10 @@ export function RDFOntologicalClassBlock({ classUri }) {
       <Spinner active small />
     </span>
   ) : status === 'error' ? (
-    <Icon icon="it-error" color="danger" title={`${error}.\nCheck console log.`} />
+    <Icon icon="it-error" color="danger" title={error} />
   ) : data?.ontologicalClass ? (
     <OntologicalClass uri={data.ontologicalClass} comment={data?.ontologicalClassComment} />
   ) : classUri ? (
-    <>
-      <OntologicalClass uri={classUri} comment={`URI not found: ${classUri}`} error />
-    </>
+    <OntologicalClass uri={classUri} comment={`URI not found: ${classUri}`} error />
   ) : null;
 }

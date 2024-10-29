@@ -1,5 +1,7 @@
-import { List, Map, OrderedMap } from 'immutable';
+import { List, Map } from 'immutable';
 import { updateJsonldContext } from '../hooks/use-jsonld-bundler';
+
+import './model-root.scss';
 
 export interface Props {
   name: string;
@@ -43,7 +45,7 @@ export const ModelRoot = ({
   const updatedJsonldContext = updateJsonldContext(parentSchema).get('@context');
 
   return (
-    <div className="d-block neutral-2-bg p-3 mb-3">
+    <div className="model-root d-block p-3 mb-3">
       <Model
         name={name}
         schema={schema}

@@ -39,7 +39,7 @@ export function uri2shortUri(uri: string) {
     return pathParts[pathParts.length - 2] + ':' + pathParts[pathParts.length - 1];
   } catch (e) {
     // Handle invalid URLs
-    console.error('Invalid URL:', e);
+    console.error(`Invalid URL: ${uri}`, e);
     return '';
   }
 }

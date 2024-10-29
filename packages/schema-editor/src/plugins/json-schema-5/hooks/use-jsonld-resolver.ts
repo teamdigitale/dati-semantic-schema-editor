@@ -50,7 +50,7 @@ export const useJsonLDResolver = (jsonldContext: Map<any, any> | any, keysPath: 
           //      because it can be defined in the parent context.
           innerContext[key] = key;
         } else if (innerContext[key].startsWith && innerContext[key].startsWith('@')) {
-          console.log(`Property ${key} is a keyword. Don't resolve it.`);
+          console.log(`Property ${key} is associated with the keyword ${innerContext[key]}. Don't resolve it.`);
           setState({
             status: 'fulfilled',
             data: { fieldName: innerContext[key], fieldUri: innerContext[key], vocabularyUri: undefined },

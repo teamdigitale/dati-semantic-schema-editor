@@ -1,17 +1,22 @@
 import './object-model.scss';
 
+import { Accordion } from 'design-react-kit';
 import { List } from 'immutable';
 import { useJsonLDResolver, useRDFPropertyResolver } from '../hooks';
 import { getParentType, isUri } from '../utils';
 import { DeprecatedBlock } from './common/deprecated-block';
 import { DescriptionBlock } from './common/description-block';
-import { ExampleBlock } from './common/example-block';
+import { ExampleAccordion } from './common/example-accordion';
 import { ExternalDocsBlock } from './common/external-docs-block';
-import { HeadingBlock } from './common/heading-block';
-import { JsonLdContextBlock } from './common/jsonld-context-block';
+import { HeadingBlock, HeadingBlockLeft, HeadingBlockRight } from './common/heading-block';
+import { RDFHelperButtonWithModal } from './common/helper';
+import { JsonLdContextAccordion } from './common/jsonld-context-accordion';
+import { ModelTitle } from './common/model-title';
+import { NavigateBack } from './common/navigate-back';
 import { OntoScoreBlock } from './common/onto-score-block';
 import { PropertiesBlock } from './common/properties-block';
-import { RDFHelperButtonWithModal } from './common/helper';
+import { RDFContentAccordion } from './common/rdf-content-accordion';
+import { RDFOntologicalClassBlock } from './common/rdf-ontological-class-block';
 import { RDFOntologicalClassPropertyBlock } from './common/rdf-ontological-class-property-block';
 import { SemanticDescriptionBlock } from './common/semantic-description-block';
 import { TypeFormatVocabularyBlock } from './common/type-format-vocabulary-block';
@@ -51,15 +56,10 @@ const ObjectModel = ({
   const oneOf = isOAS3 ? schema.get('oneOf') : null;
   const not = isOAS3 ? schema.get('not') : null;
 
-  const Model = getComponent('Model');
-  const ModelCollapse: typeof ModelCollapseComponent = getComponent('ModelCollapse', true);
-  const JumpToPath = getComponent('JumpToPath', true);
-
   // Check if parent type is array.
   const isArrayElement = getParentType(specSelectors, specPathArray) === 'array' && propertyName === 'items';
-  //
+
   // Ontological resolvers.
-  //
   const findKey = specPathArray.slice(3).filter((x) => x !== 'properties');
   const { data: jsonLDResolverResult } = useJsonLDResolver(jsonldContext, findKey);
   const { data: rdfProperty } = useRDFPropertyResolver(jsonLDResolverResult?.fieldUri);
@@ -71,79 +71,93 @@ const ObjectModel = ({
       ? classUriResolverResult?.fieldUri
       : jsonldType;
 
-  return (
-    <div className="modello object-model">
-      {depth > 1 && !isArrayElement && (
-        <div>
-          <RDFOntologicalClassPropertyBlock fieldUri={jsonLDResolverResult?.fieldUri} />
-        </div>
-      )}
+  // View models
+  const Model = getComponent('Model');
+  const ModelCollapse: typeof ModelCollapseComponent = getComponent('ModelCollapse', true);
+  const JumpToPath = getComponent('JumpToPath', true);
 
-      {!expanded && (
+  // Collapsed view
+  if (!expanded) {
+    return (
+      <div className="modello object-model">
         <TypeFormatVocabularyBlock
           type="object"
           jsonldContext={jsonldContext}
           propertyName={propertyName}
           rdfProperty={rdfProperty}
         />
-      )}
-
-      {!expanded && (
         <SemanticDescriptionBlock getComponent={getComponent} description={rdfProperty?.ontologicalPropertyComment} />
-      )}
+        <ModelCollapse title={title} specPath={specPath} expanded={expanded} schema={schema}></ModelCollapse>
+      </div>
+    );
+  }
+  // Expanded view
+  return (
+    <div className="modello object-model">
+      <HeadingBlock>
+        <HeadingBlockLeft>
+          <NavigateBack />
+          <ModelTitle title={title} />
+          <RDFOntologicalClassBlock classUri={classUri} />
+        </HeadingBlockLeft>
+        <HeadingBlockRight>
+          <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} />
+          <JumpToPath specPath={specPath} />
+        </HeadingBlockRight>
+      </HeadingBlock>
 
-      <ModelCollapse title={title} specPath={specPath} expanded={expanded} schema={schema}>
-        {depth === 1 && (
-          <HeadingBlock title={title} specPath={specPath} jsonldType={classUri} getComponent={getComponent}>
-            <>
-              <RDFHelperButtonWithModal getComponent={getComponent} classUri={classUri} schema={schema} />
-              <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} />
-            </>
-          </HeadingBlock>
-        )}
+      <hr />
 
-        <DeprecatedBlock schema={schema} />
-
-        <DescriptionBlock schema={schema} getComponent={getComponent} />
-
-        <ExternalDocsBlock schema={schema} getComponent={getComponent} />
-
-        <PropertiesBlock properties={infoProperties} getComponent={getComponent} />
-
+      <div className="d-flex justify-content-between">
         <div>
-          <span className="brace-open object">{braceOpen}</span>
-          <span className="inner-object">
-            <table className="modello code">
-              <tbody>
-                {properties &&
-                  properties.size &&
-                  properties
-                    .entrySeq()
-                    .filter(([key, value]) => value && typeof value.get === 'function')
-                    .filter(([key, value]) => {
-                      return (
-                        (!value.get('readOnly') || includeReadOnly) && (!value.get('writeOnly') || includeWriteOnly)
-                      );
-                    })
-                    .map(([key, value]) => {
-                      const childSpecPath = specPath.push('properties', key);
-                      const isDeprecated = isOAS3 && value.get && value.get('deprecated');
-                      const isRequired = List.isList(requiredProperties) && requiredProperties.contains(key);
-                      const classNames = ['property-row'];
-                      if (isDeprecated) {
-                        classNames.push('deprecated');
-                      }
-                      if (isRequired) {
-                        classNames.push('required');
-                      }
+          {depth > 1 && !isArrayElement && (
+            <RDFOntologicalClassPropertyBlock fieldUri={jsonLDResolverResult?.fieldUri} />
+          )}
+          <DeprecatedBlock schema={schema} />
+          <DescriptionBlock schema={schema} getComponent={getComponent} />
+          <ExternalDocsBlock schema={schema} getComponent={getComponent} />
+          <PropertiesBlock properties={infoProperties} getComponent={getComponent} />
+        </div>
+        <div>
+          {depth === 1 && <RDFHelperButtonWithModal getComponent={getComponent} classUri={classUri} schema={schema} />}
+        </div>
+      </div>
 
-                      return (
-                        <tr key={key} className={classNames.join(' ')}>
-                          <td className="break-word">
-                            <JumpToPath specPath={childSpecPath} size="xs" /> {key}
-                            {isRequired && <span className="star">*</span>}
-                          </td>
-                          <td>
+      <hr />
+
+      <div className="bg-white p-4">
+        <span className="brace-open object">{braceOpen}</span>
+        <span className="inner-object">
+          <table className="modello code">
+            <tbody>
+              {properties &&
+                properties.size &&
+                properties
+                  .entrySeq()
+                  .filter(([key, value]) => value && typeof value.get === 'function')
+                  .filter(([key, value]) => {
+                    return (!value.get('readOnly') || includeReadOnly) && (!value.get('writeOnly') || includeWriteOnly);
+                  })
+                  .map(([key, value]) => {
+                    const childSpecPath = specPath.push('properties', key);
+                    const isDeprecated = isOAS3 && value.get && value.get('deprecated');
+                    const isRequired = List.isList(requiredProperties) && requiredProperties.contains(key);
+                    const classNames = ['property-row'];
+                    if (isDeprecated) {
+                      classNames.push('deprecated');
+                    }
+                    if (isRequired) {
+                      classNames.push('required');
+                    }
+
+                    return (
+                      <tr key={key} className={classNames.join(' ')}>
+                        <td>
+                          {key}
+                          {isRequired && <span className="star">*</span>}
+                        </td>
+                        <td>
+                          <div className="d-flex align-items-start justify-content-between">
                             <Model
                               key={`object-${name}-${key}_${value}`}
                               {...otherProps}
@@ -156,145 +170,146 @@ const ObjectModel = ({
                               depth={depth + 1}
                               jsonldContext={jsonldContext}
                             />
-                          </td>
+                            <JumpToPath specPath={childSpecPath} size="xs" />
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                  .toArray()}
+
+              {showExtensions && extensions?.toArray().length > 0 && (
+                <>
+                  <tr>
+                    <td>&nbsp;</td>
+                  </tr>
+
+                  {extensions
+                    .map(([key, value]) => {
+                      const normalizedValue = !value ? null : value.toJS ? value.toJS() : value;
+                      return (
+                        <tr key={key} className="extension">
+                          <td>{key}</td>
+                          <td>{JSON.stringify(normalizedValue)}</td>
                         </tr>
                       );
                     })
                     .toArray()}
+                </>
+              )}
 
-                {showExtensions && extensions?.toArray().length > 0 && (
-                  <>
-                    <tr>
-                      <td>&nbsp;</td>
-                    </tr>
+              {!additionalProperties || !additionalProperties.size ? null : (
+                <tr>
+                  <td>{'< * >:'}</td>
+                  <td>
+                    <Model
+                      {...otherProps}
+                      required={false}
+                      getComponent={getComponent}
+                      specPath={specPath.push('additionalProperties')}
+                      getConfigs={getConfigs}
+                      schema={additionalProperties}
+                      depth={depth + 1}
+                      jsonldContext={jsonldContext}
+                    />
+                  </td>
+                </tr>
+              )}
 
-                    {extensions
-                      .map(([key, value]) => {
-                        const normalizedValue = !value ? null : value.toJS ? value.toJS() : value;
-                        return (
-                          <tr key={key} className="extension">
-                            <td>{key}</td>
-                            <td>{JSON.stringify(normalizedValue)}</td>
-                          </tr>
-                        );
-                      })
-                      .toArray()}
-                  </>
-                )}
-
-                {!additionalProperties || !additionalProperties.size ? null : (
-                  <tr>
-                    <td>{'< * >:'}</td>
-                    <td>
-                      <Model
-                        {...otherProps}
-                        required={false}
-                        getComponent={getComponent}
-                        specPath={specPath.push('additionalProperties')}
-                        getConfigs={getConfigs}
-                        schema={additionalProperties}
-                        depth={depth + 1}
-                        jsonldContext={jsonldContext}
-                      />
-                    </td>
-                  </tr>
-                )}
-
-                {!allOf ? null : (
-                  <tr>
-                    <td>{'allOf ->'}</td>
-                    <td>
-                      {allOf.map((schema, k) => (
-                        <div key={k}>
-                          <Model
-                            {...otherProps}
-                            required={false}
-                            getComponent={getComponent}
-                            specPath={specPath.push('allOf', k)}
-                            getConfigs={getConfigs}
-                            schema={schema}
-                            depth={depth + 1}
-                            jsonldContext={jsonldContext}
-                          />
-                        </div>
-                      ))}
-                    </td>
-                  </tr>
-                )}
-
-                {!anyOf ? null : (
-                  <tr>
-                    <td>{'anyOf ->'}</td>
-                    <td>
-                      {anyOf.map((schema, k) => (
-                        <div key={k}>
-                          <Model
-                            {...otherProps}
-                            required={false}
-                            getComponent={getComponent}
-                            specPath={specPath.push('anyOf', k)}
-                            getConfigs={getConfigs}
-                            schema={schema}
-                            depth={depth + 1}
-                            jsonldContext={jsonldContext}
-                          />
-                        </div>
-                      ))}
-                    </td>
-                  </tr>
-                )}
-
-                {!oneOf ? null : (
-                  <tr>
-                    <td>{'oneOf ->'}</td>
-                    <td>
-                      {oneOf.map((schema, k) => (
-                        <div key={k}>
-                          <Model
-                            {...otherProps}
-                            required={false}
-                            getComponent={getComponent}
-                            specPath={specPath.push('oneOf', k)}
-                            getConfigs={getConfigs}
-                            schema={schema}
-                            depth={depth + 1}
-                            jsonldContext={jsonldContext}
-                          />
-                        </div>
-                      ))}
-                    </td>
-                  </tr>
-                )}
-
-                {!not ? null : (
-                  <tr>
-                    <td>{'not ->'}</td>
-                    <td>
-                      <div>
+              {!allOf ? null : (
+                <tr>
+                  <td>{'allOf ->'}</td>
+                  <td>
+                    {allOf.map((schema, k) => (
+                      <div key={k}>
                         <Model
                           {...otherProps}
                           required={false}
                           getComponent={getComponent}
-                          specPath={specPath.push('not')}
+                          specPath={specPath.push('allOf', k)}
                           getConfigs={getConfigs}
-                          schema={not}
+                          schema={schema}
                           depth={depth + 1}
                           jsonldContext={jsonldContext}
                         />
                       </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </span>
-          <span className="brace-close">{braceClose}</span>
-        </div>
+                    ))}
+                  </td>
+                </tr>
+              )}
 
-        <ExampleBlock schema={schema} jsonldContext={jsonldContext} depth={depth} getConfigs={getConfigs} />
+              {!anyOf ? null : (
+                <tr>
+                  <td>{'anyOf ->'}</td>
+                  <td>
+                    {anyOf.map((schema, k) => (
+                      <div key={k}>
+                        <Model
+                          {...otherProps}
+                          required={false}
+                          getComponent={getComponent}
+                          specPath={specPath.push('anyOf', k)}
+                          getConfigs={getConfigs}
+                          schema={schema}
+                          depth={depth + 1}
+                          jsonldContext={jsonldContext}
+                        />
+                      </div>
+                    ))}
+                  </td>
+                </tr>
+              )}
 
-        <JsonLdContextBlock jsonldContext={jsonldContext} depth={depth} />
-      </ModelCollapse>
+              {!oneOf ? null : (
+                <tr>
+                  <td>{'oneOf ->'}</td>
+                  <td>
+                    {oneOf.map((schema, k) => (
+                      <div key={k}>
+                        <Model
+                          {...otherProps}
+                          required={false}
+                          getComponent={getComponent}
+                          specPath={specPath.push('oneOf', k)}
+                          getConfigs={getConfigs}
+                          schema={schema}
+                          depth={depth + 1}
+                          jsonldContext={jsonldContext}
+                        />
+                      </div>
+                    ))}
+                  </td>
+                </tr>
+              )}
+
+              {!not ? null : (
+                <tr>
+                  <td>{'not ->'}</td>
+                  <td>
+                    <div>
+                      <Model
+                        {...otherProps}
+                        required={false}
+                        getComponent={getComponent}
+                        specPath={specPath.push('not')}
+                        getConfigs={getConfigs}
+                        schema={not}
+                        depth={depth + 1}
+                        jsonldContext={jsonldContext}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </span>
+        <span className="brace-close">{braceClose}</span>
+      </div>
+
+      <ExampleAccordion schema={schema} jsonldContext={jsonldContext} depth={depth} getConfigs={getConfigs} />
+      <RDFContentAccordion schema={schema} jsonldContext={jsonldContext} />
+      <JsonLdContextAccordion jsonldContext={jsonldContext} depth={depth} />
     </div>
   );
 };

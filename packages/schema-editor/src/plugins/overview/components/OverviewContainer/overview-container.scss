@@ -6,8 +6,24 @@
 @import 'bootstrap/scss/badge';
 @import 'bootstrap-italia/src/scss/custom/badge';
 
+.modal {
+  .modal-dialog {
+    .modal-content {
+      .modal-header {
+        border-bottom: 1px solid #bfdfff;
+        padding-bottom: 12px;
+      }
+      .modal-footer {
+        border-top: 1px solid #bfdfff;
+        padding-top: 12px;
+      }
+    }
+  }
+}
+
 .overview-container {
-  padding: 2rem;
+  padding: 1rem;
+  height: 100%;
 
   > div {
     > div {
@@ -17,20 +33,26 @@
     }
   }
 
-  .swagger-ui {
-    font-family: 'Titillium Web', Geneva, Tahoma, sans-serif;
-    --bs-font-monospace: 'Titillium Web', Geneva, Tahoma, sans-serif;
+  .nav {
+    .nav-item {
+      .nav-link {
+        border-bottom: 2px solid #c5c7c9;
 
-    pre,
-    .pre,
-    .code {
-      font-family: var(--bs-font-monospace);
-      font-size: small;
+        &:focus,
+        &.active {
+          border-bottom: 2px solid var(--bs-nav-link-color) !important;
+        }
+      }
     }
+  }
+
+  .btn {
+    white-space: nowrap;
   }
 
   .info {
     position: relative;
+    margin: 0;
 
     .main {
       .title {

@@ -33,7 +33,7 @@ export function ModelCollapse({ children, expanded, title, specPath, schema }: P
       {!expanded ? (
         <>
           {title && (
-            <a href="#" className="d-flex justify-content-between text-primary" onClick={handleClick}>
+            <a href="#" className="text-primary" onClick={handleClick}>
               <strong>{title || 'Show'}</strong>
               <Icon icon="it-chevron-right" size="sm" />
             </a>

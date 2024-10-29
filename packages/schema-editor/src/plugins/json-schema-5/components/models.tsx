@@ -1,10 +1,10 @@
 import './models.scss';
 
 import { useSchemaNavigation } from '../../overview/components/Navigation';
-import type { ModelCollapse as ModelCollapseComponent } from './model-collapse';
+import { ActionsMenu } from './actions-menu';
+import { ModelCollapseRoot } from './model-collapse-root';
 import type { ModelRoot as ModelRootComponent } from './model-root';
 import type { ModelsBreadcrumb as ModelsBreadcrumbComponent } from './models-breadcrumb';
-import { ActionsMenu } from './actions-menu';
 
 export function Models({ getComponent, specSelectors, getConfigs }) {
   const { history, jsonldContextFullPath } = useSchemaNavigation();
@@ -20,12 +20,11 @@ export function Models({ getComponent, specSelectors, getConfigs }) {
   }
 
   const ModelsBreadcrumb: typeof ModelsBreadcrumbComponent = getComponent('ModelsBreadcrumb', true);
-  const ModelCollapse: typeof ModelCollapseComponent = getComponent('ModelCollapse', true);
   const ModelRoot: typeof ModelRootComponent = getComponent('ModelRoot', true);
 
   return (
     <div className="modelli">
-      <div className="d-flex flex-row justify-between">
+      <div className="d-flex flex-row justify-content-between">
         <ModelsBreadcrumb specPathBase={specPathBase} />
         <ActionsMenu specSelectors={specSelectors} url={url} />
       </div>
@@ -35,9 +34,7 @@ export function Models({ getComponent, specSelectors, getConfigs }) {
         definitions
           .entrySeq()
           .map(([key, schema]) => (
-            <div key={key} className="d-block neutral-2-bg p-3 mb-3">
-              <ModelCollapse title={key} specPath={[...specPathBase, key]} schema={schema} />
-            </div>
+            <ModelCollapseRoot key={key} title={key} specPath={[...specPathBase, key]} schema={schema} />
           ))
           .toArray()}
 

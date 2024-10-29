@@ -1,39 +1,41 @@
+import { Button, Icon, Modal, ModalBody, ModalFooter, ModalHeader } from 'design-react-kit';
 import React, { useState } from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Icon } from 'design-react-kit';
 import { RDFOntologicalClassHelperBlock } from './rdf-helper-block';
 
-interface RDFOntologicalClassModalProps {
+interface Props {
   getComponent: (name: string, isStatic?: boolean) => any;
   classUri: string;
   schema: any;
 }
 
-export const RDFHelperButtonWithModal: React.FC<RDFOntologicalClassModalProps> = ({
-  getComponent,
-  classUri,
-  schema,
-}) => {
+export const RDFHelperButtonWithModal: React.FC<Props> = ({ getComponent, classUri, schema }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
-  };
+  const toggleModal = () => setIsModalOpen(!isModalOpen);
+
+  const Markdown = getComponent('Markdown', true);
 
   return (
     <>
-      <Button color="primary" onClick={toggleModal} style={{ marginLeft: '10px' }}>
-        Open RDF Helper <Icon icon="it-help-circle" size="xs" />
+      <Button color="primary" size="xs" outline onClick={toggleModal}>
+        Open RDF Helper <Icon icon="it-help-circle" size="xs" color="primary" />
       </Button>
 
-      <Modal isOpen={isModalOpen} toggle={toggleModal} size="xl" style={{ height: '90%' }}>
-        <ModalHeader toggle={toggleModal}>
-          <Icon icon="it-help-circle" title="TODO: mostra help.md" size="xs" color="primary" />
+      <Modal isOpen={isModalOpen} toggle={toggleModal} size="xl" withIcon>
+        <ModalHeader toggle={toggleModal} className="align-items-center">
+          <Icon icon="it-help-circle" color="primary" />
           RDF Ontological Class Helper
         </ModalHeader>
+
         <ModalBody>
-          <RDFOntologicalClassHelperBlock getComponent={getComponent} classUri={classUri} schema={schema} />
+          {!classUri || !schema ? (
+            <Markdown source={MARKDOWN_HELPER_SOURCE} />
+          ) : (
+            <RDFOntologicalClassHelperBlock classUri={classUri} />
+          )}
         </ModalBody>
+
         <ModalFooter>
-          <Button color="secondary" onClick={toggleModal}>
+          <Button color="primary" onClick={toggleModal}>
             Close
           </Button>
         </ModalFooter>
@@ -41,3 +43,33 @@ export const RDFHelperButtonWithModal: React.FC<RDFOntologicalClassModalProps> =
     </>
   );
 };
+
+const MARKDOWN_HELPER_SOURCE = `
+###### 🇮🇹 ITALIAN
+
+
+:mega: E' una funzionalità in fase di sviluppo.
+Il nome provvisorio del tool è "RDF Helper", ma possiamo cambiarlo. :mega:
+
+Questo tab ospita un tool per aiutarti a visualizzare le owl:Class e le rdfs:Property  associate presenti nei tuoi schemi dati.
+
+Seleziona uno schema dati, quindi apri questo tab
+oppure clicca su "RDF Helper" per aprire in una modale.
+
+Troverai qui:
+
+- una drop-down con l'elenco di tutte le superclassi ontologiche,
+  ad esempio, per  "CPV:Alive" troverai "CPV:Person";
+- l'elenco dei vocabolari controllati associabili alla classe selezionata,
+    ad esempio, per "CLV:Feature" troverai sia il vocabolario delle città che quello delle regioni.
+- una tabella filtrabile con tutte le proprietà dirette ed ereditate dalla classe selezionata,
+    ad esempio, per "CPV:Alive" troverai "CPV:givenName" e "CPV:familyName" ereditate da "CPV:Person";
+
+Cliccando su una proprietà della tabella,
+vedrai le informazioni dettagliate della proprietà selezionata
+e delle snippet di codice per integrarle nei tuoi schemi dati.
+
+###### 🇬🇧 ENGLISH
+
+TBD
+`;

@@ -1,0 +1,11 @@
+.card-wrapper {
+  &.card-space {
+    padding-bottom: 1.5rem;
+  }
+
+  .card {
+    &:after {
+      content: unset;
+    }
+  }
+}
