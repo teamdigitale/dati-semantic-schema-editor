@@ -6,7 +6,7 @@ import { ModelCollapseRoot } from './model-collapse-root';
 import type { ModelRoot as ModelRootComponent } from './model-root';
 import type { ModelsBreadcrumb as ModelsBreadcrumbComponent } from './models-breadcrumb';
 
-export function Models({ getComponent, specSelectors, getConfigs }) {
+export function Models({ getComponent, specSelectors, getConfigs, specActions }) {
   const { history, jsonldContextFullPath } = useSchemaNavigation();
   const currentHistoryItem = history[history.length - 1];
 
@@ -26,7 +26,7 @@ export function Models({ getComponent, specSelectors, getConfigs }) {
     <div className="modelli">
       <div className="d-flex flex-row justify-content-between">
         <ModelsBreadcrumb specPathBase={specPathBase} />
-        <ActionsMenu specSelectors={specSelectors} url={url} />
+        <ActionsMenu specSelectors={specSelectors} url={url} specActions={specActions} />
       </div>
 
       {/* Root */}

@@ -22,8 +22,57 @@ const downloadContent = (specStr, mediaType = 'application/yaml', fileName = 'sp
   URL.revokeObjectURL(url);
 };
 
-export const ActionsMenu = ({ specSelectors, url }) => {
+export const ActionsMenu = ({ specSelectors, url, specActions }) => {
   const { oasCheckerUrl, schemaEditorUrl } = useConfiguration();
+
+  const actions: Array<{
+    text: string;
+    icon: string;
+    onClick?: () => void;
+    href?: string;
+  } | null> = [
+    {
+      text: 'New from template',
+      icon: 'it-pencil',
+      onClick: () => {
+        const template = `${window.location.origin}/${window.location.pathname}/schemas/blank-template.oas3.yaml`;
+        console.log('New from template', template);
+        specActions.updateUrl(template);
+        specActions.download(template);
+      },
+    },
+    {
+      text: 'Download editor content',
+      icon: 'it-download',
+      onClick: () => downloadContent(specSelectors.specStr()),
+    },
+    {
+      text: 'Download as JSON',
+      icon: 'it-download',
+      onClick: () =>
+        downloadContent(JSON.stringify(specSelectors.specJson(), null, 2), 'application/json', 'spec.json'),
+    },
+    {
+      text: 'Copy as URL',
+      icon: 'it-copy',
+      onClick: () =>
+        copyAsB64zipToClipboard(specSelectors.specStr(), `${window.location.origin}${window.location.pathname}#oas:`),
+    },
+    oasCheckerUrl
+      ? {
+          text: 'Copy as OAS Checker URL',
+          icon: 'it-copy',
+          onClick: () => copyAsB64zipToClipboard(specSelectors.specStr(), `${oasCheckerUrl}#text=`),
+        }
+      : null,
+    schemaEditorUrl
+      ? {
+          text: 'Open in Schema Editor',
+          icon: 'it-external-link',
+          href: `${schemaEditorUrl}?url=${/^http/.test(url) ? url : `${window.location.origin}/${window.location.pathname}/${url}`}`,
+        }
+      : null,
+  ];
 
   return (
     <Dropdown>
@@ -31,65 +80,23 @@ export const ActionsMenu = ({ specSelectors, url }) => {
 
       <DropdownMenu>
         <LinkList>
-          <LinkListItem
-            className="right-icon justify-content-between d-flex"
-            inDropdown
-            href="#"
-            onClick={() => downloadContent(specSelectors.specStr())}
-          >
-            <span>Download editor content</span>
-            <Icon icon="it-download" size="sm" className="right" />
-          </LinkListItem>
-
-          <LinkListItem
-            className="right-icon justify-content-between d-flex"
-            inDropdown
-            href="#"
-            onClick={() =>
-              downloadContent(JSON.stringify(specSelectors.specJson(), null, 2), 'application/json', 'spec.json')
-            }
-          >
-            <span>Download as JSON</span>
-            <Icon icon="it-download" size="sm" className="right" />
-          </LinkListItem>
-
-          <LinkListItem
-            className="right-icon justify-content-between d-flex"
-            inDropdown
-            href="#"
-            onClick={() =>
-              copyAsB64zipToClipboard(
-                specSelectors.specStr(),
-                `${window.location.origin}${window.location.pathname}#oas:`,
-              )
-            }
-          >
-            <span>Copy as URL</span>
-            <Icon icon="it-copy" size="sm" className="right" />
-          </LinkListItem>
-
-          {oasCheckerUrl && (
-            <LinkListItem
-              className="right-icon justify-content-between d-flex"
-              inDropdown
-              href="#"
-              onClick={() => copyAsB64zipToClipboard(specSelectors.specStr(), `${oasCheckerUrl}#text=`)}
-            >
-              <span>Copy as OAS Checker URL</span>
-              <Icon icon="it-copy" size="sm" className="right" />
-            </LinkListItem>
-          )}
-
-          {schemaEditorUrl && (
-            <LinkListItem
-              className="right-icon justify-content-between d-flex"
-              inDropdown
-              href={`${schemaEditorUrl}?url=${/^http/.test(url) ? url : `${window.location.origin}/${window.location.pathname}/${url}`}`}
-            >
-              <span>Open in Schema Editor</span>
-              <Icon icon="it-external-link" size="sm" className="right" />
-            </LinkListItem>
-          )}
+          <>
+            {actions.map(
+              (action) =>
+                action && (
+                  <LinkListItem
+                    key={action.text}
+                    className="right-icon justify-content-between d-flex"
+                    inDropdown
+                    href={action?.href || '#'}
+                    onClick={action?.onClick}
+                  >
+                    <span>{action?.text}</span>
+                    <Icon icon={action?.icon} size="sm" className="right" />
+                  </LinkListItem>
+                ),
+            )}
+          </>
         </LinkList>
       </DropdownMenu>
     </Dropdown>
