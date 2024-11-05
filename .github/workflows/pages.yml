@@ -15,10 +15,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
@@ -57,4 +57,18 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/dist
           publish_branch: gh-pages-new  # don't overwrite the existing gh-pages branch.
-          destination_dir: ${{ env.EDITOR_VERSION }}
+          destination_dir: ${{ github.ref == 'refs/heads/main' && 'latest' || env.EDITOR_VERSION }}
+
+      - name: Post GitHub Pages URL as comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const url = `https://par-tec.github.io/dati-semantic-schema-editor/${{ env.EDITOR_VERSION }}`;
+            github.rest.issues.createComment({
+              issue_number: ${{ github.event.pull_request.number }},
+              owner: `par-tec`,
+              repo: `dati-semantic-schema-editor`,
+              body: `The changes have been deployed to GitHub Pages: ${url}`
+            });
