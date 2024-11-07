@@ -1,7 +1,7 @@
 import './_layout.scss';
 
 import { SplitPane } from 'react-collapse-pane';
-import Dropzone from '../Dropzone/Dropzone';
+import { Dropzone } from '../Dropzone/Dropzone';
 
 export const EditorLayout = ({ specActions, getComponent }) => {
   const ConfigurationProvider = getComponent('ConfigurationProvider', true);
