@@ -6,6 +6,11 @@ export default mergeConfig(
   defineProject({
     test: {
       environment: 'jsdom',
+      server: {
+        deps: {
+          inline: ['design-react-kit'],
+        },
+      },
     },
   }),
 );
