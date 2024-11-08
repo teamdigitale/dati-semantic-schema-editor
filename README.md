@@ -1,6 +1,6 @@
 # Schema Editor
 
-Italia OpenAPI Schema Editor devoped on [Swagger Editor](https://github.com/swagger-api/swagger-editor).
+Italia OpenAPI Schema Editor is developed on [Swagger Editor](https://github.com/swagger-api/swagger-editor).
 
 This repository uses [PNPM](https://pnpm.io) and [turborepo](https://turbo.build/) for packages management, and [changesets](https://github.com/changesets/changesets) for versioning and publishing.
 
