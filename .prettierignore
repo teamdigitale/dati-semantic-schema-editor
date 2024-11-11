@@ -4,5 +4,9 @@ dist
 node_modules
 .github
 .changeset
+#
+# YAML is formatted via pre-commit.
+#
 pnpm-lock.yaml
 pnpm-workspace.yaml
+*.yaml

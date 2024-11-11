@@ -1,6 +1,8 @@
 #
 # Self-baked pre-commit docker image.
 #
+
+# checkov:skip=CKV_DOCKER_2: HEALTHCHECK is not required.
 FROM python:3
 RUN useradd noop -m
 USER noop

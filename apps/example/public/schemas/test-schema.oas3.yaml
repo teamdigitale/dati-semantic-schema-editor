@@ -6,20 +6,22 @@ components:
   schemas:
     ListPrimitive:
       x-jsonld-context:
-        "@vocab": https://w3id.org/italia/onto/CPV/
+        '@vocab': https://w3id.org/italia/onto/CPV/
       type: object
       properties:
         hasLevelOfEducation:
           description: >-
             Array properties show the rdfs:comment too.
           type: array
+          minItems: 0
+          maxItems: 2
           items:
             type: string
       example:
         hasLevelOfEducation: [NED, L]
     ListObject:
       x-jsonld-context:
-        "@vocab": https://w3id.org/italia/onto/CLV/
+        '@vocab': https://w3id.org/italia/onto/CLV/
       type: object
       properties:
         hasAddress:
@@ -27,7 +29,7 @@ components:
           minItems: 0
           maxItems: 2
           items:
-            $ref: "#/components/schemas/B"
+            $ref: '#/components/schemas/B'
       example:
         hasAddress:
           - hasCity: Rome
@@ -36,7 +38,7 @@ components:
       type: object
       x-jsonld-type: https://w3id.org/italia/onto/CLV/Address
       x-jsonld-context:
-        "@vocab": https://w3id.org/italia/onto/CLV/
+        '@vocab': https://w3id.org/italia/onto/CLV/
       properties:
         hasCity:
           type: string
@@ -44,10 +46,10 @@ components:
       type: object
       x-jsonld-type: https://w3id.org/italia/onto/CPV/Person
       x-jsonld-context:
-        "@vocab": https://w3id.org/italia/onto/CPV/
+        '@vocab': https://w3id.org/italia/onto/CPV/
       properties:
         hasBirthPlace:
-          $ref: "#/components/schemas/B"
+          $ref: '#/components/schemas/B'
     ExportedSchemas:
       anyOf: []
     #
@@ -66,6 +68,8 @@ components:
         JSON-LD does not support to attach a `@context` to a primitive type,
         and the x-jsonld-type would be something like `rdfs:Literal`, that
         bears no semantic information.
+      minItems: 0
+      maxItems: 2
       items:
         type: string
     #
@@ -95,7 +99,7 @@ components:
       type: object
       x-jsonld-type: Person
       x-jsonld-context:
-        "@vocab": "https://w3id.org/italia/onto/CPV/"
+        '@vocab': 'https://w3id.org/italia/onto/CPV/'
       description: >-
         The associated rdf:type is inferred from @vocab.
         The editor shows only the rdf:type information,
@@ -112,7 +116,7 @@ components:
       type: object
       x-jsonld-type: RPO:RegisteredResidentPerson
       x-jsonld-context:
-        "@vocab": "https://w3id.org/italia/onto/CPV/"
+        '@vocab': 'https://w3id.org/italia/onto/CPV/'
         RPO: https://w3id.org/italia/onto/RPO/
       properties:
         givenName:
@@ -132,14 +136,14 @@ components:
     NoExampleNoPlayground:
       type: object
       x-jsonld-context:
-        "@vocab": "https://w3id.org/italia/onto/CPV/"
+        '@vocab': 'https://w3id.org/italia/onto/CPV/'
       description: >-
-            The editor warns that to open the playground
-            the schema must have an `example`.
+        The editor warns that to open the playground
+        the schema must have an `example`.
     TypeUsesContext3:
       type: object
       x-jsonld-context:
-        "@vocab": "https://w3id.org/italia/onto/CPV/"
+        '@vocab': 'https://w3id.org/italia/onto/CPV/'
       properties:
         isParentOf:
           type: object
@@ -154,9 +158,9 @@ components:
     Card:
       x-jsonld-type: Person
       x-jsonld-context:
-        "@vocab": "https://w3id.org/italia/onto/CPV/"
-        email: "@id"
-        "@base": "mailto:"
+        '@vocab': 'https://w3id.org/italia/onto/CPV/'
+        email: '@id'
+        '@base': 'mailto:'
       properties:
         fullName:
           type: string
@@ -167,24 +171,24 @@ components:
         fullName: Roberto Polli
     Addressbook:
       type: object
-      x-jsonld-type: "https://w3id.org/italia/onto/CPV/Addressbook"
+      x-jsonld-type: 'https://w3id.org/italia/onto/CPV/Addressbook'
       x-jsonld-context:
-        "@vocab": "https://w3id.org/italia/onto/CPV/"
+        '@vocab': 'https://w3id.org/italia/onto/CPV/'
       properties:
         owner:
           $ref: '#/components/schemas/Card'
     Person:
       type: object
-      x-jsonld-type: "https://w3id.org/italia/onto/CPV/Person"
+      x-jsonld-type: 'https://w3id.org/italia/onto/CPV/Person'
       x-jsonld-context:
-        "@vocab": "https://w3id.org/italia/onto/CPV/"
+        '@vocab': 'https://w3id.org/italia/onto/CPV/'
         detached: null
         family_name: familyName
         tax_code:
-          "@id": taxCode
+          '@id': taxCode
         education_level:
-          "@id": hasLevelOfEducation
-          "@type": "@id"
+          '@id': hasLevelOfEducation
+          '@type': '@id'
       properties:
         missing:
           type: string
@@ -218,19 +222,19 @@ components:
             The associated rdf:Property is explicitly mentioned in @context using `@id`.
             The editor identifies the controlled vocabulary
             even if it is not mentioned in the context.
-          example: "L"
+          example: 'L'
         hasLevelOfEducation:
           type: string
           description: >-
             The associated rdf:Property is not explicitly mentioned in @context.
             The editor identifies the controlled vocabulary
             even if it is not mentioned in the context.
-          example: "L"
+          example: 'L'
       example:
         givenName: John
         family_name: Doe
-        tax_code: "DOEJHN77T01H501A"
-        education_level: "L"
+        tax_code: 'DOEJHN77T01H501A'
+        education_level: 'L'
 
 info:
   title: Test schema collection

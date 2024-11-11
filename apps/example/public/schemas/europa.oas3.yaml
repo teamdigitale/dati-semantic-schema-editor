@@ -24,10 +24,10 @@ components:
     Country:
       description: |-
         A test entry for https://data.europa.eu/sparql
-      x-jsonld-type: "http://purl.org/dc/terms/Location"
+      x-jsonld-type: 'http://purl.org/dc/terms/Location'
       x-jsonld-context:
-        "@base": http://publications.europa.eu/resource/authority/country
-        id: "@id"
+        '@base': http://publications.europa.eu/resource/authority/country
+        id: '@id'
       properties:
         id:
           type: string

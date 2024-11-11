@@ -11,9 +11,14 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
 
     steps:
       - name: Checkout repository
@@ -24,17 +29,29 @@ jobs:
         with:
           node-version: 20
 
-      - name: Set version based on head_ref when pull or ref_name when tag.
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-        run: echo "EDITOR_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+      - name: Set version based on event type
+        # Pass untrusted input via intermediate environment variables. See https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
+        env:
+          UNTRUSTED_GITHUB_HEAD_REF: ${{ github.head_ref }}
+        run: |
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
+            EDITOR_VERSION="latest"
+          elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" =~ ^refs/tags/ ]]; then
+            EDITOR_VERSION="${{ github.ref_name }}"
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            EDITOR_VERSION="${UNTRUSTED_GITHUB_HEAD_REF}"
+          fi
 
-      - name: Set version based on head_ref when pull or ref_name when tag.
-        if: github.event_name == 'pull_request'
-        run: echo "EDITOR_VERSION=${{ github.head_ref }}" >> $GITHUB_ENV
+          if [[ "$EDITOR_VERSION" =~ ^[a-zA-Z0-9.-]+$ ]]; then
+            echo "EDITOR_VERSION=$EDITOR_VERSION" >> "$GITHUB_ENV"
+          else
+            echo "Invalid EDITOR_VERSION: $EDITOR_VERSION"
+            exit 1
+          fi
 
       - name: Set BASE_URL
         run: |
-          echo "BASE_URL=/${{ github.event.repository.name }}/${{ env.EDITOR_VERSION }}" >> $GITHUB_ENV
+          echo "BASE_URL=/${{ github.event.repository.name }}/${{ env.EDITOR_VERSION }}" >> "$GITHUB_ENV"
 
       - name: Install pnpm
         run: npm install -g pnpm

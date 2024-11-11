@@ -13,3 +13,14 @@ rules:
     max: 90
   indentation:
     indent-sequences: consistent
+
+# Specify the paths to be processed
+ignore: |
+  pnpm-lock.yaml
+  node_modules
+
+# Override rules for specific paths
+overrides:
+  - path: "apps/example/public/schemas/*.yaml"
+    rules:
+      line-length: disable

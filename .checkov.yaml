@@ -1,0 +1,6 @@
+#
+#
+#
+skip-check:
+- CKV_OPENAPI_3  # Schema don't need cleartext checks.
+- CKV_OPENAPI_4  # Schema don't need security definitions.

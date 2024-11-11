@@ -31,11 +31,13 @@ components:
         and the x-jsonld-type would be something like `rdfs:Literal`, that
         bears no semantic information.
     Array:
-      type: array
       description: >-
         JSON-LD does not support to attach a `@context` to a primitive type,
         and the x-jsonld-type would be something like `rdfs:Literal`, that
         bears no semantic information.
+      type: array
+      minItems: 0
+      maxItems: 2
       items:
         type: string
     ListPrimitive:
@@ -47,6 +49,8 @@ components:
           description: >-
             Array properties show the rdfs:comment too.
           type: array
+          minItems: 0
+          maxItems: 10
           items:
             type: string
       example:

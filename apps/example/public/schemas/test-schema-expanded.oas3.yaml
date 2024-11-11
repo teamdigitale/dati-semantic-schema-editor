@@ -491,10 +491,14 @@ components:
           type: string
         listaSoggetti:
           type: array
+          minItems: 0
+          maxItems: 10
           items:
             $ref: '#/components/schemas/PersonaAnagraficamenteResidente'
         listaAnomalie:
           type: array
+          minItems: 0
+          maxItems: 10
           items:
             $ref: '#/components/schemas/TipoErroriAnomalia'
     RispostaKO:
@@ -504,6 +508,8 @@ components:
           type: string
         listaErrori:
           type: array
+          minItems: 0
+          maxItems: 10
           items:
             $ref: '#/components/schemas/TipoErroriAnomalia'
     TipoErroriAnomalia:

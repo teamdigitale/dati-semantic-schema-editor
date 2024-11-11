@@ -32,14 +32,23 @@ services:
       pnpm install
       npm run dev
   super-linter:
-    image: github/super-linter:v3.15.5
+    image: ghcr.io/super-linter/super-linter:slim-v7.1.0
     environment:
     - RUN_LOCAL=true
     - VALIDATE_MARKDOWN=false
     - VALIDATE_PYTHON_ISORT=false
     - VALIDATE_XML=false
     - VALIDATE_NATURAL_LANGUAGE=false
+    - VALIDATE_JSCPD=false
     - IGNORE_GITIGNORED_FILES=true
+    - FIX_YAML_PRETTIER=true
+    - FIX_CSS=true
+    - FIX_JSON=true
+    - FIX_JSON_PRETTIER=true
+    - FIX_MARKDOWN_PRETTIER=true
+    - FIX_TSX=true
+    - FIX_TYPESCRIPT_ES=true
+
     volumes:
     - .:/tmp/lint/
   # This container will run successfully
