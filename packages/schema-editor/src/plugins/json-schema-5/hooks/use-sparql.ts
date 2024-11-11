@@ -14,7 +14,7 @@ export function useSparqlQuery(query: string, options?: SparqlQueryOptions) {
   const callback = useCallback(async (query: string) => {
     try {
       setStatus('pending');
-      const endpoint = `${sparqlUrl}?format=json&query=${encodeURIComponent(query)}`;
+      const endpoint = `${sparqlUrl?.trim()}?format=json&query=${encodeURIComponent(query)}`;
       const response = await fetch(endpoint, { cache: 'force-cache' });
       if (!response.ok) {
         throw new Error(response.statusText);
