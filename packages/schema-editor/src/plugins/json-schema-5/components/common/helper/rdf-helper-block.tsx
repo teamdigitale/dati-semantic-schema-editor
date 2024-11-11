@@ -1,4 +1,4 @@
-import { Spinner } from 'design-react-kit';
+import { Alert, Spinner } from 'design-react-kit';
 import { useState } from 'react';
 import { useRDFClassPropertiesResolver } from '../../../hooks';
 import { uri2shortUri } from '../../../utils';
@@ -21,17 +21,17 @@ export function RDFOntologicalClassHelperBlock({ classUri }: Props) {
     setSelectedSuperClass(event.target.value);
   };
 
-  if (status === 'pending') {
-    return (
-      <span className="d-inline-block align-middle">
-        <Spinner active small />
-      </span>
-    );
-  }
-  if (!data?.classProperties || !data?.classUri) {
-    return null;
-  }
-  return (
+  return status === 'pending' ? (
+    <div className="d-flex justify-content-center mb-4">
+      <Spinner active small />
+    </div>
+  ) : status === 'error' ? (
+    <div className="mb-4">
+      <Alert color="danger">There was an error fetching RDF properties</Alert>
+    </div>
+  ) : !data?.classProperties || !data?.classUri ? (
+    <div className="mb-4">No RDF properties to display</div>
+  ) : (
     <span className="modelli">
       <div className="d-flex justify-content-between mb-4">
         <h6>
