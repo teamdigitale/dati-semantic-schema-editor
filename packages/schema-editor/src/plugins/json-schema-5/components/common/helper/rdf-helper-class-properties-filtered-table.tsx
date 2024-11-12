@@ -1,19 +1,34 @@
+import {
+  Badge,
+  Button,
+  ButtonGroup,
+  Form,
+  Icon,
+  InputGroup,
+  InputGroupText,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Table,
+} from 'design-react-kit';
+import yaml from 'js-yaml';
 import { useState } from 'react';
 import { RDFClassProperties } from '../../../hooks';
 import { uri2shortUri } from '../../../utils';
-import { Badge, Button, Icon, Modal, ModalBody, ModalFooter, ModalHeader, Table } from 'design-react-kit';
-import yaml from 'js-yaml';
 
 export const ClassPropertiesFilteredTable = ({ properties, superClass }) => {
+  const [selectedOption, setSelectedOption] = useState<RDFClassProperties | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleModal = (option: RDFClassProperties | null = null) => {
     setSelectedOption(option);
     setIsModalOpen(!isModalOpen);
   };
-  const [selectedOption, setSelectedOption] = useState<RDFClassProperties | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [searchTerm, setSearchTerm] = useState('');
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
+  const handleSearch = (event) => {
+    event.preventDefault();
+    setSearchTerm(event.target[0].value);
   };
 
   const sortedOptions = properties.sort(
@@ -35,18 +50,19 @@ export const ClassPropertiesFilteredTable = ({ properties, superClass }) => {
 
   return sortedOptions.length ? (
     <span className="modelli">
-      <div className="input-group mb-3">
-        <span className="input-group-text">
-          <Icon icon="it-search" />
-        </span>
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          placeholder="Search"
-          className="form-control"
-        />
-      </div>
+      <Form onSubmit={handleSearch}>
+        <ButtonGroup className="w-100 mb-3">
+          <InputGroup>
+            <InputGroupText>
+              <Icon icon="it-search" />
+            </InputGroupText>
+            <input type="text" placeholder="Search" className="form-control" />
+          </InputGroup>
+          <Button type="submit" color="primary">
+            Search
+          </Button>
+        </ButtonGroup>
+      </Form>
 
       <Table responsive>
         <thead className="table-dark">
