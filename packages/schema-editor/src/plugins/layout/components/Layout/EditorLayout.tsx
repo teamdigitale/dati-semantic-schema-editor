@@ -1,7 +1,7 @@
 import './_layout.scss';
 
-import { SplitPane } from 'react-collapse-pane';
 import { Dropzone } from '../Dropzone/Dropzone';
+import { SplitPane } from '../SplitPane';
 
 export const EditorLayout = ({ specActions, getComponent }) => {
   const ConfigurationProvider = getComponent('ConfigurationProvider', true);
@@ -16,20 +16,7 @@ export const EditorLayout = ({ specActions, getComponent }) => {
     <ConfigurationProvider>
       <div className="schema-editor">
         <Dropzone onDrop={handleChange}>
-          <SplitPane
-            split="vertical"
-            resizerOptions={{
-              css: {
-                width: '5px',
-                background: '#e6ecf2',
-              },
-              hoverCss: {
-                width: '5px',
-                background: '#e6ecf2',
-              },
-              grabberSize: '1.5rem',
-            }}
-          >
+          <SplitPane>
             <EditorContainer onChange={handleChange} />
             <OverviewContainer />
           </SplitPane>

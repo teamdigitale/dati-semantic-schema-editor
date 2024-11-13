@@ -80,7 +80,7 @@ export function SchemaEditor({
       console.log('Updating url');
       const prevStateUrl = system?.specSelectors.url();
       if (url !== prevStateUrl || url !== prevUrl) {
-        system.getSystem().specActions.updateSpec('');
+        system.specActions.updateSpec('');
         if (url) {
           system.specActions.updateUrl(url);
           system.specActions.download(url);
@@ -95,7 +95,7 @@ export function SchemaEditor({
       const prevStateSpec = system.specSelectors.specStr();
       if (spec && spec !== SwaggerUI.config.defaults.spec && (spec !== prevStateSpec || spec !== prevSpec)) {
         const updatedSpec = typeof spec === 'object' ? JSON.stringify(spec) : spec;
-        system.getSystem().specActions.updateSpec(updatedSpec);
+        system.specActions.updateSpec(updatedSpec);
       }
     }
   }, [system, spec]);

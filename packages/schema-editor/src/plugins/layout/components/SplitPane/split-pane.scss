@@ -1,0 +1,42 @@
+.split-pane {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  position: absolute;
+  outline: none;
+  overflow: hidden;
+  left: 0;
+  right: 0;
+  flex-direction: row;
+
+  .split-pane-pane {
+    overflow: auto;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 50%;
+  }
+
+  .split-pane-divider {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    cursor: col-resize;
+
+    .split-pane-divider-touch {
+      z-index: 1;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 24px;
+    }
+
+    .split-pane-divider-bar {
+      z-index: 2;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      background: rgb(230, 236, 242);
+      width: 5px;
+    }
+  }
+}
