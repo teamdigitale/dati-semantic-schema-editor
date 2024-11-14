@@ -1,6 +1,7 @@
 import LZString from 'lz-string';
 
 export * from './basename';
+export * from './jsonld-resolver';
 export * from './shorten-rdf';
 export * from './curie';
 

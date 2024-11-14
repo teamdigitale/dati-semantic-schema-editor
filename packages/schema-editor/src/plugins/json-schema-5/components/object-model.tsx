@@ -1,7 +1,6 @@
 import './object-model.scss';
 
-import { Accordion } from 'design-react-kit';
-import { List } from 'immutable';
+import { List, Map } from 'immutable';
 import { useJsonLDResolver, useRDFPropertyResolver } from '../hooks';
 import { getParentType, isUri } from '../utils';
 import { DeprecatedBlock } from './common/deprecated-block';
@@ -25,7 +24,7 @@ import type { ModelCollapse as ModelCollapseComponent } from './model-collapse';
 const braceOpen = '{';
 const braceClose = '}';
 
-const ObjectModel = ({
+export const ObjectModel = ({
   schema,
   name,
   displayName,
@@ -36,6 +35,19 @@ const ObjectModel = ({
   specPath,
   jsonldContext,
   ...otherProps
+}: {
+  schema: Map<string, any>;
+  name: string;
+  displayName: string;
+  getComponent: (path: string, required?: boolean) => any;
+  getConfigs: () => { showExtensions: boolean };
+  depth: number;
+  expanded: boolean;
+  specPath: List<string>;
+  jsonldContext: any;
+  specSelectors: any;
+  includeReadOnly: boolean;
+  includeWriteOnly: boolean;
 }) => {
   const { specSelectors, includeReadOnly, includeWriteOnly } = otherProps;
   const { showExtensions } = getConfigs();
@@ -44,7 +56,7 @@ const ObjectModel = ({
   const propertyName = specPathArray[specPathArray.length - 1] as string;
   const jsonldType = schema.get('x-jsonld-type');
   const title = (schema?.get('title') as string) || displayName || name || '';
-  const properties = schema.get('properties');
+  const properties: Map<string, any> = schema.get('properties');
   const additionalProperties = schema.get('additionalProperties');
   const requiredProperties = schema.get('required');
   const infoProperties = schema.filter((v, key) => ['maxProperties', 'minProperties', 'nullable'].indexOf(key) !== -1);
@@ -70,6 +82,8 @@ const ObjectModel = ({
     classUriResolverResult?.fieldUri && isUri(classUriResolverResult.fieldUri)
       ? classUriResolverResult?.fieldUri
       : jsonldType;
+
+  const propertiesPaths = Array.from(properties?.keys() || []).map((x) => [...findKey, x]);
 
   // View models
   const Model = getComponent('Model');
@@ -101,7 +115,7 @@ const ObjectModel = ({
           <RDFOntologicalClassBlock classUri={classUri} />
         </HeadingBlockLeft>
         <HeadingBlockRight>
-          <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} />
+          <OntoScoreBlock jsonldContext={jsonldContext} propertiesPaths={propertiesPaths} />
           <JumpToPath specPath={specPath} />
         </HeadingBlockRight>
       </HeadingBlock>
@@ -313,5 +327,3 @@ const ObjectModel = ({
     </div>
   );
 };
-
-export default ObjectModel;

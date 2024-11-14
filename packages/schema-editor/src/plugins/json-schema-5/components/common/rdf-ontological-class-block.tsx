@@ -27,7 +27,7 @@ export function RDFOntologicalClassBlock({ classUri }) {
     </span>
   ) : status === 'error' ? (
     <Icon icon="it-error" color="danger" title={error} />
-  ) : data?.ontologicalClass ? (
+  ) : classUri && data?.ontologicalClass ? (
     <OntologicalClass uri={data.ontologicalClass} comment={data?.ontologicalClassComment} />
   ) : classUri ? (
     <OntologicalClass uri={classUri} comment={`URI not found: ${classUri}`} error />

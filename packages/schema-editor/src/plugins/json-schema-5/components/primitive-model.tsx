@@ -11,15 +11,14 @@ import { ExampleAccordion } from './common/example-accordion';
 import { ExternalDocsBlock } from './common/external-docs-block';
 import { HeadingBlock, HeadingBlockLeft, HeadingBlockRight } from './common/heading-block';
 import { JsonLdContextAccordion } from './common/jsonld-context-accordion';
-import { PropertiesBlock } from './common/properties-block';
-import { RDFOntologicalClassPropertyBlock } from './common/rdf-ontological-class-property-block';
-import { SemanticDescriptionBlock } from './common/semantic-description-block';
-import { TypeFormatVocabularyBlock } from './common/type-format-vocabulary-block';
-import JumpToPath from '../../jump-to-path';
 import { ModelTitle } from './common/model-title';
 import { NavigateBack } from './common/navigate-back';
 import { OntoScoreBlock } from './common/onto-score-block';
+import { PropertiesBlock } from './common/properties-block';
 import { RDFOntologicalClassBlock } from './common/rdf-ontological-class-block';
+import { RDFOntologicalClassPropertyBlock } from './common/rdf-ontological-class-property-block';
+import { SemanticDescriptionBlock } from './common/semantic-description-block';
+import { TypeFormatVocabularyBlock } from './common/type-format-vocabulary-block';
 
 export const PrimitiveModel = ({
   schema,
@@ -71,7 +70,7 @@ export const PrimitiveModel = ({
               <RDFOntologicalClassBlock classUri={jsonldType} />
             </HeadingBlockLeft>
             <HeadingBlockRight>
-              <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} />
+              <OntoScoreBlock jsonldContext={jsonldContext} propertiesPaths={[findKey]} />
               <JumpToPath specPath={specPath} />
             </HeadingBlockRight>
           </HeadingBlock>

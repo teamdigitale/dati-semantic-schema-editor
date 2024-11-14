@@ -1,0 +1,187 @@
+#
+# Schema to test the editor.
+#
+openapi: 3.0.3
+components:
+  schemas:
+    NoTypeNoContext:
+      description: |-
+        When we have no @type nor @context, Ontoscore is not computed.
+      type: object
+    ContextOnly:
+      description: |-
+        When we have @type or @context, Ontoscore is computed.
+        - `ontoscore: 0`
+      x-jsonld-context:
+        '@vocab': https://w3id.org/italia/onto/CLV/
+      type: object
+    TypeOnly:
+      description: |-
+        When we only have @type, Ontoscore is 0
+        because it's only computed on properties.
+        - `ontoscore: 0`
+      x-jsonld-type: Country
+      x-jsonld-context:
+        '@vocab': https://w3id.org/italia/onto/CLV/
+      type: object
+    IdOnly:
+      description: |-
+        `@id` is considered an ontomatch.
+        `ontoscore: 1`
+      x-jsonld-type: Country
+      x-jsonld-context:
+        '@vocab': https://w3id.org/italia/onto/CLV/
+        '@base': http://publications.europa.eu/resource/authority/country/
+        country: '@id'
+      type: object
+      properties:
+        country:
+          type: string
+      example:
+        country: ITA
+    IdAndOneMissingProp:
+      description: |-
+        `@id` is considered an ontomatch.
+        explicit mentions are ontomatch.
+        `ontoscore: 0.50`
+      x-jsonld-type: Country
+      x-jsonld-context:
+        '@vocab': https://w3id.org/italia/onto/CLV/
+        '@base': http://publications.europa.eu/resource/authority/country/
+        country: '@id'
+      type: object
+      properties:
+        country:
+          type: string
+        inhabitants:
+          type: number
+      example:
+        country: ITA
+        inhabitants: 14200
+    IdAndOneResolvedProp:
+      description: |-
+        `@id` is considered an ontomatch.
+        resolved mentions are ontomatch.
+        `ontoscore: 1`
+      x-jsonld-type: Country
+      x-jsonld-context:
+        '@vocab': https://w3id.org/italia/onto/CLV/
+        country: '@id'
+      type: object
+      properties:
+        country:
+          type: string
+        hasLowerRank:
+          type: boolean
+      example:
+        country: ITA
+    ResolveVocabProperty:
+      description: |-
+        @vocab properties are ontomatch.
+        `ontoscore: 1`
+      x-jsonld-type: EducationLevel
+      x-jsonld-context:
+        '@vocab': https://w3id.org/italia/onto/CPV/
+      type: object
+      properties:
+        educationLevelID:
+          type: string
+      example:
+        country: ITA
+    ResolveVocabAndExplicitProperty:
+      description: |-
+        @vocab properties are ontomatch.
+        explicit mentions are ontomatch.
+        `ontoscore: 1`
+      x-jsonld-type: EducationLevel
+      x-jsonld-context:
+        '@vocab': https://w3id.org/italia/onto/CPV/
+        description: educationLevelDesc
+      type: object
+      properties:
+        educationLevelID:
+          type: string
+        description:
+          type: string
+      example:
+        country: NED
+        description: No education
+    VocabAndMissing:
+      description: |-
+        @vocab properties are ontomatch.
+        explicit mentions are ontomatch.
+        `ontoscore: 0.50`
+      x-jsonld-type: EducationLevel
+      x-jsonld-context:
+        '@vocab': https://w3id.org/italia/onto/CPV/
+        description: foo
+      type: object
+      properties:
+        educationLevelID:
+          type: string
+        description:
+          type: string
+      example:
+        country: NED
+        description: No education
+    Human:
+      description: |-
+        **ATTENTION: This element must be reached from NestedContext**
+
+        inferred properties are ontomatch.
+        `ontoscore: 1`
+      properties:
+        givenName:
+          type: string
+        familyName:
+          type: string
+    NestedContext:
+      description: |-
+        @vocab properties are ontomatch.
+        explicit mentions are ontomatch.
+        `ontoscore: 1`
+      x-jsonld-type: Person
+      x-jsonld-context:
+        '@vocab': https://w3id.org/italia/onto/CPV/
+        parents: isChildOf
+      allOf:
+        - $ref: '#/components/schemas/Human'
+        - properties:
+            parents:
+              type: array
+              maxItems: 2
+              minItems: 0
+              items:
+                $ref: '#/components/schemas/Human'
+      example:
+        givenName: John
+        familyName: Doe
+        parents:
+          - givenName: Jane
+            familyName: Doe
+        ciao: 1
+
+
+info:
+  title: Test schema collection
+  version: 202409.01.00
+  x-summary: A schema to test functionalities of the editor.
+  license:
+    name: BSD3
+    url: https://opensource.org/licenses/BSD-3-Clause
+  termsOfService: https://opensource.org/licenses/BSD-3-Clause
+  contact:
+    name: Roberto Polli
+    email: roberto.polli@par-tec.it
+    url: https://www.par-tec.it
+  description: |-
+
+    ## Welcome!
+    This schema is used to test the editor functionalities.
+#
+# If this is a schema-only file, you can leave the following sections empty.
+# Do not remove them, as they are required by the OpenAPI 3.0 specification.
+#
+paths: {}
+servers: []
+tags: []
