@@ -84,10 +84,10 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const url = `https://par-tec.github.io/dati-semantic-schema-editor/${{ env.EDITOR_VERSION }}`;
+            const url = `https://${context.repo.owner}.github.io/${context.repo.repo}/${{ env.EDITOR_VERSION }}`;
             github.rest.issues.createComment({
               issue_number: ${{ github.event.pull_request.number }},
-              owner: `par-tec`,
-              repo: `dati-semantic-schema-editor`,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
               body: `The changes have been deployed to GitHub Pages: ${url}`
             });
