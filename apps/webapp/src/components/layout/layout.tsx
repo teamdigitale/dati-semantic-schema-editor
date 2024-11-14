@@ -42,7 +42,7 @@ export function Layout({ children }: { children: JSX.Element }) {
             <Header type="center" small className="inner-header">
               <HeaderContent>
                 <HeaderBrand iconAlt="it code circle icon" iconName="it-code-circle">
-                  <h2>Schema Editor - 0.0.4 beta</h2>
+                  <h2>Schema Editor - 0.0.5 beta</h2>
                   <h3>Italian OpenAPI Schema Editor</h3>
                 </HeaderBrand>
 
