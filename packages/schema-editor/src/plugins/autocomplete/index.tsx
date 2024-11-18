@@ -227,7 +227,6 @@ export const EditorAutosuggestCustomPlugin = () => ({
                     editorValue: editor.getValue(),
                     AST: system.fn.AST,
                   });
-                  console.log('path', path, context);
 
                   if (path.length == 3 && path[0] === 'components' && path[1] === 'schemas') {
                     const suggestions = suggestionMap['x-jsonld'];

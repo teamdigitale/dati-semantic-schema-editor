@@ -4,52 +4,66 @@ import { expand } from 'jsonld';
 
 export interface JsonLDResolverResult {
   fieldName: string;
-  fieldUri: string;
+  fieldUri: string | undefined;
   vocabularyUri?: string;
 }
 
 export async function resolvePropertyByJsonldContext(
-  jsonldContext: Map<any, any>,
+  jsonldContext: Map<any, any> | any,
   propertyPath: string[], // For example ["components", "schemas", "person", "birth_place"]
 ): Promise<JsonLDResolverResult> {
   try {
+    // Validate inputs
     if (!jsonldContext || !propertyPath?.length) {
       throw new Error('Invalid context or keys');
     }
 
+    // If last key equals @id, then resolve
     const lastKey = propertyPath[propertyPath.length - 1];
     if (lastKey.startsWith('@id')) {
       return { fieldName: '@id', fieldUri: '@id' };
     }
 
-    // Don't need to process full URIs.
+    // If last key is an URI, then resolve
     if (/^https?:/.test(lastKey)) {
       return { fieldName: basename(lastKey), fieldUri: lastKey };
     }
 
-    let context: any = typeof jsonldContext.toJS !== 'undefined' ? jsonldContext.toJS() : jsonldContext;
-    context = context['@context'] ?? context;
+    // Parse context deeply in order to generate a correct context
+    let rootContext: any = Map.isMap(jsonldContext) ? jsonldContext.toJS() : jsonldContext;
+    rootContext = rootContext['@context'] ?? rootContext;
 
-    // Validate property path upon context
-    let innerContext = context;
+    let innerContext = rootContext;
     for (let i = 0; i < propertyPath.length; i++) {
       const key = propertyPath[i];
-      if (!innerContext[key]) {
-        // Property ${key} not found in inner @context. Resolving with default @vocab.
-        // We cannot check if @vocab is defined in the context because it can be defined in the parent context.
-        innerContext[key] = key;
-      } else if (innerContext[key].startsWith && innerContext[key].startsWith('@')) {
-        // Property ${key} is associated with the keyword ${innerContext[key]}. Don't resolve it.
-        return { fieldName: innerContext[key], fieldUri: innerContext[key] };
-      } else if (i < propertyPath.length - 1 && !innerContext[key]['@context']) {
-        throw new Error(`Missing inner @context for property ${key}`);
+      const isLastKey = i === propertyPath.length - 1;
+
+      // If missing inner context, the x-jsonld-context spec is not complete (eg: still writing yaml, or unresolved context)
+      if (!innerContext) {
+        return { fieldName: key, fieldUri: undefined };
       }
-      innerContext = innerContext[key]['@context'];
+      // If property value is explicitly null, then avoid resolving URI
+      else if (innerContext[key] === null) {
+        return { fieldName: key, fieldUri: undefined };
+      }
+      // If property value is not set, then resolve with the default @vocab.
+      // Please consider that @vocab could be defined in the parent context, not only in inner context.
+      else if (innerContext[key] === undefined) {
+        innerContext[key] = key;
+      }
+      // If property is something like @id, avoid resolving URI
+      else if (isLastKey && typeof innerContext[key] === 'string' && innerContext[key].startsWith('@')) {
+        return { fieldName: innerContext[key], fieldUri: innerContext[key] };
+      }
+      // Continue to resolve deeply
+      else {
+        innerContext = innerContext[key]?.['@context'];
+      }
     }
 
     // Generating input and extracting expanded data
     const input = propertyPath.reduceRight((obj, x, i) => ({ [x]: i < propertyPath.length - 1 ? obj : '' }), {});
-    const result = await expand({ '@context': context, ...input });
+    const result = await expand({ '@context': rootContext, ...input });
 
     // Processing extracted data
     let fieldUri: string | undefined = undefined;

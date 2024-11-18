@@ -1,10 +1,16 @@
-import { Spinner } from 'design-react-kit';
+import { Icon, Spinner } from 'design-react-kit';
 import { useRDFPropertyResolver } from '../../hooks';
 import { basename } from '../../utils';
 
 export function RDFOntologicalClassPropertyBlock({ fieldUri }) {
-  const { data, status } = useRDFPropertyResolver(fieldUri);
+  const { data, status, error } = useRDFPropertyResolver(fieldUri);
 
+  // When the fieldUri is null, it means that it has been dis-associated from the schema. See https://www.w3.org/TR/json-ld11/#terminology
+  if (!fieldUri) {
+    return null;
+  }
+
+  // Pending status
   if (status === 'pending') {
     return (
       <span className="d-inline-block align-middle">
@@ -13,17 +19,17 @@ export function RDFOntologicalClassPropertyBlock({ fieldUri }) {
     );
   }
 
-  // When the fieldUri is null, it means that it has been dis-associated from the schema. See https://www.w3.org/TR/json-ld11/#terminology
-  if (!fieldUri) {
-    return null;
+  // Error status
+  if (status === 'error') {
+    return <Icon icon="it-error" color="danger" title={error} />;
   }
 
-  // When the fieldUri starts with '@', it means that it is a keyword, not a URI.
+  // Identifier field
   if (fieldUri.startsWith('@')) {
     return <span className="rdf-ontological-class-property">[{fieldUri}]</span>;
   }
 
-  // When the fieldUri is not null, but the data is null, it means that the fieldUri was not found on SparQL.
+  // Not found item
   if (!data?.ontologicalClass) {
     return (
       <span
@@ -35,6 +41,7 @@ export function RDFOntologicalClassPropertyBlock({ fieldUri }) {
     );
   }
 
+  // Resolved item
   return (
     <span className="rdf-ontological-class-property">
       {'['}

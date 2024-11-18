@@ -36,7 +36,6 @@ export const ActionsMenu = ({ specSelectors, url, specActions }) => {
       icon: 'it-pencil',
       onClick: () => {
         const template = `${window.location.origin}/${window.location.pathname}/schemas/blank-template.oas3.yaml`;
-        console.log('New from template', template);
         specActions.updateUrl(template);
         specActions.download(template);
       },

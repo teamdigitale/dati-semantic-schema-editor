@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { SchemaEditor } from './SchemaEditor';
 
@@ -18,7 +18,6 @@ vi.mock('swagger-ui', async (importOriginal) => {
       },
       getComponent: () => () => <div>Test</div>,
       getSystem: (...args2) => {
-        console.log('Gennaro');
         return originalInstance.getSystem(...args2);
       },
     };
