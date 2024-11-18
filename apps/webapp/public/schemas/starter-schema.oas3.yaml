@@ -48,6 +48,13 @@ components:
       example:
         id: NED
         description: Nessun titolo di studio
+    EUCountry:
+      description: >-
+        Just a flexible schema tied to the EU country vocabulary.
+      x-jsonld-type: Country
+      x-jsonld-context:
+        "@vocab": http://publications.europa.eu/ontology/euvoc#
+      type: object
     Parent:
       x-jsonld-context:
         '@vocab': 'https://w3id.org/italia/onto/CPV/'

@@ -7,6 +7,7 @@ components:
     Country:
       description: >-
         The `country` property is mapped to the object id.
+        The `@type: Country` is resolved using the `@vocab.
       x-jsonld-type: Country
       x-jsonld-context:
         '@vocab': https://w3id.org/italia/onto/CLV/
@@ -20,8 +21,8 @@ components:
         country: ITA
     Location:
       description: >-
-        The country property inherits its id
-        from Country/x-jsonld-context.
+        The `country` property inherits its id
+        from `#/components/schemas/Country/x-jsonld-context`.
       x-jsonld-context:
         '@vocab': https://w3id.org/italia/onto/CLV/
         country: hasCountry
@@ -36,17 +37,19 @@ components:
         country:
           country: ITA
     DontOverride:
+      description: >-
+        The @context is not overridden by `#/components/schemas/Location`.
       x-jsonld-context:
         '@vocab': https://w3id.org/italia/onto/CPV/
         dontOverride:
-          '@id': null
+          '@id': hasAddress
           '@context':
             '@vocab': https://schema.org/
       type: object
       properties:
         dontOverride:
           # The original context is not overridden
-          # by Simple/x-jsonld-context.
+          # by Location/x-jsonld-context.
           $ref: '#/components/schemas/Location'
       example:
         dontOverride:
@@ -71,6 +74,9 @@ components:
           #  the parent context.
           $ref: '#/components/schemas/Location'
     DeeplyNestedPerson:
+      description: |-
+        1. object `@type` is resolved using `@vocab`.
+        1. `parent` `@type` is resolved using `#/components/schemas/MergeContext/x-jsonld-context`.
       x-jsonld-type: Person
       x-jsonld-context:
         '@vocab': https://w3id.org/italia/onto/CPV/

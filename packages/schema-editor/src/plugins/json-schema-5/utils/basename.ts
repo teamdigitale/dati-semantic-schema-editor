@@ -11,7 +11,7 @@ export function basename(path: string) {
     return pathParts[pathParts.length - 1];
   } catch (e) {
     // Handle invalid URLs
-    console.error('Invalid URL:', e);
+    console.error(`Invalid URL: ${path}`, e);
     return '';
   }
 }

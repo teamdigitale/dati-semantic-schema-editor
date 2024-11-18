@@ -38,7 +38,7 @@ export const RDFHelperClassVocabulariesBlock = ({ classUri }: Props) => {
               .map((item, index) => (
                 <tr key={index}>
                   <td>
-                    <a href={item.controlledVocabulary} target="_blank" rel="noreferrer">
+                    <a href={item.controlledVocabulary} target="_blank" rel="noreferrer" title={item.label}>
                       {uri2shortUri(item.controlledVocabulary as string)}
                     </a>
                   </td>

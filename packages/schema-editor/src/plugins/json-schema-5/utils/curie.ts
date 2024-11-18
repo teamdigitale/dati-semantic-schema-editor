@@ -8,9 +8,12 @@ export const prefix_cc = {
   foaf: 'http://xmlns.com/foaf/0.1/',
   dc: 'http://purl.org/dc/elements/1.1/',
   dct: 'http://purl.org/dc/terms/',
+  // Italy
   CPV: 'https://w3id.org/italia/onto/CPV/',
   CLV: 'https://w3id.org/italia/onto/CLV/',
   l0: 'https://w3id.org/italia/onto/l0/',
+  // EU
+  euvoc: 'http://publications.europa.eu/ontology/euvoc#',
 };
 
 export function uri2curie(uri: string, context: Record<string, string>) {

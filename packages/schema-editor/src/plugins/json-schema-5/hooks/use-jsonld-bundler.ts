@@ -20,7 +20,7 @@ export const updateJsonldContext = (schema, jsonldContext = OrderedMap()) => {
             }
 
             const c0 = contextNode.get('@context') || OrderedMap();
-            innerLog('c0: ', c0.toJS(), typeof c0);
+            // innerLog('c0: ', c0.toJS(), typeof c0);
 
             let subKeyContext = OrderedMap();
             if (c0.has(subKey)) {
@@ -30,7 +30,7 @@ export const updateJsonldContext = (schema, jsonldContext = OrderedMap()) => {
                 subKeyContext = c0.get(subKey);
               }
             }
-            innerLog('subKeyContext: ', subKeyContext?.toJS());
+            // innerLog('subKeyContext: ', subKeyContext?.toJS());
             if (subKeyContext === null) {
               innerLog(`Don't overwrite an explicit parent's context`);
               return;

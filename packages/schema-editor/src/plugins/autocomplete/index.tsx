@@ -45,6 +45,12 @@ const suggestionMap = {
       caption: 'l0',
       score: 50,
     },
+    {
+      snippet: 'http://publications.europa.eu/ontology/euvoc#',
+      docHTML: 'Euvoc Ontology',
+      caption: 'euvoc',
+      score: 50,
+    },
   ],
   'x-jsonld-type': [
     {
@@ -160,47 +166,47 @@ const suggestionMap = {
     {
       caption: '"@vocab"',
       snippet: '"@vocab": ',
-      meta: 'A JSON-LD vocabulary',
+      docHTML: 'A JSON-LD vocabulary',
     },
     {
       caption: '"@base"',
       snippet: '"@base": ',
-      meta: 'A JSON-LD vocabulary',
+      docHTML: 'A JSON-LD vocabulary',
     },
     {
       // @id, @type, @context
       caption: '"@id"',
       snippet: '"@id": ',
-      meta: 'A JSON-LD vocabulary',
+      docHTML: 'A JSON-LD vocabulary',
     },
     {
       caption: '"@type"',
       snippet: '"@type": ',
-      meta: 'A JSON-LD vocabulary',
+      docHTML: 'A JSON-LD vocabulary',
     },
     {
       caption: '"@context"',
       snippet: '"@context": ',
-      meta: 'A JSON-LD vocabulary',
+      docHTML: 'A JSON-LD vocabulary',
     },
   ],
   '@base': [
     {
       caption: 'Country',
       snippet: 'http://publications.europa.eu/resource/authority/country/',
-      meta: 'Country',
+      docHTML: 'EU Country Vocabulary',
       score: 100,
     },
     {
       caption: 'Vehicle Code',
       snippet: 'https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/',
-      meta: 'Vehicle Code',
+      docHTML: 'IT Vehicle Code',
       score: 90,
     },
     {
       caption: 'Education Level',
       snippet: 'https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/',
-      meta: 'Education Level',
+      docHTML: 'IT Education Level',
       score: 90,
     },
   ],

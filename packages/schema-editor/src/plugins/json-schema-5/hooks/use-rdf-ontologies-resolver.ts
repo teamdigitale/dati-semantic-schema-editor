@@ -12,7 +12,7 @@ export interface RDFProperty {
 export function useRDFPropertyResolver(fieldUri: string | undefined): { data: RDFProperty; status: string } {
   const { data: sparqlData, status: sparqlStatus } = useSparqlQuery(
     `
-    PREFIX RDFS: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 
     SELECT DISTINCT * WHERE {
@@ -204,12 +204,14 @@ export function useRDFClassPropertiesResolver(classUri: string | undefined) {
 }
 
 /*
-  This hook resolves all the possible properties of a RDF class.
+  This hook resolves the vocabularies related to a rdf:type or its subclasses.
+  E.g. for a location, returns Provinces, Regions, Municipalities, etc.
 */
 export interface RDFClassVocabularies {
+  controlledVocabulary: string | undefined;
+  label: string | undefined;
   subclass: string;
   classUri: string | undefined;
-  controlledVocabulary: string | undefined;
   api: string | undefined;
 }
 export function useRDFClassVocabulariesResolver(classUri: string | undefined) {
@@ -219,14 +221,14 @@ export function useRDFClassVocabulariesResolver(classUri: string | undefined) {
     error: error,
   } = useSparqlQuery(
     `
-PREFIX CLV:	<https://w3id.org/italia/onto/CLV/>
-PREFIX CPV:	<https://w3id.org/italia/onto/CPV/>
 PREFIX NDC: <https://w3id.org/italia/onto/NDC/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
 SELECT DISTINCT
 
-  GROUP_CONCAT(DISTINCT ?subclass; separator=",") as ?subclass
   ?controlledVocabulary
+  ?label
+  GROUP_CONCAT(DISTINCT ?subclass; separator=",") as ?subclass
   ?api
 
  WHERE {
@@ -240,6 +242,21 @@ SELECT DISTINCT
     a ?subclass;
     skos:inScheme ?controlledVocabulary
   .
+
+  ?controlledVocabulary a skos:ConceptScheme
+  .
+
+  # Get the label from rdfs or skos.
+  # If there is a label in English, use it, otherwise use the Italian one.
+  OPTIONAL {
+    ?controlledVocabulary (rdfs:label|skos:prefLabel) ?label_en .
+    FILTER(lang(?label_en) = 'en')
+  }
+  OPTIONAL {
+    ?controlledVocabulary (rdfs:label|skos:prefLabel) ?label_it .
+    FILTER(lang(?label_it) = 'it')
+  }
+  BIND(COALESCE(?label_en, ?label_it) as ?label)
 
   OPTIONAL {
     _:b2
