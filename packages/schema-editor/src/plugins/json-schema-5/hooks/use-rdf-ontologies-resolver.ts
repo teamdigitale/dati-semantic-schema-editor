@@ -71,6 +71,7 @@ export function useRDFClassResolver(classUri: string | undefined) {
   } = useSparqlQuery(
     `
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
     SELECT DISTINCT
       ?classUri
@@ -82,10 +83,17 @@ export function useRDFClassResolver(classUri: string | undefined) {
 
       VALUES ?classUri { <${classUri}> }
 
-      ?classUri
-        rdfs:label ?label
-      .
-      FILTER(lang(?label) = 'en')
+      # Get the label from rdfs or skos.
+      # If there is a label in English, use it, otherwise use the Italian one.
+      OPTIONAL {
+        ?classUri (rdfs:label|skos:prefLabel) ?label_en .
+        FILTER(lang(?label_en) = 'en')
+      }
+      OPTIONAL {
+        ?classUri (rdfs:label|skos:prefLabel) ?label_it .
+        FILTER(lang(?label_it) = 'it')
+      }
+      BIND(COALESCE(?label_en, ?label_it) as ?label)
 
       OPTIONAL {
         ?classUri
