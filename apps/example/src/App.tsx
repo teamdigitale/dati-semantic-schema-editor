@@ -92,8 +92,13 @@ function App() {
               <HeaderSocialsZone label="Info + Repo">
                 <ul>
                   <li>
-                    <a aria-label="Github" href="#" target="_blank">
-                      <Icon icon="it-github" />
+                    <a
+                      aria-label="Github"
+                      href="https://github.com/italia/schema-editor"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Icon icon="it-github" title="Source code" />
                     </a>
                   </li>
                 </ul>

@@ -67,9 +67,6 @@ jobs:
       - name: Deploy
         run: pnpm deploy --filter=webapp --prod ./build
 
-      - name: Fixup
-        run: sed -i -e "s,%version%,${{ env.EDITOR_VERSION }}," build/dist/index.html
-
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:

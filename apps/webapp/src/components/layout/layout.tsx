@@ -1,4 +1,5 @@
 import cx from 'classnames';
+import { version } from '../../../package.json';
 import {
   Col,
   Header,
@@ -42,20 +43,26 @@ export function Layout({ children }: { children: JSX.Element }) {
             <Header type="center" small className="inner-header">
               <HeaderContent>
                 <HeaderBrand iconAlt="it code circle icon" iconName="it-code-circle">
-                  <h2>Schema Editor - 0.0.5 beta</h2>
+                  <h2>Schema Editor - {version} beta</h2>
                   <h3>Italian OpenAPI Schema Editor</h3>
                 </HeaderBrand>
 
                 <HeaderRightZone>
-                  <HeaderSocialsZone label="Info + Repo">
-                    <ul>
-                      <li>
-                        <a aria-label="Github" href="#" target="_blank">
-                          <Icon icon="it-github" />
-                        </a>
-                      </li>
-                    </ul>
-                  </HeaderSocialsZone>
+                    <HeaderSocialsZone label="Info + Repo">
+                      <ul>
+                        <li>
+                  <a
+                    aria-label="Github"
+                    href="https://github.com/italia/schema-editor"
+                    target="_blank"
+                    rel="noreferrer"
+                    className={cx({ 'text-white': !showMenu, 'text-primary': showMenu })}
+                  >
+                            <Icon icon="it-github" title="Source code" />
+                          </a>
+                        </li>
+                      </ul>
+                    </HeaderSocialsZone>
                 </HeaderRightZone>
               </HeaderContent>
             </Header>
