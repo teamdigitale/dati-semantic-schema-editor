@@ -9,7 +9,7 @@ interface Props {
   schema: any;
 }
 
-export function ModelCollapseRoot({ title, specPath, schema }: Props) {
+export function ModelCollapseRoot({ title, specPath }: Props) {
   const { push } = useSchemaNavigation();
   const specPathArray: string[] = specPath ? Array.from(specPath) : [];
 
@@ -18,7 +18,6 @@ export function ModelCollapseRoot({ title, specPath, schema }: Props) {
       id: specPathArray.join('-'),
       title,
       fullPath: specPathArray,
-      jsonldContextFullPath: schema.has('x-jsonld-context') ? specPathArray : undefined,
     });
   };
 

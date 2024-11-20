@@ -13,18 +13,15 @@ interface Props {
 /**
  * The collapsed visualization for object models (or root model only)
  */
-export function ModelCollapse({ children, expanded, title, specPath, schema }: Props) {
-  const { jsonldContextFullPath, push } = useSchemaNavigation();
+export function ModelCollapse({ children, expanded, title, specPath }: Props) {
+  const { push } = useSchemaNavigation();
   const specPathArray: string[] = specPath ? Array.from(specPath) : [];
 
   const handleClick = (): void => {
-    const hasParentJsonldContextFullPath = !!jsonldContextFullPath;
-    const hasJsonldContextFullPath = schema.has('x-jsonld-context');
     push({
       id: specPathArray.join('-'),
       title,
       fullPath: specPathArray,
-      jsonldContextFullPath: !hasParentJsonldContextFullPath && hasJsonldContextFullPath ? specPathArray : undefined,
     });
   };
 

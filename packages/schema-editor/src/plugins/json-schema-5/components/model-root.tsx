@@ -1,48 +1,49 @@
 import { List, Map } from 'immutable';
-import { updateJsonldContext } from '../hooks/use-jsonld-bundler';
 
 import './model-root.scss';
 
 export interface Props {
   name: string;
   fullPath: string[];
-  jsonldContextFullPath: string[] | undefined;
   getComponent?: any;
   specSelectors?: any;
   specActions?: any;
-  layoutSelectors?: any;
-  layoutActions?: any;
+  jsonldContextSelectors?: any;
   getConfigs?: any;
 }
 
 export const ModelRoot = ({
   name,
   fullPath,
-  jsonldContextFullPath,
   getComponent,
   specSelectors,
   specActions,
+  jsonldContextSelectors,
   getConfigs,
 }: Props) => {
   const specPath = List(fullPath);
 
+  // Schema corrente in formato JSON.
+  // Se non è ancora stato risolto, viene fatta la risoluzione (specActions.requestResolvedSubtree)
   const schemaValue = specSelectors.specResolvedSubtree(fullPath);
   const rawSchemaValue = specSelectors.specJson().getIn(fullPath);
 
   const schema = Map.isMap(schemaValue) ? schemaValue : Map();
   const rawSchema = Map.isMap(rawSchemaValue) ? rawSchemaValue : Map();
 
-  const displayName = schema.get('title') || rawSchema.get('title') || name;
-
   if (schema.size === 0 && rawSchema.size > 0) {
     specActions.requestResolvedSubtree(fullPath);
   }
 
-  const parentSchema = jsonldContextFullPath ? specSelectors.specResolvedSubtree(jsonldContextFullPath) : schema;
+  // JSONLD schema (se presente)
+  // Se non è ancora stato risolto, viene fatta la  risoluzione
+  const jsonldContext = jsonldContextSelectors.jsonldContextResolvedSubtree(fullPath);
 
+  // Altre proprietà
+  const displayName = schema.get('title') || rawSchema.get('title') || name;
+
+  // Components
   const Model = getComponent('Model');
-
-  const updatedJsonldContext = updateJsonldContext(parentSchema).get('@context');
 
   return (
     <div className="model-root d-block p-3 mb-3">
@@ -59,7 +60,7 @@ export const ModelRoot = ({
         includeWriteOnly={true}
         expanded={true}
         depth={1}
-        jsonldContext={updatedJsonldContext}
+        jsonldContext={jsonldContext}
       />
     </div>
   );

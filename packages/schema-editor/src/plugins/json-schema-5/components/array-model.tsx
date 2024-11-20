@@ -1,4 +1,3 @@
-import JumpToPath from '../../jump-to-path';
 import { useJsonLDResolver, useRDFPropertyResolver } from '../hooks';
 import './array-model.scss';
 
@@ -11,7 +10,6 @@ import { JsonLdContextAccordion } from './common/jsonld-context-accordion';
 import { ModelTitle } from './common/model-title';
 import { NavigateBack } from './common/navigate-back';
 import { PropertiesBlock } from './common/properties-block';
-import { RDFOntologicalClassBlock } from './common/rdf-ontological-class-block';
 import { RDFOntologicalClassPropertyBlock } from './common/rdf-ontological-class-property-block';
 import { SemanticDescriptionBlock } from './common/semantic-description-block';
 import { TypeFormatVocabularyBlock } from './common/type-format-vocabulary-block';
@@ -21,7 +19,6 @@ export const ArrayModel = (props) => {
 
   const specPathArray = Array.from(specPath);
   const propertyName = specPathArray[specPathArray.length - 1] as string;
-  const jsonldType = schema.get('x-jsonld-type');
   const title = (schema?.get('title') as string) || displayName || name || '';
   const items = schema.get('items');
   const properties = schema.filter(
@@ -44,10 +41,8 @@ export const ArrayModel = (props) => {
             <HeadingBlockLeft>
               <NavigateBack />
               <ModelTitle title={title} />
-              <RDFOntologicalClassBlock classUri={jsonldType} />
             </HeadingBlockLeft>
             <HeadingBlockRight>
-              {/* <OntoScoreBlock schema={schema} jsonldContext={jsonldContext} /> */}
               <JumpToPath specPath={specPath} />
             </HeadingBlockRight>
           </HeadingBlock>

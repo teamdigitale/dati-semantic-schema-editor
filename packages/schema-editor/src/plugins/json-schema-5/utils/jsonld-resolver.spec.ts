@@ -31,18 +31,23 @@ describe('resolvePropertyByJsonldContext', () => {
     });
   });
 
-  it('should return undefined fieldUri on wrong jsonld context', async () => {
+  it('should throw error on wrong jsonld context', async () => {
     const jsonldContext = fromJS({
       '@vocab': 'https://w3id.org/italia/onto/CPV/',
       '@base': 'https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/',
       country: '@id',
     });
-    const result = await resolvePropertyByJsonldContext(jsonldContext, ['country', 'id']);
-    expect(result).toEqual({
-      fieldName: 'id',
-      fieldUri: undefined,
-      vocabularyUri: undefined,
+    await expect(resolvePropertyByJsonldContext(jsonldContext, ['country', 'id'])).rejects.toThrow();
+  });
+
+  it('should return undefined fieldUri if no @vocab in jsonldContext', async () => {
+    const jsonldContext = fromJS({
+      name: 'http://schema.org/name',
+      geo: 'http://schema.org/geo',
     });
+    await expect(resolvePropertyByJsonldContext(jsonldContext, ['geo', 'latitude'])).rejects.toThrow(
+      'No results provided',
+    );
   });
 
   it('should ignore detached properties', async () => {
@@ -73,14 +78,14 @@ describe('resolvePropertyByJsonldContext', () => {
   it('should return undefined fieldUri if cannot be resolved', async () => {
     const jsonldContext = fromJS({
       '@vocab': 'https://w3id.org/italia/onto/CPV/',
-      children: {
-        '@id': 'isParentOf',
+      privateDetails: {
+        '@id': 'supponiamoEsista',
       },
     });
-    const result = await resolvePropertyByJsonldContext(jsonldContext, ['children', 'items']);
+    const result = await resolvePropertyByJsonldContext(jsonldContext, ['privateDetails', 'bankAccount']);
     expect(result).toEqual({
-      fieldName: 'items',
-      fieldUri: undefined,
+      fieldName: 'bankAccount',
+      fieldUri: 'https://w3id.org/italia/onto/CPV/bankAccount',
       vocabularyUri: undefined,
     });
   });

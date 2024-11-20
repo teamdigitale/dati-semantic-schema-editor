@@ -4,8 +4,8 @@ const innerLog = (...args) => {
   // console.log(...args); // Uncomment to enable logs
 };
 
-export const updateJsonldContext = (schema, jsonldContext = OrderedMap()) => {
-  const traverseSchema = (schemaNode, contextNode, isRoot = false) => {
+export const resolveJsonldContext = (schema: Map<any, any> | undefined) => {
+  const traverseSchema = (schemaNode: Map<any, any> | undefined, contextNode: Map<any, any>) => {
     if (Map.isMap(schemaNode)) {
       schemaNode.forEach((value: any, key) => {
         if (key === 'x-jsonld-context') {
@@ -55,5 +55,5 @@ export const updateJsonldContext = (schema, jsonldContext = OrderedMap()) => {
     return contextNode;
   };
 
-  return traverseSchema(schema, jsonldContext, true);
+  return traverseSchema(schema, OrderedMap());
 };

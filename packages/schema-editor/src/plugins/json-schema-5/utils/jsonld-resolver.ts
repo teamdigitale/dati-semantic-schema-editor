@@ -1,6 +1,6 @@
 import { Map } from 'immutable';
-import { basename } from '.';
 import { expand } from 'jsonld';
+import { basename } from '.';
 
 export interface JsonLDResolverResult {
   fieldName: string;
@@ -40,7 +40,7 @@ export async function resolvePropertyByJsonldContext(
 
       // If missing inner context, the x-jsonld-context spec is not complete (eg: still writing yaml, or unresolved context)
       if (!innerContext) {
-        return { fieldName: key, fieldUri: undefined };
+        break;
       }
       // If property value is explicitly null, then avoid resolving URI
       else if (innerContext[key] === null) {
@@ -69,7 +69,12 @@ export async function resolvePropertyByJsonldContext(
     let fieldUri: string | undefined = undefined;
     let fieldValue: any = result;
     for (let i = 0; i < propertyPath.length; i++) {
-      [fieldUri, fieldValue] = Object.entries(fieldValue[0])[0];
+      const entries = Object.entries(fieldValue[0])[0];
+      if (!entries) {
+        [fieldUri, fieldValue] = [undefined, undefined];
+        break;
+      }
+      [fieldUri, fieldValue] = entries;
     }
     if (!fieldUri || !fieldValue) {
       throw new Error(`No results provided`);

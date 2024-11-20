@@ -4,7 +4,6 @@ import { NavigationItem } from './models';
 
 export function SchemaNavigationProvider({ children }) {
   const [history, setHistory] = useState<NavigationItem[]>([]);
-  const jsonldContextFullPath = history.find((x) => x.jsonldContextFullPath)?.jsonldContextFullPath;
 
   const push = (item: NavigationItem) => {
     if (history[history.length - 1]?.id === item.id) {
@@ -22,8 +21,6 @@ export function SchemaNavigationProvider({ children }) {
   };
 
   return (
-    <SchemaNavigationContext.Provider value={{ history, jsonldContextFullPath, push, go, back }}>
-      {children}
-    </SchemaNavigationContext.Provider>
+    <SchemaNavigationContext.Provider value={{ history, push, go, back }}>{children}</SchemaNavigationContext.Provider>
   );
 }

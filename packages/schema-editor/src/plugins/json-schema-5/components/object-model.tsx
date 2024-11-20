@@ -1,8 +1,8 @@
 import './object-model.scss';
 
 import { List, Map } from 'immutable';
-import { useJsonLDResolver, useRDFPropertyResolver } from '../hooks';
-import { getParentType, isUri } from '../utils';
+import { useJsonLDResolver, useOntologicalClassResolver, useRDFPropertyResolver } from '../hooks';
+import { getParentType } from '../utils';
 import { DeprecatedBlock } from './common/deprecated-block';
 import { DescriptionBlock } from './common/description-block';
 import { ExampleAccordion } from './common/example-accordion';
@@ -54,7 +54,12 @@ export const ObjectModel = ({
 
   const specPathArray = Array.from(specPath) as string[];
   const propertyName = specPathArray[specPathArray.length - 1] as string;
+  const isArrayElement = getParentType(specSelectors, specPathArray) === 'array' && propertyName === 'items';
   const jsonldType = schema.get('x-jsonld-type');
+  const jsonldContextPathArray = specPathArray
+    .slice(3)
+    .filter((x) => x !== 'properties')
+    .slice(0, isArrayElement ? -1 : undefined);
   const title = (schema?.get('title') as string) || displayName || name || '';
   const properties: Map<string, any> = schema.get('properties');
   const additionalProperties = schema.get('additionalProperties');
@@ -68,22 +73,14 @@ export const ObjectModel = ({
   const oneOf = isOAS3 ? schema.get('oneOf') : null;
   const not = isOAS3 ? schema.get('not') : null;
 
-  // Check if parent type is array.
-  const isArrayElement = getParentType(specSelectors, specPathArray) === 'array' && propertyName === 'items';
-
   // Ontological resolvers.
-  const findKey = specPathArray.slice(3).filter((x) => x !== 'properties');
-  const { data: jsonLDResolverResult } = useJsonLDResolver(jsonldContext, findKey);
+  const { data: jsonLDResolverResult } = useJsonLDResolver(jsonldContext, jsonldContextPathArray);
   const { data: rdfProperty } = useRDFPropertyResolver(jsonLDResolverResult?.fieldUri);
 
-  // Resolve class URI from jsonldType using jsonldContext.
-  const { data: classUriResolverResult } = useJsonLDResolver(jsonldContext, [...findKey.slice(0, -1), jsonldType]);
-  const classUri =
-    classUriResolverResult?.fieldUri && isUri(classUriResolverResult.fieldUri)
-      ? classUriResolverResult?.fieldUri
-      : jsonldType;
+  // Ontological class
+  const { data: ontologicalClassUri } = useOntologicalClassResolver(jsonldContext, jsonldType, jsonldContextPathArray);
 
-  const propertiesPaths = Array.from(properties?.keys() || []).map((x) => [...findKey, x]);
+  const propertiesPaths = Array.from(properties?.keys() || []).map((x) => [...jsonldContextPathArray, x]);
 
   // View models
   const Model = getComponent('Model');
@@ -112,7 +109,7 @@ export const ObjectModel = ({
         <HeadingBlockLeft>
           <NavigateBack />
           <ModelTitle title={title} />
-          <RDFOntologicalClassBlock classUri={classUri} />
+          <RDFOntologicalClassBlock classUri={ontologicalClassUri} />
         </HeadingBlockLeft>
         <HeadingBlockRight>
           <OntoScoreBlock jsonldContext={jsonldContext} propertiesPaths={propertiesPaths} />
@@ -133,7 +130,9 @@ export const ObjectModel = ({
           <PropertiesBlock properties={infoProperties} getComponent={getComponent} />
         </div>
         <div>
-          {depth === 1 && <RDFHelperButtonWithModal getComponent={getComponent} classUri={classUri} schema={schema} />}
+          {depth === 1 && ontologicalClassUri && (
+            <RDFHelperButtonWithModal getComponent={getComponent} classUri={ontologicalClassUri} schema={schema} />
+          )}
         </div>
       </div>
 

@@ -1,13 +1,12 @@
 import { fromJS } from 'immutable';
 import { describe, expect, it } from 'vitest';
+import { resolveJsonldContext } from './resolve-jsonld-context';
 
-import { updateJsonldContext } from './use-jsonld-bundler';
-
-describe('useSearch', () => {
+describe('resolve-jsonld-context', () => {
   const schema = getSchema();
 
   it('should resolve a simple context', () => {
-    const result = updateJsonldContext(schema.get('Place'));
+    const result = resolveJsonldContext(schema.get('Place'));
     expect(result.toJS()).toEqual({
       '@context': {
         '@vocab': 'https://w3id.org/italia/onto/CLV/',
@@ -19,7 +18,7 @@ describe('useSearch', () => {
   });
 
   it('should not overwrite a parent context', () => {
-    const result = updateJsonldContext(schema.get('DontOverWriteContext'));
+    const result = resolveJsonldContext(schema.get('DontOverWriteContext'));
     expect(result.toJS()).toEqual({
       '@context': {
         '@vocab': 'https://w3id.org/italia/onto/CPV/',
@@ -33,7 +32,7 @@ describe('useSearch', () => {
   });
 
   it('should not overwrite a null parent context', () => {
-    const result = updateJsonldContext(schema.get('DontOverrideNullParentContext'));
+    const result = resolveJsonldContext(schema.get('DontOverrideNullParentContext'));
     expect(result.toJS()).toEqual({
       '@context': {
         '@vocab': 'https://w3id.org/italia/onto/CPV/',
@@ -43,7 +42,7 @@ describe('useSearch', () => {
   });
 
   it('should resolve a nested context', () => {
-    const result = updateJsonldContext(schema.get('A'));
+    const result = resolveJsonldContext(schema.get('A'));
     expect(result.toJS()).toEqual({
       '@context': {
         '@vocab': 'https://w3id.org/italia/onto/CPV/',
@@ -59,7 +58,7 @@ describe('useSearch', () => {
   });
 
   it('should preserve @id information when merging contexts', () => {
-    const result = updateJsonldContext(schema.get('PreserveId'));
+    const result = resolveJsonldContext(schema.get('PreserveId'));
     expect(result.toJS()).toEqual({
       '@context': {
         '@vocab': 'https://w3id.org/italia/onto/CPV/',
@@ -78,7 +77,7 @@ describe('useSearch', () => {
   });
 
   it('should resolve a deeply nested context', () => {
-    const result = updateJsonldContext(schema.get('Nested3'));
+    const result = resolveJsonldContext(schema.get('Nested3'));
     expect(result.toJS()).toEqual({
       '@context': {
         '@vocab': 'https://w3id.org/italia/onto/CPV/',

@@ -3,7 +3,6 @@ import { NavigationItem } from './models';
 
 export interface ISchemaNavigationContext {
   history: NavigationItem[];
-  jsonldContextFullPath: string[] | undefined;
   push: (item: NavigationItem) => void;
   go: (index: number) => void;
   back: () => void;

@@ -13,9 +13,7 @@ import { HeadingBlock, HeadingBlockLeft, HeadingBlockRight } from './common/head
 import { JsonLdContextAccordion } from './common/jsonld-context-accordion';
 import { ModelTitle } from './common/model-title';
 import { NavigateBack } from './common/navigate-back';
-import { OntoScoreBlock } from './common/onto-score-block';
 import { PropertiesBlock } from './common/properties-block';
-import { RDFOntologicalClassBlock } from './common/rdf-ontological-class-block';
 import { RDFOntologicalClassPropertyBlock } from './common/rdf-ontological-class-property-block';
 import { SemanticDescriptionBlock } from './common/semantic-description-block';
 import { TypeFormatVocabularyBlock } from './common/type-format-vocabulary-block';
@@ -35,7 +33,6 @@ export const PrimitiveModel = ({
 
   const specPathArray = Array.from(specPath) as string[];
   const propertyName = specPathArray[specPathArray.length - 1] as string;
-  const jsonldType = schema.get('x-jsonld-type');
   const title = (schema?.get('title') as string) || displayName || name || '';
   const type = schema.get('type');
   const format = schema.get('format');
@@ -67,10 +64,8 @@ export const PrimitiveModel = ({
             <HeadingBlockLeft>
               <NavigateBack />
               <ModelTitle title={title} />
-              <RDFOntologicalClassBlock classUri={jsonldType} />
             </HeadingBlockLeft>
             <HeadingBlockRight>
-              <OntoScoreBlock jsonldContext={jsonldContext} propertiesPaths={[findKey]} />
               <JumpToPath specPath={specPath} />
             </HeadingBlockRight>
           </HeadingBlock>

@@ -7,7 +7,7 @@ import type { ModelRoot as ModelRootComponent } from './model-root';
 import type { ModelsBreadcrumb as ModelsBreadcrumbComponent } from './models-breadcrumb';
 
 export function Models({ getComponent, specSelectors, getConfigs, specActions }) {
-  const { history, jsonldContextFullPath } = useSchemaNavigation();
+  const { history } = useSchemaNavigation();
   const currentHistoryItem = history[history.length - 1];
 
   const isOAS3 = specSelectors.isOAS3();
@@ -39,13 +39,7 @@ export function Models({ getComponent, specSelectors, getConfigs, specActions })
           .toArray()}
 
       {/* Schema model */}
-      {currentHistoryItem && (
-        <ModelRoot
-          name={currentHistoryItem.title}
-          fullPath={currentHistoryItem.fullPath}
-          jsonldContextFullPath={jsonldContextFullPath}
-        />
-      )}
+      {currentHistoryItem && <ModelRoot name={currentHistoryItem.title} fullPath={currentHistoryItem.fullPath} />}
     </div>
   );
 }
