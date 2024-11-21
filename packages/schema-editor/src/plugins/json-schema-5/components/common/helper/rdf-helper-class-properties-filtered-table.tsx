@@ -51,7 +51,7 @@ export const ClassPropertiesFilteredTable = ({ properties, superClass }) => {
       <Table responsive>
         <thead className="table-dark">
           <tr>
-            <th>Baseclass</th>
+            <th>Class</th>
             <th>Field URI</th>
             <th>Range</th>
             <th>Comment</th>

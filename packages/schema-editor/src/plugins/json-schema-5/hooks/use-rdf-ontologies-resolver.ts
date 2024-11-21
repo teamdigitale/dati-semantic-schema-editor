@@ -215,13 +215,13 @@ export function useRDFClassPropertiesResolver(classUri: string | undefined) {
   E.g. for a location, returns Provinces, Regions, Municipalities, etc.
 */
 export interface RDFClassVocabularies {
-  controlledVocabulary: string | undefined;
-  label: string | undefined;
-  subclass: string;
-  classUri: string | undefined;
-  api: string | undefined;
+  controlledVocabulary: string;
+  label?: string;
+  subclass?: string;
+  classUri?: string;
+  api?: string;
 }
-export function useRDFClassVocabulariesResolver(classUri: string | undefined) {
+export function useRDFClassVocabulariesResolver(classUri: string | undefined): AsyncState<RDFClassVocabularies[]> {
   const {
     data: sparqlData,
     status: sparqlStatus,

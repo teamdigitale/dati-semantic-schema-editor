@@ -1,4 +1,5 @@
 import { Badge, Spinner, Table } from 'design-react-kit';
+import { Fragment } from 'react';
 import { useRDFClassVocabulariesResolver } from '../../../hooks';
 import { uri2shortUri } from '../../../utils';
 
@@ -8,6 +9,8 @@ interface Props {
 
 export const RDFHelperClassVocabulariesBlock = ({ classUri }: Props) => {
   const { data, status } = useRDFClassVocabulariesResolver(classUri);
+
+  const vocabularies = data?.filter((x) => x?.controlledVocabulary) || [];
 
   return (
     <div className="lightgrey-bg-b4 p-3 mb-4">
@@ -21,28 +24,36 @@ export const RDFHelperClassVocabulariesBlock = ({ classUri }: Props) => {
         </div>
       ) : status === 'error' ? (
         <div>There was en error trying to load vocabularies</div>
-      ) : !data?.length ? (
+      ) : !vocabularies.length ? (
         <div>No vocabularies to show</div>
       ) : (
-        <Table>
-          <thead>
-            <tr>
-              <th>Controlled vocabulary</th>
-              <th>Subclasses</th>
-              <th>API</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data
-              .filter((x) => x?.controlledVocabulary)
-              .map((item, index) => (
+        <div style={{ maxHeight: '12rem', overflowY: 'auto' }}>
+          <Table>
+            <thead>
+              <tr>
+                <th>Controlled vocabulary</th>
+                <th>Classes</th>
+                <th>API</th>
+              </tr>
+            </thead>
+            <tbody>
+              {vocabularies.map((item, index) => (
                 <tr key={index}>
                   <td>
                     <a href={item.controlledVocabulary} target="_blank" rel="noreferrer" title={item.label}>
                       {uri2shortUri(item.controlledVocabulary as string)}
                     </a>
                   </td>
-                  <td>{uri2shortUri(item?.subclass)}</td>
+                  <td>
+                    {item?.subclass?.split(',').map((uri, subIndex, array) => (
+                      <Fragment key={`${index}-${subIndex}`}>
+                        <a href={uri.trim()} target="_blank" rel="noreferrer">
+                          {uri2shortUri(uri.trim())}
+                        </a>
+                        {subIndex < array.length - 1 ? ', ' : ''}
+                      </Fragment>
+                    ))}
+                  </td>
                   <td>
                     {item?.api ? (
                       <a href={item.api} target="_blank" rel="noreferrer">
@@ -54,8 +65,9 @@ export const RDFHelperClassVocabulariesBlock = ({ classUri }: Props) => {
                   </td>
                 </tr>
               ))}
-          </tbody>
-        </Table>
+            </tbody>
+          </Table>
+        </div>
       )}
     </div>
   );

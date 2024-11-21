@@ -1,5 +1,5 @@
 import { Button, Icon, Modal, ModalBody, ModalFooter, ModalHeader } from 'design-react-kit';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { RDFOntologicalClassHelperBlock } from './rdf-helper-block';
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
   schema: any;
 }
 
-export const RDFHelperButtonWithModal: React.FC<Props> = ({ getComponent, classUri, schema }) => {
+export const RDFHelperButtonWithModal = ({ getComponent, classUri, schema }: Props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 

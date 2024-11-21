@@ -48,21 +48,21 @@ export function Layout({ children }: { children: JSX.Element }) {
                 </HeaderBrand>
 
                 <HeaderRightZone>
-                    <HeaderSocialsZone label="Info + Repo">
-                      <ul>
-                        <li>
-                  <a
-                    aria-label="Github"
-                    href="https://github.com/italia/schema-editor"
-                    target="_blank"
-                    rel="noreferrer"
-                    className={cx({ 'text-white': !showMenu, 'text-primary': showMenu })}
-                  >
-                            <Icon icon="it-github" title="Source code" />
-                          </a>
-                        </li>
-                      </ul>
-                    </HeaderSocialsZone>
+                  <HeaderSocialsZone label="Info + Repo">
+                    <ul>
+                      <li>
+                        <a
+                          aria-label="Github"
+                          href="https://github.com/italia/schema-editor"
+                          target="_blank"
+                          rel="noreferrer"
+                          className={cx({ 'text-white': !showMenu, 'text-primary': showMenu })}
+                        >
+                          <Icon icon="it-github" title="Source code" />
+                        </a>
+                      </li>
+                    </ul>
+                  </HeaderSocialsZone>
                 </HeaderRightZone>
               </HeaderContent>
             </Header>
