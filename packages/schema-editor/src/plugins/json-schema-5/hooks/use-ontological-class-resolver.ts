@@ -6,7 +6,7 @@ export function useOntologicalClassResolver(
   jsonldContext: Map<any, any>,
   jsonldType: string | undefined,
   path: string[],
-): AsyncState<string> {
+): AsyncState<{ ontologicalClassUri: string | undefined; inferred: boolean }> {
   const resolutionPath = jsonldType ? [...path.slice(0, -1), jsonldType] : path;
 
   const {
@@ -23,7 +23,13 @@ export function useOntologicalClassResolver(
 
   // If no jsonld context, return jsonld type or undefined
   if (!jsonldContext) {
-    return { status: 'fulfilled', data: jsonldType || undefined };
+    return {
+      status: 'fulfilled',
+      data: {
+        ontologicalClassUri: jsonldType || undefined,
+        inferred: false,
+      },
+    };
   }
 
   // If x-jsonld-type exists try to resolve it with jsonld context
@@ -31,7 +37,10 @@ export function useOntologicalClassResolver(
     return {
       status: jsonldResolverStatus,
       error: jsonldResolverError,
-      data: jsonldResolverData?.fieldUri,
+      data: {
+        ontologicalClassUri: jsonldResolverData?.fieldUri,
+        inferred: false,
+      },
     };
   }
   // If parent jsonld context exists, but no x-jsonld-type use context + propertyName
@@ -45,6 +54,9 @@ export function useOntologicalClassResolver(
             ? 'error'
             : 'idle',
     error: rdfPropertyResolverError || jsonldResolverError,
-    data: rdfPropertyResolverData?.ontologicalClass,
+    data: {
+      ontologicalClassUri: rdfPropertyResolverData?.ontologicalClass,
+      inferred: true,
+    },
   };
 }

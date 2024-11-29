@@ -1,4 +1,4 @@
-import { Icon, Spinner } from 'design-react-kit';
+import { Badge, Icon, Spinner } from 'design-react-kit';
 import { useRDFClassResolver } from '../../hooks';
 import { uri2shortUri } from '../../utils';
 
@@ -7,19 +7,28 @@ interface OntologicalClassProps {
   comment: string | undefined;
   error?: boolean;
 }
-const OntologicalClass = ({ uri, comment, error }: OntologicalClassProps) => {
-  return (
-    <span className="rdf-ontological-class-property">
-      [{error ? '⚠' : ''}
-      <a key={uri} href={uri} target="_blank" rel="noreferrer" title={comment}>
-        {uri2shortUri(uri)}
-      </a>
-      ]
-    </span>
-  );
-};
-export function RDFOntologicalClassBlock({ classUri }) {
+
+export function RDFOntologicalClassBlock({ classUri, inferred }: { classUri: string; inferred: boolean }) {
   const { data, status, error } = useRDFClassResolver(classUri);
+
+  const OntologicalClass = ({ uri, comment, error }: OntologicalClassProps) => {
+    return (
+      <span className="rdf-ontological-class-property">
+        {'['}
+        {error ? '⚠' : ''}
+        <a key={uri} href={uri} target="_blank" rel="noreferrer" title={comment}>
+          {uri2shortUri(uri)}
+        </a>
+        {inferred && (
+          <>
+            &nbsp;
+            <Badge color="info">Inferred</Badge>
+          </>
+        )}
+        {']'}
+      </span>
+    );
+  };
 
   return status === 'pending' ? (
     <span className="d-inline-block align-middle">

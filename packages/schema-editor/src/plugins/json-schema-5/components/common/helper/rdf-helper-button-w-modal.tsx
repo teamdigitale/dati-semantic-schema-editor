@@ -5,10 +5,11 @@ import { RDFOntologicalClassHelperBlock } from './rdf-helper-block';
 interface Props {
   getComponent: (name: string, isStatic?: boolean) => any;
   classUri: string;
+  inferred: boolean;
   schema: any;
 }
 
-export const RDFHelperButtonWithModal = ({ getComponent, classUri, schema }: Props) => {
+export const RDFHelperButtonWithModal: React.FC<Props> = ({ getComponent, classUri, inferred, schema }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
@@ -30,7 +31,7 @@ export const RDFHelperButtonWithModal = ({ getComponent, classUri, schema }: Pro
           {!classUri || !schema ? (
             <Markdown source={MARKDOWN_HELPER_SOURCE} />
           ) : (
-            <RDFOntologicalClassHelperBlock classUri={classUri} />
+            <RDFOntologicalClassHelperBlock classUri={classUri} inferred={inferred} />
           )}
         </ModalBody>
 

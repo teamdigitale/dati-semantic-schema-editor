@@ -78,7 +78,11 @@ export const ObjectModel = ({
   const { data: rdfProperty } = useRDFPropertyResolver(jsonLDResolverResult?.fieldUri);
 
   // Ontological class
-  const { data: ontologicalClassUri } = useOntologicalClassResolver(jsonldContext, jsonldType, jsonldContextPathArray);
+  const { data: ontologicalClassResolverData } = useOntologicalClassResolver(
+    jsonldContext,
+    jsonldType,
+    jsonldContextPathArray,
+  );
 
   const propertiesPaths = Array.from(properties?.keys() || []).map((x) => [...jsonldContextPathArray, x]);
 
@@ -109,7 +113,12 @@ export const ObjectModel = ({
         <HeadingBlockLeft>
           <NavigateBack />
           <ModelTitle title={title} />
-          <RDFOntologicalClassBlock classUri={ontologicalClassUri} />
+          {ontologicalClassResolverData?.ontologicalClassUri && (
+            <RDFOntologicalClassBlock
+              classUri={ontologicalClassResolverData.ontologicalClassUri}
+              inferred={ontologicalClassResolverData.inferred}
+            />
+          )}
         </HeadingBlockLeft>
         <HeadingBlockRight>
           <OntoScoreBlock jsonldContext={jsonldContext} propertiesPaths={propertiesPaths} />
@@ -130,8 +139,13 @@ export const ObjectModel = ({
           <PropertiesBlock properties={infoProperties} getComponent={getComponent} />
         </div>
         <div>
-          {depth === 1 && ontologicalClassUri && (
-            <RDFHelperButtonWithModal getComponent={getComponent} classUri={ontologicalClassUri} schema={schema} />
+          {depth === 1 && ontologicalClassResolverData?.ontologicalClassUri && (
+            <RDFHelperButtonWithModal
+              getComponent={getComponent}
+              classUri={ontologicalClassResolverData?.ontologicalClassUri}
+              inferred={ontologicalClassResolverData.inferred}
+              schema={schema}
+            />
           )}
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useConfiguration } from '../../configuration';
+import { AsyncState } from '../models';
 
 interface SparqlQueryOptions {
   skip?: boolean;
@@ -7,36 +8,34 @@ interface SparqlQueryOptions {
 
 export function useSparqlQuery<T = any>(query: string, options?: SparqlQueryOptions) {
   const { sparqlUrl } = useConfiguration();
-  const [status, setStatus] = useState<'idle' | 'pending' | 'fulfilled' | 'error'>('idle');
-  const [error, setError] = useState<string | undefined>(undefined);
-  const [data, setData] = useState<T | undefined>(undefined);
+  const [state, setState] = useState<AsyncState<T>>({ status: 'idle' });
 
-  const callback = useCallback(async (query: string) => {
+  const callback = useCallback(async () => {
     try {
-      setStatus('pending');
+      if (options?.skip) {
+        return;
+      }
+      setState({ status: 'pending' });
       const endpoint = `${sparqlUrl?.trim()}?format=json&query=${encodeURIComponent(query)}`;
       const response = await fetch(endpoint, { cache: 'force-cache' });
       if (!response.ok) {
         throw new Error(response.statusText);
       }
       const data = await response.json();
-      setData(data);
-      setStatus('fulfilled');
+      setState({ status: 'fulfilled', data });
     } catch (e) {
       console.error(e);
-      setError(e?.message || e || 'Unknown error');
-      setStatus('error');
+      setState({ status: 'error', error: e?.message || e || 'Unknown error' });
     }
-  }, []);
+  }, [query, options?.skip]);
 
   useEffect(() => {
-    if (options?.skip) return;
-    callback(query);
-  }, [callback, query]);
+    setState({ status: 'idle' }); // Se cambia la query resetto lo status
+  }, [query]);
 
-  return {
-    status,
-    data,
-    error,
-  };
+  useEffect(() => {
+    callback();
+  }, [callback]);
+
+  return state;
 }

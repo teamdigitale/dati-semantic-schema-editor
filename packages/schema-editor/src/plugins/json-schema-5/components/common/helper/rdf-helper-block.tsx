@@ -8,9 +8,10 @@ import { RDFHelperClassVocabulariesBlock } from './rdf-helper-class-vocabularies
 
 interface Props {
   classUri: string;
+  inferred: boolean;
 }
 
-export function RDFOntologicalClassHelperBlock({ classUri }: Props) {
+export function RDFOntologicalClassHelperBlock({ classUri, inferred }: Props) {
   const { data, status } = useRDFClassPropertiesResolver(classUri);
   const superClasses = data?.classProperties
     ?.map((property) => property.baseClass)
@@ -35,7 +36,7 @@ export function RDFOntologicalClassHelperBlock({ classUri }: Props) {
     <span className="modelli">
       <div className="d-flex justify-content-between mb-4">
         <h6>
-          Class: <RDFOntologicalClassBlock classUri={classUri} />
+          Class: <RDFOntologicalClassBlock classUri={classUri} inferred={inferred} />
         </h6>
 
         {superClasses?.length && (
