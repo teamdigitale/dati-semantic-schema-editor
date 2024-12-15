@@ -20,13 +20,35 @@ export function useRDFPropertyResolver(fieldUri: string | undefined): AsyncState
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 
-    SELECT DISTINCT * WHERE {
+    SELECT DISTINCT
+      ?fieldUri
+      ?domain
+      ?class
+      ?comment
+      ?controlledVocabulary
+    WHERE {
       VALUES ?fieldUri { <${fieldUri}> }
+      VALUES ?_propertyClass { rdf:Property owl:DatatypeProperty owl:FunctionalProperty }
 
       ?fieldUri
-        rdfs:domain ?domain ;
-        rdfs:range ?class
+        a ?_propertyClass
       .
+
+
+      OPTIONAL {
+        ?fieldUri
+          rdfs:domain ?domain ;
+          rdfs:range ?class
+        .
+
+
+        OPTIONAL {
+          ?class
+            <https://w3id.org/italia/onto/l0/controlledVocabulary> ?controlledVocabulary
+          .
+        }
+
+      }
 
       OPTIONAL {
         ?fieldUri
@@ -35,11 +57,6 @@ export function useRDFPropertyResolver(fieldUri: string | undefined): AsyncState
         FILTER(lang(?comment) = 'en')
       }
 
-      OPTIONAL {
-        ?class
-          <https://w3id.org/italia/onto/l0/controlledVocabulary> ?controlledVocabulary
-        .
-      }
 
     }
   `,
