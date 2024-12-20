@@ -27,7 +27,7 @@ export function useRDFPropertyResolver(fieldUri: string | undefined): AsyncState
       ?controlledVocabulary
     WHERE {
       VALUES ?fieldUri { <${fieldUri}> }
-      
+
       FILTER EXISTS {
         ?fieldUri rdf:type ?validType .
         FILTER(?validType IN (rdf:Property, owl:ObjectProperty, owl:DatatypeProperty, owl:FunctionalProperty))
