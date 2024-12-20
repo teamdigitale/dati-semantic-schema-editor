@@ -1,10 +1,21 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { fromJS } from 'immutable';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useOntoScore } from './use-onto-score';
 import * as useSparqlQueryImport from './use-sparql';
+import * as configuration from '../../configuration';
 
 describe('useOntoScore', () => {
+  beforeEach(() => {
+    vi.spyOn(configuration, 'useConfiguration').mockReturnValue({
+      sparqlUrl: 'https://virtuoso-dev-external-service-ndc-dev.apps.cloudpub.testedev.istat.it/sparql',
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should return 0 without jsonldcontext', async () => {
     vi.spyOn(useSparqlQueryImport, 'useSparqlQuery').mockReturnValue({
       status: 'idle',
@@ -109,5 +120,19 @@ describe('useOntoScore', () => {
         skip: false,
       },
     );
+  });
+
+  it('should check real values for https://w3id.org/italia/social-security/onto/contributions/retribuzioneOrariaEffettiva', async () => {
+    const jsonldContext = fromJS({
+      retribuzioneOrariaEffettiva:
+        'https://w3id.org/italia/social-security/onto/contributions/retribuzioneOrariaEffettiva',
+    });
+    const { result } = renderHook(() => useOntoScore(jsonldContext, [['retribuzioneOrariaEffettiva']]));
+    await waitFor(() => expect(result.current.status).toBe('fulfilled'));
+    expect(result.current.data).toEqual({
+      rawPropertiesCount: 1,
+      semanticPropertiesCount: 1,
+      score: 1,
+    });
   });
 });
