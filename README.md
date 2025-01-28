@@ -6,7 +6,7 @@ This repository uses [PNPM](https://pnpm.io) and [turborepo](https://turbo.build
 
 <div align="center">
 
-![Build Status](https://github.com/par-tec/dati-semantic-schema-editor/actions/workflows/ci.yml/badge.svg)
+![Build Status](https://github.com/italia/schema-editor/actions/workflows/pages.yml/badge.svg)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 </div>
