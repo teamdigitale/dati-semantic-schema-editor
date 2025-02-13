@@ -1,18 +1,13 @@
 import { Map } from 'immutable';
 import { useEffect, useState } from 'react';
-import { resolvePropertyByJsonldContext } from '../utils';
-import { useSparqlQuery } from './use-sparql';
 import { AsyncState } from '../models';
+import { buildOntoScoreSparqlQuery, determinePropertiesToValidate, ResolvedPropertiesGroups } from '../utils';
+import { useSparqlQuery } from './use-sparql';
 
 interface OntoScoreResult {
   rawPropertiesCount: number;
   semanticPropertiesCount: number;
   score: number;
-}
-
-class ResolvedPropertiesGroups {
-  valid: string[] = [];
-  unknown: string[] = [];
 }
 
 // For every property it should check if:
@@ -32,18 +27,8 @@ export function useOntoScore(
     data: sparqlData,
     status: sparqlStatus,
     error: sparqlError,
-  } = useSparqlQuery(
-    `
-    SELECT (COUNT(DISTINCT  ?fieldUri) as ?count) WHERE {
-      VALUES ?fieldUri { ${resolvedProperties.unknown.map((propertyName) => `<${propertyName}>`).join(' ')} }
+  } = useSparqlQuery(buildOntoScoreSparqlQuery(resolvedProperties.unknown), { skip: skipQuery });
 
-      ?fieldUri
-        rdfs:range ?class
-      .
-    }
-  `,
-    { skip: skipQuery },
-  );
   const sparqlResultCount = !skipQuery ? parseInt(sparqlData?.results?.bindings?.[0]?.count?.value || 0) : 0;
   const semanticPropertiesCount = resolvedProperties.valid.length + sparqlResultCount;
 
@@ -53,19 +38,7 @@ export function useOntoScore(
       setResolvedProperties(new ResolvedPropertiesGroups());
       return;
     }
-
-    Promise.all(propertiesPaths.map((propertyPath) => resolvePropertyByJsonldContext(jsonldContext, propertyPath)))
-      .then((resolvedProperties) => resolvedProperties.map((x) => x.fieldUri))
-      .then((resolvedPropertiesUris) =>
-        resolvedPropertiesUris.reduce((objRes, fieldUri) => {
-          if (fieldUri?.startsWith('@')) {
-            objRes.valid = [...objRes.valid.filter((x) => x !== fieldUri), fieldUri];
-          } else if (fieldUri) {
-            objRes.unknown = [...objRes.unknown.filter((x) => x !== fieldUri), fieldUri];
-          }
-          return objRes;
-        }, new ResolvedPropertiesGroups()),
-      )
+    determinePropertiesToValidate(jsonldContext, propertiesPaths)
       .then((groups) => setResolvedProperties(groups))
       .catch(() => setResolvedProperties(new ResolvedPropertiesGroups()));
   }, [jsonldContext, JSON.stringify(propertiesPaths)]);

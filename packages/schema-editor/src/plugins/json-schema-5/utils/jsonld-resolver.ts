@@ -2,6 +2,37 @@ import { Map } from 'immutable';
 import { expand } from 'jsonld';
 import { basename } from '.';
 
+
+/**
+ * JSON-LD vocabulary keys
+ * @see https://www.w3.org/ns/json-ld
+ */
+const JSONLD_VOCABULARY = [
+  '@base',
+  '@container',
+  '@context',
+  '@definition',
+  '@direction',
+  '@id',
+  '@import',
+  '@language',
+  '@nest',
+  '@prefix',
+  '@propagate',
+  '@protected',
+  '@reverse',
+  '@term',
+  '@type',
+  '@version',
+  '@vocab',
+
+  '@graph',
+  '@index',
+  '@list',
+  '@set',
+
+];
+
 export interface JsonLDResolverResult {
   fieldName: string;
   fieldUri: string | undefined;
@@ -53,6 +84,9 @@ export async function resolvePropertyByJsonldContext(
       }
       // If property is something like @id, avoid resolving URI
       else if (isLastKey && typeof innerContext[key] === 'string' && innerContext[key].startsWith('@')) {
+        if (! JSONLD_VOCABULARY.includes(innerContext[key])) {
+          throw new Error(`Invalid JSON-LD vocabulary key: ${innerContext[key]} in ${innerContext}. Allowed keys are: ${JSONLD_VOCABULARY.join(', ')}`);
+        }
         return { fieldName: innerContext[key], fieldUri: innerContext[key] };
       }
       // Continue to resolve deeply

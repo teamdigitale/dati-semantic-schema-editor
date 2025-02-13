@@ -139,7 +139,7 @@ export const ClassPropertiesFilteredTable = ({ properties, superClass }) => {
               </p>
 
               <pre className="m-0">
-                <code> {yaml.dump(suggestContext(selectedOption), {}, 2)} </code>
+                <code> {yaml.dump(suggestContext(selectedOption), { indent: 2 })} </code>
               </pre>
             </div>
           ) : (
