@@ -100,6 +100,12 @@ describe('resolve-jsonld-context', () => {
       },
     });
   });
+
+  it('should produce the same output if x-jsonld-context is written after properties', () => {
+    const result = resolveJsonldContext(schema.get('Nested3'));
+    const resultInverted = resolveJsonldContext(schema.get('Nested3Inverted'));
+    expect(result.toJS()).toEqual(resultInverted.toJS());
+  });
 });
 
 function getSchema() {
@@ -139,6 +145,44 @@ function getSchema() {
               },
             },
           },
+        },
+      },
+    },
+    Nested3Inverted: {
+      properties: {
+        given_name: {
+          type: 'string',
+        },
+        birth_place: {
+          'x-jsonld-context': {
+            '@vocab': 'https://w3id.org/italia/onto/CLV/',
+            province: {
+              '@id': 'hasProvince',
+            },
+          },
+          properties: {
+            province: {
+              type: 'object',
+              'x-jsonld-context': {
+                '@vocab': 'https://w3id.org/italia/onto/l0/',
+                sigla: {
+                  '@id': 'hasSigla',
+                },
+              },
+              properties: {
+                sigla: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+      'x-jsonld-context': {
+        '@vocab': 'https://w3id.org/italia/onto/CPV/',
+        given_name: 'givenName',
+        birth_place: {
+          '@id': 'hasBirthPlace',
         },
       },
     },
