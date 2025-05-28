@@ -1,4 +1,4 @@
-import { validateJsonldReservedKeys } from './validators/jsonld-reserved-keys';
+import { validateJsonldReservedKeys } from './validators/jsonld-keys';
 import { validateJsonldVocab } from './validators/jsonld-vocab';
 
 export const JSONLDValidatorPlugin = () => {
