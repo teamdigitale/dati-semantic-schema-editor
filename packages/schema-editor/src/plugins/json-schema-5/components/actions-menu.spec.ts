@@ -50,7 +50,7 @@ components:
       allOf:
         - $ref: 'https://italia.github.io/ansc/docs/openapi/base_servizi.yaml#/components/schemas/AnscResponse'
         - type: object
-          properties:         
+          properties:
             modelEvento:
                  $ref: 'https://italia.github.io/ansc/docs/openapi/model_evento.yaml#/components/schemas/ModelEvento'`;
     const specJson = yaml.load(specYaml) as any;
