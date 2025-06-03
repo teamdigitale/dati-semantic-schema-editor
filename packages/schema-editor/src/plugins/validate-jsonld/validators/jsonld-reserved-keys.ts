@@ -1,29 +1,6 @@
 import { Map, OrderedMap } from 'immutable';
+import { JSONLD_VOCABULARY } from '../common/vocabulary';
 import { SwaggerError } from '../models/error';
-
-const JSONLD_VOCABULARY = [
-  '@base',
-  '@container',
-  '@context',
-  '@definition',
-  '@direction',
-  '@id',
-  '@import',
-  '@language',
-  '@nest',
-  '@prefix',
-  '@propagate',
-  '@protected',
-  '@reverse',
-  '@term',
-  '@type',
-  '@version',
-  '@vocab',
-  '@graph',
-  '@index',
-  '@list',
-  '@set',
-];
 
 export const validateJsonldReservedKeys = (system): SwaggerError[] => {
   // Get basePath from spec
