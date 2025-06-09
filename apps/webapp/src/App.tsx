@@ -8,7 +8,7 @@ function App() {
   return (
     <ConfigurationProvider
       config={{
-        sparqlUrl: 'https://virtuoso-dev-external-service-ndc-dev.apps.cloudpub.testedev.istat.it/sparql',
+        sparqlUrl: 'https://virtuoso-test-external-service-ndc-test.apps.cloudpub.testedev.istat.it/sparql',
         oasCheckerUrl: 'https://italia.github.io/api-oas-checker',
         schemaEditorUrl: 'https://par-tec.github.io/dati-semantic-schema-editor/latest/',
       }}
