@@ -41,6 +41,40 @@ components:
     expect(bundledSpecJson['info']['x-ontoscore']).toEqual(1);
   });
 
+  it('should not block ontoscore calculation if x-jsonld-context is not present', async () => {
+    const specYaml = `#
+openapi: 3.0.3
+components:
+  schemas:
+    NoContext:
+      type: object
+      properties:
+        edu:
+          $ref: '#/components/schemas/EducationLevel'
+    EducationLevel:
+      x-jsonld-type: https://w3id.org/italia/onto/CPV/EducationLevel
+      x-jsonld-context:
+        id: '@id'
+        '@base': 'https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/'
+        '@vocab': 'https://w3id.org/italia/onto/CPV/'
+        description: educationLevelDesc
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+      example:
+        id: NED
+        description: Nessun titolo di studio
+`;
+    const specJson = yaml.load(specYaml) as any;
+    const bundledSpecJson = await createBundle(specJson, { sparqlUrl });
+    expect(bundledSpecJson).toBeTruthy();
+    expect(bundledSpecJson['info']['x-ontoscore']).toEqual(0.5);
+  });
+
   it('should normalize spec models', async () => {
     const specYaml = `openapi: 3.0.3
 components:
