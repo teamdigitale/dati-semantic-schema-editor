@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createBundle } from './actions-menu';
 
 describe('resolveOpenAPISpec', () => {
-  const sparqlUrl = 'https://virtuoso-dev-external-service-ndc-dev.apps.cloudpub.testedev.istat.it/sparql';
+  const sparqlUrl = 'https://virtuoso-test-external-service-ndc-test.apps.cloudpub.testedev.istat.it/sparql';
 
   it('should resolve openAPI specification, resolve jsonldContext and calculate ontoscore', async () => {
     const specYaml = `openapi: 3.0.3

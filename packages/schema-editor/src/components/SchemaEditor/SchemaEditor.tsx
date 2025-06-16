@@ -28,7 +28,7 @@ export function SchemaEditor({
   spec,
   url,
   layout = LayoutTypes.EDITOR,
-  sparqlUrl = 'https://virtuoso-dev-external-service-ndc-dev.apps.cloudpub.testedev.istat.it/sparql',
+  sparqlUrl = 'https://virtuoso-test-external-service-ndc-test.apps.cloudpub.testedev.istat.it/sparql',
   oasCheckerUrl,
   schemaEditorUrl,
 }: Props) {
