@@ -1,5 +1,7 @@
-import { Map } from 'immutable';
+import { fromJS, Map } from 'immutable';
+import { resolveJsonldContext } from '../../jsonld-context/resolve-jsonld-context';
 import { resolvePropertyByJsonldContext } from './jsonld-resolver';
+import { resolveOpenAPISpec } from './openapi-resolver';
 
 export class ResolvedPropertiesGroups {
   valid: string[] = [];
@@ -45,3 +47,76 @@ export async function fetchValidOntoScorePropertiesCount(properties: string[], o
   const sparqlData = await response.json();
   return parseInt(sparqlData?.results?.bindings?.[0]?.count?.value || '0');
 }
+
+export const calculateGlobalOntoscore = async (specJson: any, options: { sparqlUrl: string }) => {
+  const resolvedSpecJson = await resolveOpenAPISpec(specJson);
+  const resolvedSpecOrderedMap = fromJS(resolvedSpecJson);
+
+  // Extract all data models from spec
+  const dataModels = resolvedSpecOrderedMap.getIn(['components', 'schemas']) as Map<any, any> | undefined;
+  if (!dataModels) {
+    throw 'No #/components/schemas models provided';
+  }
+
+  // Calculate specific and global ontoscores
+  let globalOntoScoreModels = 0;
+  let globalOntoScoreSum = 0;
+
+  const setOntoscoreValue = (dataModelKey: string, value: number) => {
+    resolvedSpecJson['components']['schemas'][dataModelKey]['x-ontoscore'] = value;
+    globalOntoScoreSum += value;
+    globalOntoScoreModels++;
+  };
+
+  // Process every datamodel
+  for (const [dataModelKey, dataModel] of dataModels.entries()) {
+    // Filter only data models with type "object"
+    const isObject = (dataModel.get('type', '') as string | undefined)?.toLowerCase() === 'object';
+    if (!isObject) {
+      continue;
+    }
+
+    // Extract x-jsonld-context if present
+    const jsonldContext = resolveJsonldContext(dataModel)?.get('@context');
+    if (!jsonldContext) {
+      setOntoscoreValue(dataModelKey, 0);
+      continue;
+    }
+
+    // Determine data model's properties to use for ontoscore calculation
+    const propertiesPaths: string[][] =
+      dataModel
+        .get('properties')
+        ?.keySeq()
+        .toArray()
+        .map((x) => [x]) || [];
+
+    // Determine properties to validate
+    const { valid: validPropertiesPaths, unknown: unknownPropertiesPaths } = await determinePropertiesToValidate(
+      jsonldContext,
+      propertiesPaths,
+    );
+
+    // Execute sparql fetch to check if mapped onto-properties are correct
+    const sparqlResultCount = await fetchValidOntoScorePropertiesCount(unknownPropertiesPaths, {
+      sparqlUrl: options.sparqlUrl,
+    });
+    const semanticPropertiesCount = validPropertiesPaths.length + sparqlResultCount;
+    const rawPropertiesCount = propertiesPaths?.length;
+    const score = rawPropertiesCount > 0 ? semanticPropertiesCount / rawPropertiesCount : 0;
+
+    setOntoscoreValue(dataModelKey, score);
+  }
+
+  // Setting global onto score (calculated as an average ontoscore value)
+  if (!resolvedSpecJson['info']) {
+    resolvedSpecJson['info'] = {};
+  }
+  const globalOntoScore = globalOntoScoreSum / globalOntoScoreModels;
+  resolvedSpecJson['info']['x-ontoscore'] = globalOntoScore;
+
+  return {
+    resolvedSpecJson,
+    globalOntoScore,
+  };
+};

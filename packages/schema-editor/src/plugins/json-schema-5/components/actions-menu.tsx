@@ -1,22 +1,11 @@
 /**
  * A menu with right icons, see https://italia.github.io/design-react-kit/?path=/docs/documentazione-componenti-dropdown--documentazione#menu-icona-a-destra
  */
-import { Dropdown, DropdownToggle } from 'design-react-kit';
-
-import { DropdownMenu, Icon, LinkList, LinkListItem } from 'design-react-kit';
-import { fromJS, Map } from 'immutable';
+import { Dropdown, DropdownMenu, DropdownToggle, Icon, LinkList, LinkListItem } from 'design-react-kit';
 import yaml from 'js-yaml';
 import { useConfiguration } from '../../configuration';
-import { resolveJsonldContext } from '../../jsonld-context/resolve-jsonld-context';
-import {
-  buildOntoScoreSparqlQuery,
-  compressAndBase64UrlSafe,
-  copyToClipboard,
-  determinePropertiesToValidate,
-  fetchValidOntoScorePropertiesCount,
-  normalizeOpenAPISpec,
-  resolveOpenAPISpec,
-} from '../utils';
+import { compressAndBase64UrlSafe, copyToClipboard, normalizeOpenAPISpec } from '../utils';
+import { calculateGlobalOntoscore } from '../utils/onto-score';
 
 const copyAsB64zipToClipboard = (text: string, prefix: string = '') => {
   copyToClipboard(`${prefix}${compressAndBase64UrlSafe(text)}`);
@@ -35,80 +24,13 @@ const downloadContent = (content: any, mediaType: string, fileName: string) => {
 };
 
 export const createBundle = async (specJson: object, options: { sparqlUrl: string }) => {
-  // Resolve openapi spec with external references
-  let resolvedSpecJson = await resolveOpenAPISpec(specJson);
-  const resolvedSpecOrderedMap = fromJS(resolvedSpecJson);
-
-  // Extract all data models from spec
-  const dataModels = resolvedSpecOrderedMap.getIn(['components', 'schemas']) as Map<any, any> | undefined;
-  if (!dataModels) {
-    return 'No #/components/schemas models provided';
-  }
-
-  // Calculate specific and global ontoscores
-  let globalOntoScoreModels = 0;
-  let globalOntoScoreSum = 0;
-
-  const setOntoscoreValue = (dataModelKey: string, value: number) => {
-    resolvedSpecJson['components']['schemas'][dataModelKey]['x-ontoscore'] = value;
-    globalOntoScoreSum += value;
-    globalOntoScoreModels++;
-  };
-
-  // Process every datamodel
-  for (const [dataModelKey, dataModel] of dataModels.entries()) {
-    // Filter only data models with type "object"
-    const isObject = (dataModel.get('type', '') as string | undefined)?.toLowerCase() === 'object';
-    if (!isObject) {
-      continue;
-    }
-
-    // Extract x-jsonld-context if present
-    const jsonldContext = resolveJsonldContext(dataModel)?.get('@context');
-    if (!jsonldContext) {
-      setOntoscoreValue(dataModelKey, 0);
-      continue;
-    }
-
-    // Determine data model's properties to use for ontoscore calculation
-    const propertiesPaths: string[][] =
-      dataModel
-        .get('properties')
-        ?.keySeq()
-        .toArray()
-        .map((x) => [x]) || [];
-
-    // Determine properties to validate
-    const { valid: validPropertiesPaths, unknown: unknownPropertiesPaths } = await determinePropertiesToValidate(
-      jsonldContext,
-      propertiesPaths,
-    );
-
-    // Execute sparql fetch to check if mapped onto-properties are correct
-    const sparqlResultCount = await fetchValidOntoScorePropertiesCount(unknownPropertiesPaths, {
-      sparqlUrl: options.sparqlUrl,
-    });
-    const semanticPropertiesCount = validPropertiesPaths.length + sparqlResultCount;
-    const rawPropertiesCount = propertiesPaths?.length;
-    const score = rawPropertiesCount > 0 ? semanticPropertiesCount / rawPropertiesCount : 0;
-
-    setOntoscoreValue(dataModelKey, score);
-  }
-
-  // Setting global onto score (calculated as an average ontoscore value)
-  if (!resolvedSpecJson['info']) {
-    resolvedSpecJson['info'] = {};
-  }
-  resolvedSpecJson['info']['x-ontoscore'] = globalOntoScoreSum / globalOntoScoreModels;
-
-  // Normalize x-ref elements
+  let { resolvedSpecJson } = await calculateGlobalOntoscore(specJson, { sparqlUrl: options.sparqlUrl });
   resolvedSpecJson = normalizeOpenAPISpec(resolvedSpecJson);
-
   return resolvedSpecJson;
 };
 
 export const ActionsMenu = ({ specSelectors, url, specActions }) => {
-  const { oasCheckerUrl, schemaEditorUrl, sparqlUrl } = useConfiguration();
+  const { oasCheckerUrl, schemaEditorUrl, sparqlUrl = '' } = useConfiguration();
 
   const actions: Array<{
     text: string;
@@ -140,8 +62,8 @@ export const ActionsMenu = ({ specSelectors, url, specActions }) => {
       text: 'Download bundle',
       icon: 'it-download',
       onClick: async () => {
-        const resolvedSpec = await createBundle(specSelectors.specJson().toJS(), { sparqlUrl: sparqlUrl as string });
-        downloadContent(yaml.dump(resolvedSpec), 'application/yaml', 'spec.yaml');
+        const { resolvedSpecJson } = await createBundle(specSelectors.specJson().toJS(), { sparqlUrl });
+        downloadContent(yaml.dump(resolvedSpecJson), 'application/yaml', 'spec.yaml');
       },
     },
     {

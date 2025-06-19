@@ -1,12 +1,20 @@
 import yaml from 'js-yaml';
 import { describe, expect, it } from 'vitest';
-import { createBundle } from './actions-menu';
+import { calculateGlobalOntoscore } from './onto-score';
 
-describe('ActionsMenu', () => {
+describe('onto-score', () => {
   const sparqlUrl = 'https://virtuoso-test-external-service-ndc-test.apps.cloudpub.testedev.istat.it/sparql';
 
-  it('should createBundle', async () => {
-    const specYaml = `openapi: 3.0.3
+  describe('calculateGlobalOntoscore', () => {
+    it('should throw error when no schemas are provided', async () => {
+      const specJson = { info: {} };
+      await expect(calculateGlobalOntoscore(specJson, { sparqlUrl })).rejects.toThrow(
+        'No #/components/schemas models provided',
+      );
+    });
+
+    it('should resolve openAPI specification, resolve jsonldContext and calculate global ontoscore', async () => {
+      const specYaml = `openapi: 3.0.3
 components:
   schemas:
     Country:
@@ -35,9 +43,11 @@ components:
         hasCity: Rome
         country:
           country: ITA`;
-    const specJson = yaml.load(specYaml) as any;
-    const bundledSpecJson = await createBundle(specJson, { sparqlUrl });
-    expect(bundledSpecJson).toBeTruthy();
-    expect(bundledSpecJson['info']['x-ontoscore']).toEqual(1);
+      const specJson = yaml.load(specYaml) as any;
+      const { globalOntoScore, resolvedSpecJson } = await calculateGlobalOntoscore(specJson, { sparqlUrl });
+      expect(resolvedSpecJson).toBeTruthy();
+      expect(resolvedSpecJson['info']['x-ontoscore']).toEqual(1);
+      expect(globalOntoScore).toEqual(1);
+    });
   });
 });
