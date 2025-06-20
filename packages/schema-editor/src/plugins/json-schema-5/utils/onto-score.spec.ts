@@ -83,6 +83,5 @@ components:
       expect(resolvedSpecJson).toBeTruthy();
       expect(resolvedSpecJson['info']['x-ontoscore']).toEqual(0.5);
     });
-
   });
 });
