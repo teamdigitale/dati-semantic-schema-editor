@@ -19,28 +19,38 @@ export function useRDFPropertyResolver(fieldUri: string | undefined): AsyncState
     `
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-
-    SELECT DISTINCT * WHERE {
+    SELECT DISTINCT
+      ?fieldUri
+      ?domain
+      ?class
+      ?comment
+      ?controlledVocabulary
+    WHERE {
       VALUES ?fieldUri { <${fieldUri}> }
 
-      ?fieldUri
-        rdfs:domain ?domain ;
-        rdfs:range ?class
-      .
+      FILTER EXISTS {
+        ?fieldUri rdf:type ?validType .
+        FILTER(?validType IN (rdf:Property, owl:ObjectProperty, owl:DatatypeProperty, owl:FunctionalProperty))
+      }
 
       OPTIONAL {
-        ?fieldUri
-          rdfs:comment ?comment
-        .
+        ?fieldUri rdfs:domain ?domain .
+      }
+
+      OPTIONAL {
+        ?fieldUri rdfs:range ?class .
+
+        OPTIONAL {
+          ?class
+            <https://w3id.org/italia/onto/l0/controlledVocabulary> ?controlledVocabulary
+          .
+        }
+      }
+
+      OPTIONAL {
+        ?fieldUri rdfs:comment ?comment .
         FILTER(lang(?comment) = 'en')
       }
-
-      OPTIONAL {
-        ?class
-          <https://w3id.org/italia/onto/l0/controlledVocabulary> ?controlledVocabulary
-        .
-      }
-
     }
   `,
     { skip: !fieldUri },
