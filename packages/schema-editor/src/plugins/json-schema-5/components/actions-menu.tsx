@@ -64,6 +64,12 @@ export const createBundle = async (specJson: object, options: { sparqlUrl: strin
     }
 
     // Extract x-jsonld-context if present
+    if (!dataModel.has('x-jsonld-context')) {
+      setOntoscoreValue(dataModelKey, 0);
+      continue;
+    }
+
+    // Resolve x-jsonld-context
     const jsonldContext = resolveJsonldContext(dataModel)?.get('@context');
     if (!jsonldContext) {
       setOntoscoreValue(dataModelKey, 0);

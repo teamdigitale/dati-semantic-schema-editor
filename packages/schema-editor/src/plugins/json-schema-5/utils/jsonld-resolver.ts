@@ -122,7 +122,14 @@ export async function resolvePropertyByJsonldContext(
 
     return { fieldName, fieldUri, vocabularyUri };
   } catch (e) {
-    console.error(e);
+    if (e.name == 'jsonld.SyntaxError') {
+      console.error(
+        `Error parsing JSON-LD context when resolving "${propertyPath}" in ${JSON.stringify(jsonldContext)}`,
+        e,
+      );
+    } else {
+      console.error(e);
+    }
     throw e;
   }
 }
