@@ -1,4 +1,4 @@
-FROM docker.io/nginx:stable-alpine3.19 AS nginx
+FROM docker.io/nginx:1.29.0-alpine AS nginx
 
 # checkov:skip=CKV_DOCKER_2
 # checkov:skip=CKV_DOCKER_3
@@ -21,12 +21,10 @@ RUN pnpm deploy --filter=example --prod /prod/example
 FROM nginx AS webapp
 COPY --from=build /prod/webapp/dist /usr/share/nginx/html
 EXPOSE 80
-USER 1000
 CMD ["nginx","-g","daemon off;"]
 
 # checkov:skip=CKV_DOCKER_2
 FROM nginx AS example
 COPY --from=build /prod/example/dist /usr/share/nginx/html
 EXPOSE 80
-USER 1000
 CMD ["nginx","-g","daemon off;"]
