@@ -1,5 +1,6 @@
 {
   "name": "@italia/dati-semantic-schema-editor",
+  "private": true,
   "version": "0.0.6",
   "description": "",
   "main": "index.js",
@@ -19,8 +20,8 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "eslint --fix",
-    "ci:version": "pnpm changeset version && pnpm install",
-    "ci:publish": "pnpm publish -r",
+    "ci:version": "changeset version && pnpm install --lockfile-only --engine-strict=false",
+    "ci:publish": "turbo run build && pnpm publish -r",
     "prepare": "husky install"
   },
   "devDependencies": {
