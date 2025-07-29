@@ -77,6 +77,12 @@ export const calculateGlobalOntoscore = async (specJson: any, options: { sparqlU
     }
 
     // Extract x-jsonld-context if present
+    if (!dataModel.has('x-jsonld-context')) {
+      setOntoscoreValue(dataModelKey, 0);
+      continue;
+    }
+
+    // Extract x-jsonld-context if present
     const jsonldContext = resolveJsonldContext(dataModel)?.get('@context');
     if (!jsonldContext) {
       setOntoscoreValue(dataModelKey, 0);
