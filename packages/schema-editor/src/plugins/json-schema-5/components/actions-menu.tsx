@@ -23,7 +23,7 @@ const downloadContent = (content: any, mediaType: string, fileName: string) => {
   URL.revokeObjectURL(url);
 };
 
-export const createBundle = async (specJson: object, options: { sparqlUrl: string }) => {
+export const createBundle = async (specJson: object, options: { sparqlUrl: string }): Promise<object> => {
   let { resolvedSpecJson } = await calculateGlobalOntoscore(specJson, { sparqlUrl: options.sparqlUrl });
   resolvedSpecJson = normalizeOpenAPISpec(resolvedSpecJson);
   return resolvedSpecJson;
@@ -62,7 +62,7 @@ export const ActionsMenu = ({ specSelectors, url, specActions }) => {
       text: 'Download bundle',
       icon: 'it-download',
       onClick: async () => {
-        const { resolvedSpecJson } = await createBundle(specSelectors.specJson().toJS(), { sparqlUrl });
+        const resolvedSpecJson = await createBundle(specSelectors.specJson().toJS(), { sparqlUrl });
         downloadContent(yaml.dump(resolvedSpecJson), 'application/yaml', 'spec.yaml');
       },
     },
