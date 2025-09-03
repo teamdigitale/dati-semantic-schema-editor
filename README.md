@@ -34,7 +34,7 @@ open http://localhost:5000
 
 ### Local Usage
 
-To use Italia Schema Editor all you need to do is installing the `@italia/schema-editor` plugin
+To use the Semantic Schema Editor all you need to do is installing the `@italia/schema-editor` plugin
 and use the component in your application.
 
 ```typescript
