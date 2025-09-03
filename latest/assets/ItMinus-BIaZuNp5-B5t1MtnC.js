@@ -1,0 +1,1 @@
+import{r as e}from"./index-Cuvd_St_.js";const n=({title:t,titleId:l,...a})=>e.createElement("svg",{xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",xmlSpace:"preserve",enableBackground:"new 0 0 24 24","aria-labelledby":l,...a},t?e.createElement("title",{id:l},t):null,e.createElement("path",{d:"M20 12.5H4v-1h16v1z"}));export{n as component};
