@@ -15,7 +15,7 @@ export function Standalone() {
         <SchemaEditor
           url={schemaUrl}
           oasCheckerUrl="https://italia.github.io/api-oas-checker/"
-          schemaEditorUrl="https://par-tec.github.io/dati-semantic-schema-editor/latest/"
+          schemaEditorUrl="https://teamdigitale.github.io/dati-semantic-schema-editor/latest/"
           sparqlUrl={sparqlUrl}
         />
       </div>
