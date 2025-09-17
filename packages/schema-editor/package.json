@@ -1,5 +1,5 @@
 {
-  "name": "@italia/schema-editor",
+  "name": "@teamdigitale/schema-editor",
   "private": false,
   "version": "0.0.5",
   "type": "module",

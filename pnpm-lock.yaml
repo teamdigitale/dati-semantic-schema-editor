@@ -65,7 +65,7 @@ importers:
       '@fontsource/titillium-web':
         specifier: ^5.1.0
         version: 5.1.0
-      '@italia/schema-editor':
+      '@teamdigitale/schema-editor':
         specifier: workspace:*
         version: link:../../packages/schema-editor
       ace-builds:
@@ -147,7 +147,7 @@ importers:
       '@fontsource/titillium-web':
         specifier: ^5.1.0
         version: 5.1.0
-      '@italia/schema-editor':
+      '@teamdigitale/schema-editor':
         specifier: workspace:*
         version: link:../../packages/schema-editor
       bootstrap-italia:

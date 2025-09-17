@@ -1,5 +1,5 @@
-import * as schemaEditor from '@italia/schema-editor';
-import { SchemaEditor } from '@italia/schema-editor';
+import * as schemaEditor from '@teamdigitale/schema-editor';
+import { SchemaEditor } from '@teamdigitale/schema-editor';
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, MockInstance, test, vi } from 'vitest';
 import * as configuration from '../../features/configuration';

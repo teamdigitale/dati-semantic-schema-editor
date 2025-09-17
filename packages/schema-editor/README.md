@@ -31,10 +31,10 @@ function App() {
 }
 ```
 
-Finally install @italia/schema-editor and use it like described in the next paragraph
+Finally install @teamdigitale/schema-editor and use it like described in the next paragraph
 
 ```bash
-npm install @italia/schema-editor
+npm install @teamdigitale/schema-editor
 ```
 
 ## Usage
@@ -48,8 +48,8 @@ The package can be used in 2 ways:
 ### Standalone component
 
 ```js
-import { SchemaEditor } from '@italia/schema-editor';
-import '@italia/schema-editor/dist/style.css';
+import { SchemaEditor } from '@teamdigitale/schema-editor';
+import '@teamdigitale/schema-editor/dist/style.css';
 
 function App() {
   // By omitting both params the editor will be loaded as empty
@@ -72,8 +72,8 @@ function App() {
 ### View only component
 
 ```js
-import { LayoutTypes, SchemaEditor } from '@italia/schema-editor';
-import '@italia/schema-editor/dist/style.css';
+import { LayoutTypes, SchemaEditor } from '@teamdigitale/schema-editor';
+import '@teamdigitale/schema-editor/dist/style.css';
 
 function App() {
   // By omitting both params the editor will be loaded as empty
@@ -93,7 +93,7 @@ function App() {
 ### Ace editor theme
 
 ```js
-import { EditorThemePlugin } from '@italia/schema-editor';
+import { EditorThemePlugin } from '@teamdigitale/schema-editor';
 
 // Initialize ace editor before
 EditorThemePlugin();

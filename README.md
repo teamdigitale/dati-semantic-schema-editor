@@ -6,7 +6,7 @@ This repository uses [PNPM](https://pnpm.io) and [turborepo](https://turbo.build
 
 <div align="center">
 
-![Build Status](https://github.com/italia/schema-editor/actions/workflows/pages.yml/badge.svg)
+![Build Status](https://github.com/teamdigitale/dati-semantic-schema-editor/actions/workflows/pages.yml/badge.svg)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 </div>
@@ -34,7 +34,7 @@ open http://localhost:5000
 
 ### Local Usage
 
-To use the Semantic Schema Editor all you need to do is installing the `@italia/schema-editor` plugin
+To use the Semantic Schema Editor all you need to do is installing the `@teamdigitale/schema-editor` plugin
 and use the component in your application.
 
 ```typescript
@@ -45,8 +45,8 @@ import '@fontsource/titillium-web';
 
 import './App.scss';
 
-import { SchemaEditor } from '@italia/schema-editor';
-import '@italia/schema-editor/dist/style.css';
+import { SchemaEditor } from '@teamdigitale/schema-editor';
+import '@teamdigitale/schema-editor/dist/style.css';
 
 function App() {
   const urlParams = new URLSearchParams(window.location.search);

@@ -13,7 +13,7 @@
     "dist"
   ],
   "dependencies": {
-    "@italia/schema-editor": "workspace:*",
+    "@teamdigitale/schema-editor": "workspace:*",
     "bootstrap-italia": "^2.10.0",
     "classnames": "^2.5.1",
     "design-react-kit": "^5.2.0",

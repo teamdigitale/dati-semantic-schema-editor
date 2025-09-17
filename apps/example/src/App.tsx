@@ -94,7 +94,7 @@ function App() {
                   <li>
                     <a
                       aria-label="Github"
-                      href="https://github.com/italia/schema-editor"
+                      href="https://github.com/teamdigitale/dati-semantic-schema-editor"
                       target="_blank"
                       rel="noreferrer"
                     >
