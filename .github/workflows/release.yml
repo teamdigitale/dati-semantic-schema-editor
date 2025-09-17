@@ -7,14 +7,19 @@ on:
 env:
   CI: true
 
-permissions: read-all
+permissions:
+  pull-requests: write
+  contents: write
+  packages: write
+  id-token: write
 
 jobs:
   version:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
       - name: Setup PNPM
         uses: pnpm/action-setup@v4
@@ -23,20 +28,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install
-
-      - name: Build Packages
-        run: pnpm run build
+        run: pnpm install --frozen-lockfile
 
       - name: Create Release Pull Request or Publish
+        id: changesets
         uses: changesets/action@v1
         with:
           version: pnpm ci:version
-          # publish: pnpm ci:publish
+          publish: pnpm ci:publish
           commit: "chore: update versions"
           title: "chore: update versions"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Push tags after publish
+        if: steps.changesets.outputs.published == 'true'
+        run: git push --follow-tags
