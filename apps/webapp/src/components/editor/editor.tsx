@@ -1,4 +1,4 @@
-import { decompressAndBase64UrlSafe, SchemaEditor } from '@italia/schema-editor';
+import { decompressAndBase64UrlSafe, SchemaEditor } from '@teamdigitale/schema-editor';
 import { useConfiguration } from '../../features/configuration';
 
 export function Editor() {
