@@ -4,7 +4,10 @@
   "initialVersions": {
     "example": "0.0.5",
     "webapp": "0.0.6",
-    "@italia/schema-editor": "0.0.5"
+    "@italia/schema-editor": "0.0.5",
+    "@teamdigitale/schema-editor": "0.0.5"
   },
-  "changesets": []
+  "changesets": [
+    "long-zoos-glow"
+  ]
 }
