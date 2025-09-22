@@ -30,7 +30,6 @@ docker run -d -p 8000:8000 ghcr.io/teamdigitale/dati-semantic-schema-editor:late
 
 or pick a specific version from the [github container registry](https://github.com/teamdigitale/dati-semantic-schema-editor/pkgs/container/dati-semantic-schema-editor).
 
-
 ### Usage with Docker
 
 To launch the application, just run docker compose
