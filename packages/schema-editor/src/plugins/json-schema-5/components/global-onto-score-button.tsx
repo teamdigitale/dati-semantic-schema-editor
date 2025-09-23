@@ -1,4 +1,4 @@
-import { Button, Spinner } from 'design-react-kit';
+import { Button, Icon, Spinner } from 'design-react-kit';
 import { useCallback, useMemo, useState } from 'react';
 import { useConfiguration } from '../../configuration';
 import { calculateGlobalOntoscore, to32CharString } from '../utils';
@@ -38,8 +38,11 @@ export const GlobalOntoScoreButton = ({ specSelectors }) => {
       onClick={recalculate}
       disabled={isLoading}
       title={isUpdated ? 'Global OntoScore is up to date' : 'Global OntoScore is outdated, click to recalculate'}
+      className="d-flex align-items-center"
     >
-      {isLoading && <Spinner active small className="me-2" />}
+      <span className="me-2">
+        {isLoading ? <Spinner active small /> : <Icon icon="it-refresh" size="sm" color="white" />}
+      </span>
       <span>Global OntoScore β: {ontoscore !== null ? ontoscore.toFixed(2) : '-'}</span>
     </Button>
   );
