@@ -20,7 +20,7 @@ describe('GlobalOntoScoreButton', () => {
   it('should render button with initial state', () => {
     const button = screen.getByRole('button');
     expect(button).toBeTruthy();
-    expect(button.innerHTML).toContain('Global OntoScore β: 0.00');
+    expect(button.innerHTML).toContain('Global OntoScore β: -');
     expect(button.classList).toContain('btn-secondary'); // Not calculated initially
   });
 
@@ -28,14 +28,12 @@ describe('GlobalOntoScoreButton', () => {
     const calculateGlobalOntoscoreSpy = vi
       .spyOn(utils, 'calculateGlobalOntoscore')
       .mockResolvedValueOnce({ resolvedSpecJson: {}, globalOntoScore: 0.5 });
-
     const button = screen.getByRole('button');
     fireEvent.click(button);
-
     await waitFor(() => {
       expect(calculateGlobalOntoscoreSpy).toHaveBeenCalled();
       expect(button.innerHTML).toContain('Global OntoScore β: 0.50');
-      expect(button.classList).toContain('btn-success'); // Just calculated
+      expect(button.classList).toContain('btn-warning'); // Just calculated
     });
   });
 });

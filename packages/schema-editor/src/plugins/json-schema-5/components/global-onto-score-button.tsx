@@ -1,49 +1,28 @@
 import { Button, Icon, Spinner } from 'design-react-kit';
-import { useCallback, useMemo, useState } from 'react';
-import { useConfiguration } from '../../configuration';
-import { calculateGlobalOntoscore, to32CharString } from '../utils';
+import { useGlobalOntoScore, useOntoScoreColor } from '../hooks/use-onto-score';
 
 export const GlobalOntoScoreButton = ({ specSelectors }) => {
-  const { sparqlUrl = '' } = useConfiguration();
-
-  const [ontoscore, setOntoscore] = useState<number>(0);
-  const [lastHash, setLastHash] = useState<string | null>(null);
-  const [isLoading, setLoading] = useState(false);
-
-  const specJson = useMemo(() => specSelectors.specJson().toJS(), [specSelectors.specJson().toJS()]);
-  const currentHash = useMemo(() => to32CharString(JSON.stringify(specJson)), [specJson]);
-
-  const recalculate = useCallback(async () => {
-    try {
-      setLoading(true);
-
-      // Calculate global ontoscore
-      const { globalOntoScore } = await calculateGlobalOntoscore(specJson, { sparqlUrl });
-      setOntoscore(globalOntoScore);
-
-      // Update hash to give a feedback to the user
-      const hash = to32CharString(JSON.stringify(specJson));
-      setLastHash(hash);
-    } finally {
-      setLoading(false);
-    }
-  }, [specJson, sparqlUrl]);
-
-  const isUpdated = lastHash && currentHash && lastHash === currentHash;
+  const {
+    status,
+    error,
+    data: { score, isUpdated },
+    recalculate,
+  } = useGlobalOntoScore(specSelectors.specJson().toJS());
+  const ontoscoreColor = useOntoScoreColor(score ?? 0);
 
   return (
     <Button
-      color={isUpdated ? 'success' : 'secondary'}
+      color={!isUpdated ? 'secondary' : error ? 'danger' : ontoscoreColor}
       size="xs"
-      onClick={recalculate}
-      disabled={isLoading}
-      title={isUpdated ? 'Global OntoScore is up to date' : 'Global OntoScore is outdated, click to recalculate'}
+      onClick={() => recalculate()}
+      disabled={status === 'pending'}
+      title={!isUpdated ? 'Global OntoScore is outdated, click to recalculate' : 'Global OntoScore is up to date'}
       className="d-flex align-items-center"
     >
       <span className="me-2">
-        {isLoading ? <Spinner active small /> : <Icon icon="it-refresh" size="sm" color="white" />}
+        {status === 'pending' ? <Spinner active small /> : <Icon icon="it-refresh" size="sm" fill="currentColor" />}
       </span>
-      <span>Global OntoScore β: {ontoscore !== null ? ontoscore.toFixed(2) : '-'}</span>
+      {error ? <span>Global OntoScore β: ERROR</span> : <span>Global OntoScore β: {score?.toFixed(2) ?? '-'}</span>}
     </Button>
   );
 };

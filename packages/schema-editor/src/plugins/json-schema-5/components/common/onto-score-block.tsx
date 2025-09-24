@@ -1,6 +1,6 @@
 import { Badge, Spinner } from 'design-react-kit';
-import { useOntoScore } from '../../hooks';
 import { Map } from 'immutable';
+import { useOntoScore, useOntoScoreColor } from '../../hooks';
 
 interface Props {
   jsonldContext: Map<string, any> | undefined;
@@ -13,6 +13,7 @@ export function OntoScoreBlock({ jsonldContext, propertiesPaths }: Props) {
     error,
     data: { rawPropertiesCount, semanticPropertiesCount, score },
   } = useOntoScore(jsonldContext, propertiesPaths);
+  const ontoscoreColor = useOntoScoreColor(score ?? 0);
 
   return !jsonldContext || !propertiesPaths ? (
     <></>
@@ -29,7 +30,7 @@ export function OntoScoreBlock({ jsonldContext, propertiesPaths }: Props) {
     </Badge>
   ) : (
     <Badge
-      color={score > 0.9 ? 'success' : score > 0.5 ? 'warning' : 'danger'}
+      color={ontoscoreColor}
       title={`A beta feature showing the ratio of semantic annotated properties to total properties (${semanticPropertiesCount}/${rawPropertiesCount}).`}
     >
       <small>OntoScore &beta;: {score.toFixed(2)}</small>
