@@ -1,8 +1,10 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { fromJS } from 'immutable';
-import { describe, expect, it, vi } from 'vitest';
-import { useOntoScore } from './use-onto-score';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { useGlobalOntoScore, useOntoScore, useOntoScoreColor } from './use-onto-score';
 import * as useSparqlQueryImport from './use-sparql';
+import * as configuration from '../../configuration';
+import * as utils from '../utils';
 
 describe('useOntoScore', () => {
   it('should return 0 without jsonldcontext', async () => {
@@ -109,5 +111,62 @@ describe('useOntoScore', () => {
         skip: false,
       },
     );
+  });
+});
+
+describe('useGlobalOntoScore', () => {
+  beforeEach(() => {
+    vi.spyOn(configuration, 'useConfiguration').mockReturnValue({ sparqlUrl: 'https://sparql.com' });
+  });
+
+  it('should return undefined score if no calculation is done', async () => {
+    const { result } = renderHook(() => useGlobalOntoScore({}));
+    expect(result.current).toEqual({
+      status: 'idle',
+      error: undefined,
+      data: {
+        score: undefined,
+        isUpdated: false,
+      },
+      recalculate: expect.any(Function),
+    });
+  });
+
+  it('should return isUpdated false if spec is changed', async () => {
+    vi.spyOn(utils, 'calculateGlobalOntoscore').mockResolvedValue({ globalOntoScore: 0.8, resolvedSpecJson: {} });
+    const { result, rerender } = renderHook((props) => useGlobalOntoScore(props ?? { foo: 'bar' }));
+    await result.current.recalculate();
+    await waitFor(() => expect(result.current.data.isUpdated).toBe(true));
+    rerender({ foo: 'baz' });
+    await waitFor(() => expect(result.current.data.isUpdated).toBe(false));
+  });
+
+  it('should return score and isUpdated if calculation is done', async () => {
+    vi.spyOn(utils, 'calculateGlobalOntoscore').mockResolvedValue({ globalOntoScore: 0.8, resolvedSpecJson: {} });
+    const { result } = renderHook(() => useGlobalOntoScore({ foo: 'bar' }));
+    await result.current.recalculate();
+    await waitFor(() =>
+      expect(result.current).toEqual({
+        status: 'fulfilled',
+        error: undefined,
+        data: {
+          score: 0.8,
+          isUpdated: true,
+        },
+        recalculate: expect.any(Function),
+      }),
+    );
+  });
+});
+
+describe('useOntoScoreColor', () => {
+  it('should return success if score is greater than 0.5', async () => {
+    const { result } = renderHook(() => useOntoScoreColor(0.9));
+    expect(result.current).toEqual('success');
+  });
+
+  it('should return warning otherwise', async () => {
+    const { result } = renderHook(() => useOntoScoreColor(0.5));
+    expect(result.current).toEqual('warning');
   });
 });
