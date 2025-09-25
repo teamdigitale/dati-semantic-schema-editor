@@ -8,6 +8,7 @@
     "@teamdigitale/schema-editor": "0.0.5"
   },
   "changesets": [
+    "cool-guests-juggle",
     "long-zoos-glow"
   ]
 }
