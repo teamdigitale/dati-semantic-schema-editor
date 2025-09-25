@@ -1,6 +1,6 @@
 # @teamdigitale/schema-editor
 
-## 0.0.6-next.1
+## 0.0.7-next.0
 
 ### Patch Changes
 
