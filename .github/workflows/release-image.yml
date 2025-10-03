@@ -1,6 +1,7 @@
 name: Release Container Image
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -41,7 +42,7 @@ jobs:
   container-image:
     timeout-minutes: 15
     runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request'
+    # if: github.event_name != 'pull_request'
 
     permissions:
       contents: read
@@ -70,7 +71,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           labels: |
-            maintainer=Par-Tec
+            maintainer=teamdigitale
             org.opencontainers.image.source.branch=${{ steps.extract_branch.outputs.branch }}
           tags: |
             type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
@@ -81,5 +82,6 @@ jobs:
         with:
           context: .
           push: true
+          target: webapp
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
