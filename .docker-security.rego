@@ -22,6 +22,7 @@ secrets_env = [
 trusted_images = [
     "docker.io/library/nginx",
     "docker.io/library/node",
+    "docker.io/nginxinc/nginx-unprivileged",
     # multistage image names.
     "base",
     "nginx",

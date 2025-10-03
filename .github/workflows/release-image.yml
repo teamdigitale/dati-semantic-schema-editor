@@ -73,9 +73,10 @@ jobs:
           labels: |
             maintainer=teamdigitale
             org.opencontainers.image.source.branch=${{ steps.extract_branch.outputs.branch }}
+          # FIXME: move this line below before merge.
+          #  type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
           tags: |
-            type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
-            type=raw, value=latest
+            type=raw,value=latest
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6.18.0
