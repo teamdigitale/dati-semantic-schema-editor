@@ -86,7 +86,7 @@ deny[msg] {
 
 exception[rules] {
   input[i].Cmd == "from"
-  input[i].Value[0] == "maven:3.8.7-eclipse-temurin-11"
+  input[i].Value[0] == "docker.io/nginx"
 
   rules := ["untrusted_base_image"]
 }
