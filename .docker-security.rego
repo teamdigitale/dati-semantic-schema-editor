@@ -1,3 +1,8 @@
+#
+# Run with:
+#
+# $ conftest test -p .docker-security.rego Dockerfile
+#
 package main
 
 # Do Not store secrets in ENV variables
@@ -14,6 +19,15 @@ secrets_env = [
     "tkn"
 ]
 
+trusted_images = [
+    "docker.io/library/nginx",
+    "docker.io/library/node",
+    # multistage image names.
+    "base",
+    "nginx",
+    "node",
+]
+
 deny[msg] {
     input[i].Cmd == "env"
     val := input[i].Value
@@ -21,15 +35,7 @@ deny[msg] {
     msg = sprintf("Line %d: Potential secret in ENV key found: %s", [i, val])
 }
 
-# Only use trusted base images
-deny_untrusted_base_image[msg] {
-    input[i].Cmd == "from"
-    val := split(input[i].Value[0], "/")
-    count(val) > 1
-    msg = sprintf("Line %d: use a trusted base image", [i])
-}
-
-# Do not use 'latest' tag for base imagedeny[msg] {
+# Do not use 'latest' tag for base images
 deny[msg] {
     input[i].Cmd == "from"
     val := split(input[i].Value[0], ":")
@@ -84,9 +90,26 @@ deny[msg] {
     msg = sprintf("Line %d: Do not use 'sudo' command", [i])
 }
 
-exception[rules] {
-  input[i].Cmd == "from"
-  input[i].Value[0] == "docker.io/nginx"
+# Forbid the use of images not in the trusted list
+deny[msg] {
+    input[i].Cmd == "from"
+    image_name := input[i].Value[0]
+    not is_trusted(image_name)
+    msg = sprintf("Line %d: Image '%s' is not in the list of trusted images. Please use one of the approved base images.", [i, image_name])
+}
 
-  rules := ["untrusted_base_image"]
+is_trusted(image_name) {
+	startswith(image_name, trusted_images[_])
+}
+
+# Use multi-stage builds
+default multi_stage = false
+multi_stage = true {
+    input[i].Cmd == "copy"
+    val := concat(" ", input[i].Flags)
+    contains(lower(val), "--from=")
+}
+deny[msg] {
+    multi_stage == false
+    msg = sprintf("You COPY, but do not appear to use multi-stage builds...", [])
 }

@@ -1,8 +1,8 @@
-FROM docker.io/nginx:stable-alpine3.19 AS nginx
+FROM docker.io/library/nginx:stable-alpine3.19 AS nginx
 
 # checkov:skip=CKV_DOCKER_2
 # checkov:skip=CKV_DOCKER_3
-FROM docker.io/node:20-slim AS base
+FROM docker.io/library/node:20-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
