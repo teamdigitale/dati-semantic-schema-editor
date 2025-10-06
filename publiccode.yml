@@ -3,8 +3,9 @@
 #
 publiccodeYmlVersion: "0.4.0"
 name: Semantic Schema Editor
-url: https://github.com/teamdigitale/dati-semantic-schema-editor
 softwareVersion: 0.0.6
+url: https://github.com/teamdigitale/dati-semantic-schema-editor
+landingURL: https://teamdigitale.github.io/dati-semantic-schema-editor/latest/
 platforms:
   - web
 softwareType: standalone/web
