@@ -72,6 +72,8 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           labels: |
             maintainer=teamdigitale
+            org.opencontainers.image.title=dati-semantic-schema-editor
+            org.opencontainers.image.source=${{ github.server_url }}/${{ env.IMAGE_NAME }}
             org.opencontainers.image.source.branch=${{ steps.extract_branch.outputs.branch }}
           # FIXME: move this line below before merge.
           #  type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
