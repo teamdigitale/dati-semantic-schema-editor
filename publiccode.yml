@@ -1,0 +1,61 @@
+#
+# Basic metadata.
+#
+publiccodeYmlVersion: "0.4.0"
+name: Semantic Schema Editor
+url: https://github.com/teamdigitale/dati-semantic-schema-editor
+softwareVersion: 0.0.6
+platforms:
+  - web
+softwareType: standalone/web
+categories:
+  - application-development
+  - it-development
+developmentStatus: beta
+isBasedOn: https://github.com/swagger-api/swagger-editor
+
+#
+# Documentation.
+#
+description:
+  it:
+    localisedName: Semantic Schema Editor
+    shortDescription: Il Semantic Schema Editor permette di aggiungere informazioni
+      semantiche a file OpenAPI
+    longDescription: >
+      Semantic Schema Editor è un editor per file OpenAPI che
+      permette di annotare gli schemi dati e le loro proprietà con riferimenti
+      semantici presenti all'interno del Catalogo Nazionale Dati per
+      l'interoperabilità semantica https://schema.gov.it
+    features:
+      - Creazione di OpenAPI
+      - Modifica di OpenAPI
+      - Validazione di OpenAPI
+      - Progettazione di Schemi Dati
+localisation:
+  localisationReady: false
+  availableLanguages:
+    - en
+#
+# Legal and maintenance information.
+#
+legal:
+  license: BSD-3-Clause
+maintenance:
+  type: contract
+  contacts:
+    - affiliation: ISTAT
+      email: polizzi@istat.it
+      name: Marco Polizzi
+  contractors:
+    - name: ISTAT
+      until: '2026-12-31'
+it:
+  conforme:
+    gdpr: false
+    lineeGuidaDesign: false
+    misureMinimeSicurezza: false
+    modelloInteroperabilita: true
+  countryExtensionVersion: "1.0"
+  riuso:
+    codiceIPA: pcm
