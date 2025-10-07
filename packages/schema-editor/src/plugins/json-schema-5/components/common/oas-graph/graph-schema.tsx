@@ -1,176 +1,108 @@
-import React, { useRef, useEffect, useState } from 'react';
+import cytoscape, { Core } from 'cytoscape';
+import { List } from 'immutable';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
-import Cytoscape from 'cytoscape';
-import elk from 'cytoscape-fcose';
-import oasToGraph from './oas-graph';
 
-Cytoscape.use(elk);
+// Initialize cytoscape layout
 // cola represents aggregations using clusters
 // breadthfirst has a good representation for layered graphs
 // dagre is better than cose with many trees
 // cose is ok for small graphs
-const layout = 'fcose';
+import fcose from 'cytoscape-fcose';
+import { oasToGraph } from './oas-graph';
+cytoscape.use(fcose);
 
-export const GraphSchema = ({ spec }) => {
-  const { graph } = oasToGraph(spec);
+export const GraphSchema = ({ specSelectors, editorActions }) => {
+  const { elements } = useMemo(() => oasToGraph(specSelectors?.spec().toJSON()).graph, [specSelectors]);
+  const cyRef = useRef<Core | null>(null);
 
-  return <Graph elements={graph?.elements || []} />;
-};
+  // Centra il grafico al load
+  useEffect(() => {
+    cyRef.current?.center();
+  }, [cyRef.current]);
 
-export const Graph = ({ elements }) => {
-  console.log('Graph nodes', elements);
-  const cyRef = useRef<Cytoscape.Core | null>(null);
-  const [rotation, setRotation] = useState(0);
-  const fontSize = 8;
+  // Click sui nodi
+  const handleNodeClick = useCallback((e) => {
+    e.stopPropagation();
+    const path: string = e.target._private.data.id;
+    if (!path.startsWith('#/')) {
+      return;
+    }
+    const specPath = List(path.split('/').slice(1));
+    const jumpPath = specSelectors.bestJumpPath({ specPath });
+    editorActions.jumpToLine(specSelectors.getSpecLineFromPath(jumpPath));
+  }, []);
 
   useEffect(() => {
-    const cy = cyRef.current;
+    cyRef.current?.on('click', 'node', handleNodeClick);
+    return () => {
+      cyRef.current?.off('click', 'node', handleNodeClick);
+    };
+  }, [cyRef.current]);
 
-    if (cy) {
-      cy.on('dblclick', 'node', (event) => {
-        const nodeId = event.target.id();
-        alert(`Node ID: ${nodeId}`);
-      });
-    }
-  }, [elements]);
-
-  const handleRotate = () => {
-    setRotation((prevRotation) => prevRotation + 90);
-  };
-
-  return elements ? (
-    <>
-      <button
-        onClick={handleRotate}
-        //style={{ position: 'absolute', top: '-10px', right: '-10px' }}
-      >
-        Rotate
-      </button>
-      <div
-        className="info"
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          border: '2px solid',
-          height: '100vh',
-          width: '100%',
-          transform: `rotate(${rotation}deg)`,
-          transition: 'transform 0.5s ease',
-        }}
-      >
-        <CytoscapeComponent
-          cy={(cy) => {
-            cyRef.current = cy;
-            // Iterate over all nodes and update their size based on the label length
-            cy.nodes().forEach((node) => {
-              let label = node.data('label') || '';
-
-              // If a label is longer than 10 chars, split on uppercase letters
-              if (label.length > 10) {
-                label = label.split(/(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|(?<=:)(?=[A-Za-z])/).join('\n');
-                node.data('label', label);
-              }
-
-              const lines = label.split('\n');
-              const longestLineLength = Math.max(...lines.map((line) => line.length));
-              const numberOfLines = lines.length;
-
-              // Adjust size for multi-line labels to maintain a circle shape
-              const newWidth = Math.max(20, longestLineLength * fontSize * 0.8);
-              const newHeight = Math.max(20, numberOfLines * fontSize * 1.8);
-              const circleSize = Math.max(newWidth, newHeight);
-
-              node.style({
-                width: `${circleSize}px`,
-                height: `${circleSize}px`,
-              });
-            });
-            // Re-run the layout after updating node sizes to prevent overlap.
-            cy.layout({
-              name: layout,
-              spacingFactor: 1,
-              avoidOverlap: true,
-              nodeDimensionsIncludeLabels: true,
-            }).run();
-
-            cy.edges().forEach((edge) => {
-              if (edge.target().data('type') === 'rdf') {
-                edge.data('target_is_rdf', true);
-              }
-            });
-          }}
-          elements={elements}
-          style={{ width: '100%', height: '100%' }}
-          layout={{
-            name: layout,
-            spacingFactor: 1,
-            avoidOverlap: true, // Prevents node overlap
-            // nodeRepulsion: 4000,
-            nodeDimensionsIncludeLabels: true,
-          }}
-          stylesheet={[
-            {
-              selector: 'node',
-              style: {
-                label: 'data(label)',
-                'background-color': '#11479e',
-                width: '10px',
-                height: '10px',
-                'font-size': `${fontSize}px`,
-                'font-family': 'Titillium Web, sans-serif',
-                'text-valign': 'center', // Center the label vertically
-                'text-halign': 'center', // Center the label horizontally
-                color: '#ffffff', // Optional: Set the label color to white for better contrast
-                'text-wrap': 'wrap',
-                'text-max-width': '80px',
-                'white-space': 'pre-wrap',
-                'text-overflow': 'ellipsis',
-                shape: 'circle',
-              },
-            },
-            {
-              selector: 'edge',
-              style: {
-                width: 1,
-                'line-color': '#9dbaea',
-                'target-arrow-color': '#9dbaea',
-                'target-arrow-shape': 'triangle',
-              },
-            },
-            {
-              selector: 'edge[target_is_rdf]',
-              style: {
-                'line-style': 'dashed',
-              },
-            },
-            {
-              selector: 'node[type="rdf"]',
-              style: {
-                'background-color': '#008055', // success
-              },
-            },
-            {
-              selector: 'node[type="blank"]',
-              style: {
-                'background-color': '#768593',
-                // 'font-size': '4px',
-                // 'border-color': '#11479e',
-                // 'border-width': 1,
-              },
-            },
-            {
-              selector: 'node[type="@typed"]',
-              style: {
-                //  shape: 'rectangle',
-              },
-            },
-          ]}
-        />
-      </div>
-    </>
-  ) : (
-    <pre>{JSON.stringify(Object.keys(elements))}</pre>
+  return (
+    <CytoscapeComponent
+      style={{ width: '100%', height: 'calc(100vh - 210px)' }}
+      cy={(cy: Core) => (cyRef.current = cy)}
+      elements={elements}
+      layout={{
+        name: 'fcose',
+        fit: true,
+        avoidOverlap: true,
+        nodeDimensionsIncludeLabels: true,
+        spacingFactor: 1,
+      }}
+      stylesheet={[
+        {
+          selector: 'node',
+          style: {
+            label: 'data(label)',
+            width: (node) => node.data('label').length * 8,
+            height: (node) => node.data('label').length * 8,
+            padding: '16px',
+            'text-valign': 'center',
+            'text-halign': 'center',
+            'background-color': '#11479e',
+            color: '#ffffff',
+          },
+        },
+        {
+          selector: 'node[type="rdf"]',
+          style: {
+            'background-color': '#008055',
+          },
+        },
+        {
+          selector: 'node[type="blank"]',
+          style: {
+            'background-color': '#768593',
+          },
+        },
+        {
+          selector: 'node[type="@typed"]',
+          style: {},
+        },
+        //
+        // Edges
+        {
+          selector: 'edge',
+          style: {
+            width: 2,
+            'curve-style': 'straight',
+            'line-color': '#9dbaea',
+            'target-arrow-color': '#9dbaea',
+            'target-arrow-shape': 'triangle',
+          },
+        },
+        {
+          selector: 'edge[type="dashed"]',
+          style: {
+            'line-style': 'dashed',
+            'target-arrow-shape': 'none',
+          },
+        },
+      ]}
+    />
   );
 };
 

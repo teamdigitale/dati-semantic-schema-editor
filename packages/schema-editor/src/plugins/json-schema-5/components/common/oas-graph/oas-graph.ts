@@ -36,14 +36,14 @@ export function oasToMap(oas: any) {
           }
         }
         if (key === 'x-jsonld-type') {
-          console.log('x-jsonld-type', value, path);
           if (!result[path]) {
             result[path] = { label: lastpath(path), refs: [] };
           }
 
           result[path].type = '@typed';
 
-          const jsonldType = /[:/#]/.test(value as string) ? uri2shortUri(value as string) : (value as string);
+          const valueStr = value as string;
+          const jsonldType = /^(https?:\/\/|#\/)/.test(valueStr) ? uri2shortUri(valueStr) : valueStr;
           result[jsonldType] = { label: jsonldType, refs: [], type: 'rdf' };
           result[path].refs.push(jsonldType);
         }
@@ -80,11 +80,12 @@ export function mapToGraph(oasMap: OasMap) {
   const element_ids: Node[] = [];
   const element_links: Node[] = [];
 
-  for (const [source, { label: label, refs: targets, type: type }] of Object.entries(oasMap)) {
+  for (const [source, { label, refs: targets, type }] of Object.entries(oasMap)) {
     element_ids.push({ data: { id: source, label, ...(type !== undefined && { type }) } });
     // Create edges
     for (const target of targets) {
-      element_links.push({ data: { source, target } });
+      const targetType = oasMap[target].type;
+      element_links.push({ data: { source, target, ...(targetType === 'rdf' ? { type: 'dashed' } : {}) } });
     }
   }
   const elements = [...element_ids, ...element_links];
@@ -95,5 +96,3 @@ export function oasToGraph(oas: any) {
   const { result } = oasToMap(oas);
   return mapToGraph(result);
 }
-
-export default oasToGraph;
