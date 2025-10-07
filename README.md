@@ -143,6 +143,12 @@ docker build . --target webapp --tag webapp:latest
 docker build . --target example --tag example:latest
 ```
 
+After creating the desired image, run it with the following command paying attention to change listening ports and config file if needed:
+
+```bash
+docker run -p 80:80 --mount type=bind,source=${PWD}/my-custom-config.js,target=/usr/share/nginx/html/config.js webapp:latest
+```
+
 ## Contributing
 
 Please, see [CONTRIBUTING.md](CONTRIBUTING.md) for more details on:
