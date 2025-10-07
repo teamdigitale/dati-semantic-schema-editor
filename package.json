@@ -1,5 +1,5 @@
 {
-  "name": "@italia/dati-semantic-schema-editor",
+  "name": "@teamdigitale/dati-semantic-schema-editor",
   "version": "0.0.7",
   "description": "",
   "main": "index.js",

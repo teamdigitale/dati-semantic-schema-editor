@@ -53,7 +53,7 @@ export function Layout({ children }: { children: JSX.Element }) {
                       <li>
                         <a
                           aria-label="Github"
-                          href="https://github.com/italia/schema-editor"
+                          href="https://github.com/teamdigitale/dati-semantic-schema-editor"
                           target="_blank"
                           rel="noreferrer"
                           className={cx({ 'text-white': !showMenu, 'text-primary': showMenu })}
