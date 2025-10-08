@@ -1,3 +1,6 @@
+preferWorkspacePackages: true
+linkWorkspacePackages: true
+saveWorkspaceProtocol: false
 packages:
   - "apps/*"
   - "packages/*"

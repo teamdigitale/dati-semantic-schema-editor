@@ -127,9 +127,18 @@ In order to process this correctly perform the following steps:
 
 - Commit the generated files that are inside `.changeset` folder
 
-- When the changesets files reach the "baseBranch" (actually "main"), a github action will generate a new PR with updated packages versions. Review the PR and approve merge.
+- When the changesets files reach the "baseBranch" (actually "main"), a github action will generate a new PR with updated packages versions. Review the PR and approve merge when ready to release a new version.
 
 - Once the PR is merged into the baseBranch, a github action will publish packages automatically.
+
+- If you want to build and publish a pre-release version before going to the main branch, then rebase the "next" branch to the needed commit from main branch.
+  The github action will open a new PR with the "-next.X" tag. Once merged in the "next" branch it will publish the package(s) as described above.
+  For more informations and an example have a look at:
+  - https://changesets-docs.vercel.app/en/prereleases
+  - https://github.com/changesets/action/issues/69#issuecomment-774909280
+  - https://github.com/statelyai/xstate/pull/902
+
+**Pay attention: never merge "next" branch into "main"!**
 
 ## Docker builds
 
