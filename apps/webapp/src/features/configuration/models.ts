@@ -1,3 +1,9 @@
+declare global {
+  interface Window {
+    __ENV: Config;
+  }
+}
+
 export interface Config {
   sparqlUrl?: string;
   oasCheckerUrl?: string;

@@ -20,6 +20,17 @@ This repository uses [PNPM](https://pnpm.io) and [turborepo](https://turbo.build
 
 ## Usage
 
+### Usage with Public Docker Image
+
+To launch the application using the public docker image, run the following command:
+
+```bash
+docker run -d -p 8000:8000 ghcr.io/teamdigitale/dati-semantic-schema-editor:latest
+```
+
+or pick a specific version from the [github container registry](https://github.com/teamdigitale/dati-semantic-schema-editor/pkgs/container/dati-semantic-schema-editor).
+
+
 ### Usage with Docker
 
 To launch the application, just run docker compose
@@ -130,6 +141,12 @@ docker build . --target webapp --tag webapp:latest
 
 # Showcase webapp
 docker build . --target example --tag example:latest
+```
+
+After creating the desired image, run it with the following command paying attention to change listening ports and config file if needed:
+
+```bash
+docker run -p 80:80 --mount type=bind,source=${PWD}/my-custom-config.js,target=/usr/share/nginx/html/config.js webapp:latest
 ```
 
 ## Contributing
