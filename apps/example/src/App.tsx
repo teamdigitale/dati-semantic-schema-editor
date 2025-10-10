@@ -54,8 +54,8 @@ const SamplesMenu = () => {
       url: '/standalone?url=/schemas/test-context.oas3.yaml',
     },
     {
-      text: 'Test Ontoscore',
-      url: '/standalone?url=/schemas/test-ontoscore.oas3.yaml',
+      text: 'Test Semantic Score',
+      url: '/standalone?url=/schemas/test-semantic score.oas3.yaml',
     },
     {
       text: 'Test data.europa.eu/sparql',
