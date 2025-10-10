@@ -6,33 +6,33 @@ components:
   schemas:
     NoTypeNoContext:
       description: |-
-        When we have no @type nor @context, Ontoscore is not computed.
+        When we have no @type nor @context, Semantic Score is not computed.
       type: object
     ContextOnly:
       description: |-
-        When we have @type or @context, Ontoscore is computed.
-        - `ontoscore: 0`
+        When we have @type or @context, Semantic Score is computed.
+        - `semantic-score: 0`
       x-jsonld-context:
-        '@vocab': https://w3id.org/italia/onto/CLV/
+        "@vocab": https://w3id.org/italia/onto/CLV/
       type: object
     TypeOnly:
       description: |-
-        When we only have @type, Ontoscore is 0
+        When we only have @type, Semantic Score is 0
         because it's only computed on properties.
-        - `ontoscore: 0`
+        - `semantic-score: 0`
       x-jsonld-type: Country
       x-jsonld-context:
-        '@vocab': https://w3id.org/italia/onto/CLV/
+        "@vocab": https://w3id.org/italia/onto/CLV/
       type: object
     IdOnly:
       description: |-
         `@id` is considered an ontomatch.
-        `ontoscore: 1`
+        `semantic-score: 1`
       x-jsonld-type: Country
       x-jsonld-context:
-        '@vocab': https://w3id.org/italia/onto/CLV/
-        '@base': http://publications.europa.eu/resource/authority/country/
-        country: '@id'
+        "@vocab": https://w3id.org/italia/onto/CLV/
+        "@base": http://publications.europa.eu/resource/authority/country/
+        country: "@id"
       type: object
       properties:
         country:
@@ -43,12 +43,12 @@ components:
       description: |-
         `@id` is considered an ontomatch.
         explicit mentions are ontomatch.
-        `ontoscore: 0.50`
+        `semantic-score: 0.50`
       x-jsonld-type: Country
       x-jsonld-context:
-        '@vocab': https://w3id.org/italia/onto/CLV/
-        '@base': http://publications.europa.eu/resource/authority/country/
-        country: '@id'
+        "@vocab": https://w3id.org/italia/onto/CLV/
+        "@base": http://publications.europa.eu/resource/authority/country/
+        country: "@id"
       type: object
       properties:
         country:
@@ -62,11 +62,11 @@ components:
       description: |-
         `@id` is considered an ontomatch.
         resolved mentions are ontomatch.
-        `ontoscore: 1`
+        `semantic-score: 1`
       x-jsonld-type: Country
       x-jsonld-context:
-        '@vocab': https://w3id.org/italia/onto/CLV/
-        country: '@id'
+        "@vocab": https://w3id.org/italia/onto/CLV/
+        country: "@id"
       type: object
       properties:
         country:
@@ -78,10 +78,10 @@ components:
     ResolveVocabProperty:
       description: |-
         @vocab properties are ontomatch.
-        `ontoscore: 1`
+        `semantic-score: 1`
       x-jsonld-type: EducationLevel
       x-jsonld-context:
-        '@vocab': https://w3id.org/italia/onto/CPV/
+        "@vocab": https://w3id.org/italia/onto/CPV/
       type: object
       properties:
         educationLevelID:
@@ -92,10 +92,10 @@ components:
       description: |-
         @vocab properties are ontomatch.
         explicit mentions are ontomatch.
-        `ontoscore: 1`
+        `semantic-score: 1`
       x-jsonld-type: EducationLevel
       x-jsonld-context:
-        '@vocab': https://w3id.org/italia/onto/CPV/
+        "@vocab": https://w3id.org/italia/onto/CPV/
         description: educationLevelDesc
       type: object
       properties:
@@ -110,10 +110,10 @@ components:
       description: |-
         @vocab properties are ontomatch.
         explicit mentions are ontomatch.
-        `ontoscore: 0.50`
+        `semantic-score: 0.50`
       x-jsonld-type: EducationLevel
       x-jsonld-context:
-        '@vocab': https://w3id.org/italia/onto/CPV/
+        "@vocab": https://w3id.org/italia/onto/CPV/
         description: foo
       type: object
       properties:
@@ -129,7 +129,7 @@ components:
         **ATTENTION: This element must be reached from NestedContext**
 
         inferred properties are ontomatch.
-        `ontoscore: 1`
+        `semantic-score: 1`
       properties:
         givenName:
           type: string
@@ -139,20 +139,20 @@ components:
       description: |-
         @vocab properties are ontomatch.
         explicit mentions are ontomatch.
-        `ontoscore: 1`
+        `semantic-score: 1`
       x-jsonld-type: Person
       x-jsonld-context:
-        '@vocab': https://w3id.org/italia/onto/CPV/
+        "@vocab": https://w3id.org/italia/onto/CPV/
         parents: isChildOf
       allOf:
-        - $ref: '#/components/schemas/Human'
+        - $ref: "#/components/schemas/Human"
         - properties:
             parents:
               type: array
               maxItems: 2
               minItems: 0
               items:
-                $ref: '#/components/schemas/Human'
+                $ref: "#/components/schemas/Human"
       example:
         givenName: John
         familyName: Doe
@@ -160,7 +160,6 @@ components:
           - givenName: Jane
             familyName: Doe
         ciao: 1
-
 
 info:
   title: Test schema collection

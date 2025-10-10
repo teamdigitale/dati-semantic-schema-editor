@@ -49,7 +49,7 @@ components:
     const specJson = yaml.load(specYaml) as any;
     const bundledSpecJson = await createBundle(specJson, { sparqlUrl });
     expect(bundledSpecJson).toBeTruthy();
-    expect(bundledSpecJson['info']['x-ontoscore']).toEqual(1);
+    expect(bundledSpecJson['info']['x-semantic-score']).toEqual(1);
   });
 
   it('should download bundle when clicking download button', async () => {
@@ -95,7 +95,7 @@ components:
     const downloadButton = getByText('Download bundle');
     downloadButton.click();
     await waitFor(() => {
-      expect(mockDump).toHaveBeenCalledWith(expect.objectContaining({ info: { 'x-ontoscore': 1 } }));
+      expect(mockDump).toHaveBeenCalledWith(expect.objectContaining({ info: { 'x-semantic-score': 1 } }));
     });
   });
 });

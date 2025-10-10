@@ -3,15 +3,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useConfiguration } from '../../configuration';
 import { AsyncState } from '../models';
 import {
-  buildOntoScoreSparqlQuery,
-  calculateGlobalOntoscore,
+  buildSemanticScoreSparqlQuery,
+  calculateGlobalSemanticScore,
   determinePropertiesToValidate,
   ResolvedPropertiesGroups,
   to32CharString,
 } from '../utils';
 import { useSparqlQuery } from './use-sparql';
 
-interface OntoScoreResult {
+interface SemanticScoreResult {
   rawPropertiesCount: number;
   semanticPropertiesCount: number;
   score: number;
@@ -21,10 +21,10 @@ interface OntoScoreResult {
 // - property is explicitly or implicitly (derived from main class) provided
 // - property exists in sparql
 // Properties detached are not fetched and their result is zero
-export function useOntoScore(
+export function useSemanticScore(
   jsonldContext: Map<string, any> | undefined,
   propertiesPaths: string[][] | undefined,
-): Omit<AsyncState<OntoScoreResult>, 'data'> & { data: OntoScoreResult } {
+): Omit<AsyncState<SemanticScoreResult>, 'data'> & { data: SemanticScoreResult } {
   const rawPropertiesCount = propertiesPaths?.length || 0;
   const [resolvedProperties, setResolvedProperties] = useState(new ResolvedPropertiesGroups());
 
@@ -34,7 +34,7 @@ export function useOntoScore(
     data: sparqlData,
     status: sparqlStatus,
     error: sparqlError,
-  } = useSparqlQuery(buildOntoScoreSparqlQuery(resolvedProperties.unknown), { skip: skipQuery });
+  } = useSparqlQuery(buildSemanticScoreSparqlQuery(resolvedProperties.unknown), { skip: skipQuery });
 
   const sparqlResultCount = !skipQuery ? parseInt(sparqlData?.results?.bindings?.[0]?.count?.value || 0) : 0;
   const semanticPropertiesCount = resolvedProperties.valid.length + sparqlResultCount;
@@ -61,16 +61,17 @@ export function useOntoScore(
   };
 }
 
-interface GlobalOntoScoreResult {
+interface GlobalSemanticScoreResult {
   score?: number;
   isUpdated: boolean;
 }
 
-export function useGlobalOntoScore(
-  specJson: any,
-): Omit<AsyncState<GlobalOntoScoreResult>, 'data'> & { data: GlobalOntoScoreResult; recalculate: () => Promise<void> } {
+export function useGlobalSemanticScore(specJson: any): Omit<AsyncState<GlobalSemanticScoreResult>, 'data'> & {
+  data: GlobalSemanticScoreResult;
+  recalculate: () => Promise<void>;
+} {
   const { sparqlUrl } = useConfiguration();
-  const [state, setState] = useState<AsyncState<Pick<GlobalOntoScoreResult, 'score'>>>({ status: 'idle' });
+  const [state, setState] = useState<AsyncState<Pick<GlobalSemanticScoreResult, 'score'>>>({ status: 'idle' });
 
   const [lastHash, setLastHash] = useState<string | null>(null);
 
@@ -85,15 +86,15 @@ export function useGlobalOntoScore(
         throw new Error('Sparql url is not set');
       }
 
-      // Calculate global ontoscore
-      const { globalOntoScore } = await calculateGlobalOntoscore(specJson, { sparqlUrl });
+      // Calculate global semantic score
+      const { globalSemanticScore } = await calculateGlobalSemanticScore(specJson, { sparqlUrl });
 
       // Update hash to give a feedback to the user
       const hash = to32CharString(JSON.stringify(specJson));
       setLastHash(hash);
-      setState({ status: 'fulfilled', data: { score: globalOntoScore } });
+      setState({ status: 'fulfilled', data: { score: globalSemanticScore } });
     } catch {
-      setState({ status: 'error', error: 'Error calculating global ontoscore' });
+      setState({ status: 'error', error: 'Error calculating global semantic score' });
     }
   }, [specJson, sparqlUrl]);
 
@@ -108,6 +109,6 @@ export function useGlobalOntoScore(
   };
 }
 
-export function useOntoScoreColor(score: number) {
+export function useSemanticScoreColor(score: number) {
   return useMemo(() => (score > 0.5 ? 'success' : 'warning'), [score]);
 }

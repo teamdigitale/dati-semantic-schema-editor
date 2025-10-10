@@ -5,7 +5,7 @@ import { Dropdown, DropdownMenu, DropdownToggle, Icon, LinkList, LinkListItem } 
 import yaml from 'js-yaml';
 import { useConfiguration } from '../../configuration';
 import { compressAndBase64UrlSafe, copyToClipboard, normalizeOpenAPISpec } from '../utils';
-import { calculateGlobalOntoscore } from '../utils/onto-score';
+import { calculateGlobalSemanticScore } from '../utils/onto-score';
 
 const copyAsB64zipToClipboard = (text: string, prefix: string = '') => {
   copyToClipboard(`${prefix}${compressAndBase64UrlSafe(text)}`);
@@ -24,7 +24,7 @@ const downloadContent = (content: any, mediaType: string, fileName: string) => {
 };
 
 export const createBundle = async (specJson: object, options: { sparqlUrl: string }): Promise<object> => {
-  let { resolvedSpecJson } = await calculateGlobalOntoscore(specJson, { sparqlUrl: options.sparqlUrl });
+  let { resolvedSpecJson } = await calculateGlobalSemanticScore(specJson, { sparqlUrl: options.sparqlUrl });
   resolvedSpecJson = normalizeOpenAPISpec(resolvedSpecJson);
   return resolvedSpecJson;
 };

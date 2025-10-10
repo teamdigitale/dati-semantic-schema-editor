@@ -1,19 +1,19 @@
 import yaml from 'js-yaml';
 import { describe, expect, it } from 'vitest';
-import { calculateGlobalOntoscore } from './onto-score';
+import { calculateGlobalSemanticScore } from './onto-score';
 
 describe('onto-score', () => {
   const sparqlUrl = 'https://virtuoso-test-external-service-ndc-test.apps.cloudpub.testedev.istat.it/sparql';
 
-  describe('calculateGlobalOntoscore', () => {
+  describe('calculateGlobalSemanticScore', () => {
     it('should throw error when no schemas are provided', async () => {
       const specJson = { info: {} };
-      await expect(calculateGlobalOntoscore(specJson, { sparqlUrl })).rejects.toThrow(
+      await expect(calculateGlobalSemanticScore(specJson, { sparqlUrl })).rejects.toThrow(
         'No #/components/schemas models provided',
       );
     });
 
-    it('should resolve openAPI specification, resolve jsonldContext and calculate global ontoscore', async () => {
+    it('should resolve openAPI specification, resolve jsonldContext and calculate global semantic score', async () => {
       const specYaml = `openapi: 3.0.3
 components:
   schemas:
@@ -44,13 +44,13 @@ components:
         country:
           country: ITA`;
       const specJson = yaml.load(specYaml) as any;
-      const { globalOntoScore, resolvedSpecJson } = await calculateGlobalOntoscore(specJson, { sparqlUrl });
+      const { globalSemanticScore, resolvedSpecJson } = await calculateGlobalSemanticScore(specJson, { sparqlUrl });
       expect(resolvedSpecJson).toBeTruthy();
-      expect(resolvedSpecJson['info']['x-ontoscore']).toEqual(1);
-      expect(globalOntoScore).toEqual(1);
+      expect(resolvedSpecJson['info']['x-semantic-score']).toEqual(1);
+      expect(globalSemanticScore).toEqual(1);
     });
 
-    it('should not block ontoscore calculation if x-jsonld-context is not present', async () => {
+    it('should not block semantic score calculation if x-jsonld-context is not present', async () => {
       const specYaml = `#
 openapi: 3.0.3
 components:
@@ -79,10 +79,10 @@ components:
         description: Nessun titolo di studio
 `;
       const specJson = yaml.load(specYaml) as any;
-      const { globalOntoScore, resolvedSpecJson } = await calculateGlobalOntoscore(specJson, { sparqlUrl });
+      const { globalSemanticScore, resolvedSpecJson } = await calculateGlobalSemanticScore(specJson, { sparqlUrl });
       expect(resolvedSpecJson).toBeTruthy();
-      expect(resolvedSpecJson['info']['x-ontoscore']).toEqual(0.5);
-      expect(globalOntoScore).toEqual(0.5);
+      expect(resolvedSpecJson['info']['x-semantic-score']).toEqual(0.5);
+      expect(globalSemanticScore).toEqual(0.5);
     });
   });
 });
