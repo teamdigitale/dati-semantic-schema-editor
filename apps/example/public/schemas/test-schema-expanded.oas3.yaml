@@ -101,7 +101,7 @@ components:
       description: |
         Persona fisica avente dimora abituale in un determinato Comune come risultante nell'anagrafe della popolazione residente (artt. 3 e 7 DPR n. 223/1989; art. 43 cc).
       type: object
-      x-jsonld-type: 'RPO:RegisteredResidentPerson'
+      x-jsonld-type: 'https://w3id.org/italia/onto/RPO/RegisteredResidentPerson'
       x-jsonld-context:
         '@vocab': 'https://w3id.org/italia/onto/CPV/'
         RPO: https://w3id.org/italia/onto/RPO/
@@ -122,7 +122,7 @@ components:
           '@type': '@id'
           '@context':
             '@base': 'https://w3id.org/italia/controlled-vocabulary/territorial-classifications/cities/'
-        haResidenzaAnagrafica: 'RPO:hasRegisteredResidence'
+        haResidenzaAnagrafica: 'https://w3id.org/italia/onto/RPO/hasRegisteredResidence'
         haPuntoDiContattoOnline: 'SM:hasOnlineContactPoint'
       properties:
         codiceFiscale:
