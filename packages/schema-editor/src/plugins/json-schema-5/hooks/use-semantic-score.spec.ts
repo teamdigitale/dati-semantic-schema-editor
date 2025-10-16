@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { fromJS } from 'immutable';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { useGlobalSemanticScore, useSemanticScore, useSemanticScoreColor } from './use-onto-score';
+import { useSchemaSemanticScore, useSemanticScore, useSemanticScoreColor } from './use-semantic-score';
 import * as useSparqlQueryImport from './use-sparql';
 import * as configuration from '../../configuration';
 import * as utils from '../utils';
@@ -114,13 +114,13 @@ describe('useSemanticScore', () => {
   });
 });
 
-describe('useGlobalSemanticScore', () => {
+describe('useSchemaSemanticScore', () => {
   beforeEach(() => {
     vi.spyOn(configuration, 'useConfiguration').mockReturnValue({ sparqlUrl: 'https://sparql.com' });
   });
 
   it('should return undefined score if no calculation is done', async () => {
-    const { result } = renderHook(() => useGlobalSemanticScore({}));
+    const { result } = renderHook(() => useSchemaSemanticScore({}));
     expect(result.current).toEqual({
       status: 'idle',
       error: undefined,
@@ -133,11 +133,11 @@ describe('useGlobalSemanticScore', () => {
   });
 
   it('should return isUpdated false if spec is changed', async () => {
-    vi.spyOn(utils, 'calculateGlobalSemanticScore').mockResolvedValue({
-      globalSemanticScore: 0.8,
+    vi.spyOn(utils, 'calculateSchemaSemanticScore').mockResolvedValue({
+      schemaSemanticScore: 0.8,
       resolvedSpecJson: {},
     });
-    const { result, rerender } = renderHook((props) => useGlobalSemanticScore(props ?? { foo: 'bar' }));
+    const { result, rerender } = renderHook((props) => useSchemaSemanticScore(props ?? { foo: 'bar' }));
     await result.current.recalculate();
     await waitFor(() => expect(result.current.data.isUpdated).toBe(true));
     rerender({ foo: 'baz' });
@@ -145,11 +145,11 @@ describe('useGlobalSemanticScore', () => {
   });
 
   it('should return score and isUpdated if calculation is done', async () => {
-    vi.spyOn(utils, 'calculateGlobalSemanticScore').mockResolvedValue({
-      globalSemanticScore: 0.8,
+    vi.spyOn(utils, 'calculateSchemaSemanticScore').mockResolvedValue({
+      schemaSemanticScore: 0.8,
       resolvedSpecJson: {},
     });
-    const { result } = renderHook(() => useGlobalSemanticScore({ foo: 'bar' }));
+    const { result } = renderHook(() => useSchemaSemanticScore({ foo: 'bar' }));
     await result.current.recalculate();
     await waitFor(() =>
       expect(result.current).toEqual({

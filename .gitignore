@@ -136,7 +136,7 @@ dmypy.json
 .gitlab-ci-local/
 
 # Dependencies
-/node_modules
+node_modules
 .turbo
 .pnpm-store
 .vite

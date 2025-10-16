@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
 import { fromJS } from 'immutable';
 import { describe, expect, it, vi } from 'vitest';
-import * as ontoScoreImport from '../../hooks/use-onto-score';
-import { SemanticScoreBlock } from './onto-score-block';
+import * as ontoScoreImport from '../../hooks/use-semantic-score';
+import { SemanticScoreBlock } from './semantic-score-block';
 
 describe('<SemanticScoreBlock />', () => {
   it('should not show semantic score if missing jsonldContext', async () => {

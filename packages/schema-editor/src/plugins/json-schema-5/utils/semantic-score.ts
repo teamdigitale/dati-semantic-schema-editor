@@ -48,7 +48,7 @@ export async function fetchValidSemanticScorePropertiesCount(properties: string[
   return parseInt(sparqlData?.results?.bindings?.[0]?.count?.value || '0');
 }
 
-export const calculateGlobalSemanticScore = async (specJson: any, options: { sparqlUrl: string }) => {
+export const calculateSchemaSemanticScore = async (specJson: any, options: { sparqlUrl: string }) => {
   const resolvedSpecJson = await resolveOpenAPISpec(specJson);
   const resolvedSpecOrderedMap = fromJS(resolvedSpecJson);
 
@@ -58,14 +58,14 @@ export const calculateGlobalSemanticScore = async (specJson: any, options: { spa
     throw 'No #/components/schemas models provided';
   }
 
-  // Calculate specific and global semantic score
-  let globalSemanticScoreModels = 0;
-  let globalSemanticScoreSum = 0;
+  // Calculate specific and schema semantic score
+  let schemaSemanticScoreModels = 0;
+  let schemaSemanticScoreSum = 0;
 
   const setSemanticScoreValue = (dataModelKey: string, value: number) => {
     resolvedSpecJson['components']['schemas'][dataModelKey]['x-semantic-score'] = value;
-    globalSemanticScoreSum += value;
-    globalSemanticScoreModels++;
+    schemaSemanticScoreSum += value;
+    schemaSemanticScoreModels++;
   };
 
   // Process every datamodel
@@ -114,15 +114,15 @@ export const calculateGlobalSemanticScore = async (specJson: any, options: { spa
     setSemanticScoreValue(dataModelKey, score);
   }
 
-  // Setting global onto score (calculated as an average semantic score value)
+  // Setting schema semantic score (calculated as an average semantic score value)
   if (!resolvedSpecJson['info']) {
     resolvedSpecJson['info'] = {};
   }
-  const globalSemanticScore = globalSemanticScoreSum / globalSemanticScoreModels;
-  resolvedSpecJson['info']['x-semantic-score'] = globalSemanticScore;
+  const schemaSemanticScore = schemaSemanticScoreSum / schemaSemanticScoreModels;
+  resolvedSpecJson['info']['x-semantic-score'] = schemaSemanticScore;
 
   return {
     resolvedSpecJson,
-    globalSemanticScore,
+    schemaSemanticScore,
   };
 };

@@ -1,13 +1,13 @@
 import { Button, Icon, Spinner } from 'design-react-kit';
-import { useGlobalSemanticScore, useSemanticScoreColor } from '../hooks/use-onto-score';
+import { useSchemaSemanticScore, useSemanticScoreColor } from '../hooks/use-semantic-score';
 
-export const GlobalSemanticScoreButton = ({ specSelectors }) => {
+export const SchemaSemanticScoreButton = ({ specSelectors }) => {
   const {
     status,
     error,
     data: { score, isUpdated },
     recalculate,
-  } = useGlobalSemanticScore(specSelectors.specJson().toJS());
+  } = useSchemaSemanticScore(specSelectors.specJson().toJS());
   const semanticScoreColor = useSemanticScoreColor(score ?? 0);
 
   return (
@@ -17,7 +17,7 @@ export const GlobalSemanticScoreButton = ({ specSelectors }) => {
       onClick={() => recalculate()}
       disabled={status === 'pending'}
       title={
-        !isUpdated ? 'Global Semantic Score is outdated, click to recalculate' : 'Global Semantic Score is up to date'
+        !isUpdated ? 'Schema Semantic Score is outdated, click to recalculate' : 'Schema Semantic Score is up to date'
       }
       className="d-flex align-items-center"
     >
@@ -25,9 +25,9 @@ export const GlobalSemanticScoreButton = ({ specSelectors }) => {
         {status === 'pending' ? <Spinner active small /> : <Icon icon="it-refresh" size="sm" fill="currentColor" />}
       </span>
       {error ? (
-        <span>Global Semantic Score β: ERROR</span>
+        <span>Schema Semantic Score β: ERROR</span>
       ) : (
-        <span>Global Semantic Score β: {score?.toFixed(2) ?? '-'}</span>
+        <span>Schema Semantic Score β: {score?.toFixed(2) ?? '-'}</span>
       )}
     </Button>
   );

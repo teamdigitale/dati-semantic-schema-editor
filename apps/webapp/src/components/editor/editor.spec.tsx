@@ -1,7 +1,7 @@
 import * as schemaEditor from '@teamdigitale/schema-editor';
 import { SchemaEditor } from '@teamdigitale/schema-editor';
 import { render, screen } from '@testing-library/react';
-import { beforeEach, describe, expect, MockInstance, test, vi } from 'vitest';
+import { beforeEach, describe, expect, it, MockInstance, vi } from 'vitest';
 import * as configuration from '../../features/configuration';
 import { Editor } from './editor';
 
@@ -17,12 +17,12 @@ describe('<Editor />', () => {
     });
   });
 
-  test('it should render', async () => {
+  it('should render', async () => {
     render(<Editor />);
     expect(screen.getByText('Test')).toBeTruthy();
   });
 
-  test('it should use the URL from search parameters if present', async () => {
+  it('should use the URL from search parameters if present', async () => {
     const testUrl = 'https://example.com/schema.yaml';
     const originalLocation = window.location;
     window.location = { ...originalLocation, search: `?url=${encodeURIComponent(testUrl)}` };
@@ -34,7 +34,7 @@ describe('<Editor />', () => {
     window.location = originalLocation;
   });
 
-  test('it should use the fragment from hash if URL is not present', async () => {
+  it('should use the fragment from hash if URL is not present', async () => {
     const testFragment = '#oas:MYSwhg9gUEA';
     const originalLocation = window.location;
     window.location = {
@@ -50,7 +50,7 @@ describe('<Editor />', () => {
     window.location = originalLocation;
   });
 
-  test('it should default to the starter schema URL if neither URL nor fragment is present', async () => {
+  it('should default to the starter schema URL if neither URL nor fragment is present', async () => {
     const originalLocation = window.location;
     window.location = {
       ...originalLocation,
@@ -65,7 +65,7 @@ describe('<Editor />', () => {
     window.location = originalLocation;
   });
 
-  test('it should prioritize URL from search parameters over fragment from hash', async () => {
+  it('should prioritize URL from search parameters over fragment from hash', async () => {
     const testUrl = 'https://example.com/schema.yaml';
     const testFragment = '#oas:MYSwhg9gUEA';
     const originalLocation = window.location;

@@ -2,7 +2,7 @@ import './models.scss';
 
 import { useSchemaNavigation } from '../../overview/components/Navigation';
 import { ActionsMenu } from './actions-menu';
-import { GlobalSemanticScoreButton } from './global-onto-score-button';
+import { SchemaSemanticScoreButton } from './schema-semantic-score-button';
 import { ModelCollapseRoot } from './model-collapse-root';
 import type { ModelRoot as ModelRootComponent } from './model-root';
 import type { ModelsBreadcrumb as ModelsBreadcrumbComponent } from './models-breadcrumb';
@@ -31,7 +31,7 @@ export function Models({ getComponent, specSelectors, getConfigs, specActions })
       </div>
 
       <div className="d-flex flex-row justify-content-end align-items-center mb-2">
-        <GlobalSemanticScoreButton specSelectors={specSelectors} />
+        <SchemaSemanticScoreButton specSelectors={specSelectors} />
       </div>
 
       {/* Root */}

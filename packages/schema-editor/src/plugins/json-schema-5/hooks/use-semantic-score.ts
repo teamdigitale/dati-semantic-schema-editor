@@ -4,7 +4,7 @@ import { useConfiguration } from '../../configuration';
 import { AsyncState } from '../models';
 import {
   buildSemanticScoreSparqlQuery,
-  calculateGlobalSemanticScore,
+  calculateSchemaSemanticScore,
   determinePropertiesToValidate,
   ResolvedPropertiesGroups,
   to32CharString,
@@ -61,17 +61,17 @@ export function useSemanticScore(
   };
 }
 
-interface GlobalSemanticScoreResult {
+interface SchemaSemanticScoreResult {
   score?: number;
   isUpdated: boolean;
 }
 
-export function useGlobalSemanticScore(specJson: any): Omit<AsyncState<GlobalSemanticScoreResult>, 'data'> & {
-  data: GlobalSemanticScoreResult;
+export function useSchemaSemanticScore(specJson: any): Omit<AsyncState<SchemaSemanticScoreResult>, 'data'> & {
+  data: SchemaSemanticScoreResult;
   recalculate: () => Promise<void>;
 } {
   const { sparqlUrl } = useConfiguration();
-  const [state, setState] = useState<AsyncState<Pick<GlobalSemanticScoreResult, 'score'>>>({ status: 'idle' });
+  const [state, setState] = useState<AsyncState<Pick<SchemaSemanticScoreResult, 'score'>>>({ status: 'idle' });
 
   const [lastHash, setLastHash] = useState<string | null>(null);
 
@@ -86,15 +86,15 @@ export function useGlobalSemanticScore(specJson: any): Omit<AsyncState<GlobalSem
         throw new Error('Sparql url is not set');
       }
 
-      // Calculate global semantic score
-      const { globalSemanticScore } = await calculateGlobalSemanticScore(specJson, { sparqlUrl });
+      // Calculate schema semantic score
+      const { schemaSemanticScore } = await calculateSchemaSemanticScore(specJson, { sparqlUrl });
 
       // Update hash to give a feedback to the user
       const hash = to32CharString(JSON.stringify(specJson));
       setLastHash(hash);
-      setState({ status: 'fulfilled', data: { score: globalSemanticScore } });
+      setState({ status: 'fulfilled', data: { score: schemaSemanticScore } });
     } catch {
-      setState({ status: 'error', error: 'Error calculating global semantic score' });
+      setState({ status: 'error', error: 'Error calculating schema semantic score' });
     }
   }, [specJson, sparqlUrl]);
 
