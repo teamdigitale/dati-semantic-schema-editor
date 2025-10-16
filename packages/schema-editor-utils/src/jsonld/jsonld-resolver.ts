@@ -1,6 +1,6 @@
 import { Map } from 'immutable';
 import { expand } from 'jsonld';
-import { basename } from '.';
+import { basename } from '../utils';
 
 /**
  * JSON-LD vocabulary keys
@@ -37,6 +37,12 @@ export interface JsonLDResolverResult {
   vocabularyUri?: string;
 }
 
+/**
+ * Resolves a property by a JSON-LD context
+ * @param jsonldContext - The JSON-LD context
+ * @param propertyPath - The property path
+ * @returns The resolved property
+ */
 export async function resolvePropertyByJsonldContext(
   jsonldContext: Map<any, any> | any,
   propertyPath: string[], // For example ["components", "schemas", "person", "birth_place"]

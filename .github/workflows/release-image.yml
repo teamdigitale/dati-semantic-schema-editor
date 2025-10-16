@@ -6,20 +6,20 @@ on:
     branches:
       - main
     paths-ignore:
-      - '*.md'
-      - 'LICENSE'
-      - 'tests/**'
-      - '.husky/**'
-      - '.changeset/**'
+      - "*.md"
+      - "LICENSE"
+      - "tests/**"
+      - ".husky/**"
+      - ".changeset/**"
   pull_request:
     branches:
       - main
     paths-ignore:
-      - '*.md'
-      - 'LICENSE'
-      - 'tests/**'
-      - '.husky/**'
-      - '.changeset/**'
+      - "*.md"
+      - "LICENSE"
+      - "tests/**"
+      - ".husky/**"
+      - ".changeset/**"
 env:
   CI: true
   REGISTRY: ghcr.io
@@ -80,11 +80,20 @@ jobs:
             type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
             type=raw,value=latest
 
-      - name: Build and push Docker image
+      - name: Build and push Docker image "webapp"
         uses: docker/build-push-action@v6.18.0
         with:
           context: .
           push: true
           target: webapp
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Build and push Docker image "api"
+        uses: docker/build-push-action@v6.18.0
+        with:
+          context: .
+          push: true
+          target: api
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

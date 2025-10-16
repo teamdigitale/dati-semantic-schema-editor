@@ -1,5 +1,11 @@
 import SwaggerClient from 'swagger-client';
+import { to32CharString } from '../utils';
 
+/**
+ * It uses SwaggerClient library to resolve all $ref properties of an OpenAPI specification
+ * @param spec A JSON rappresentation of the openAPI schema
+ * @returns Resolved JSON
+ */
 export async function resolveOpenAPISpec(spec: object) {
   const originalSpec = JSON.parse(JSON.stringify(spec));
 
@@ -19,8 +25,10 @@ export async function resolveOpenAPISpec(spec: object) {
  * @param specJson A JSON rappresentation of the openAPI schema
  * @returns Normalized JSON
  */
-export function normalizeOpenAPISpec(specJson: any) {
-  const LOCAL_PATH_DOMAIN = window.location.href;
+export function normalizeOpenAPISpec(specJson: any, localPathDomain: string) {
+  if (!localPathDomain) {
+    throw new Error('localPathDomain is required');
+  }
 
   const normalizedSpecJson = JSON.parse(JSON.stringify(specJson));
 
@@ -32,10 +40,10 @@ export function normalizeOpenAPISpec(specJson: any) {
     for (const [key, value] of Object.entries(currentElement)) {
       if (key === '$$ref' && typeof value === 'string') {
         // Local reference
-        if (value.startsWith(LOCAL_PATH_DOMAIN)) {
+        if (value.startsWith(localPathDomain)) {
           if (parentElement && currentElementKey) {
             parentElement[currentElementKey] = {
-              $ref: value.replace(LOCAL_PATH_DOMAIN, LOCAL_PATH_DOMAIN.endsWith('#') ? '#' : ''),
+              $ref: value.replace(localPathDomain, localPathDomain.endsWith('#') ? '#' : ''),
             };
           }
         }
@@ -71,14 +79,4 @@ export function normalizeOpenAPISpec(specJson: any) {
   processRef(normalizedSpecJson);
 
   return normalizedSpecJson;
-}
-
-export function to32CharString(text: string): string {
-  const hash = new Uint8Array(32);
-  for (let i = 0; i < text.length; i++) {
-    hash[i % 32] ^= text.charCodeAt(i);
-  }
-  return Array.from(hash)
-    .map((byte) => byte.toString(16).padStart(2, '0'))
-    .join('');
 }

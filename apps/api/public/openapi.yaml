@@ -1,0 +1,202 @@
+openapi: 3.0.3
+info:
+  title: Semantic Score Calculator
+  x-summary: API to compute the semantic score of an OpenAPI specification document.
+  description: |-
+    ## Compute the Semantic Score of an API
+
+    What does this API do?
+    Why is it useful?
+    Who should use it?
+    How can I use it?
+  version: "0.0.1"
+  contact:
+    name: Team Digitale
+    url: https://teamdigitale.governo.it
+    email: teamdigitale@governo.it
+  license:
+    name: BSD3
+    url: https://opensource.org/licenses/BSD-3-Clause
+  termsOfService: https://schema.gov.it/note-legali
+tags:
+  - name: health
+    description: Know the health status of the service.
+  - name: semantic-score
+    description: Compute the semantic score.
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local development server
+    x-sandbox: true
+security:
+  # Anyone can use this API.
+  - {}
+paths:
+  /status:
+    get:
+      operationId: HealthController_getHealth
+      description: >-
+        The service status.
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+              example:
+                status: 200
+                title: OK
+        default:
+          description: |-
+            Client or server error during semantic score calculation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      summary: Health check endpoint
+      tags:
+        - health
+  /semantic-score:
+    post:
+      summary: Calculate semantic score for a YAML file
+      tags:
+        - semantic-score
+      description: |-
+        Process an OpenAPI 3.0 specification document containing
+        a schema and computes its semantic score
+        using the associated REST API Linked Data Keywords.
+      operationId: SemanticScoreController_updateSchemaSemanticScore_v1
+      requestBody:
+        required: true
+        description: |-
+          The OpenAPI specification document containing
+          a schema annotated with the REST API Linked Data Keywords.
+        content:
+          multipart/form-data:
+            # The file should be in the following formats.
+            encoding:
+              file:
+                contentType: application/yaml, application/json
+            schema:
+              $ref: "#/components/schemas/CalculateSemanticScoreRequestDTO"
+      responses:
+        "200":
+          description: |-
+            An OpenAPI specification document containing
+            the #/info/x-semantic-score and #/info/x-semantic-score-timestamp
+            properties.
+
+            When a YAML file is received, comments and order is not preserved.
+          content:
+            application/yaml:
+              schema:
+                $ref: "#/components/schemas/OASDocument"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OASDocument"
+        "406":
+          description: |-
+            The provided file is not a valid OpenAPI 3.0 specification document.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "413":
+          description: |-
+            The provided file is too large.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "415":
+          description: |-
+            The provided file has an unsupported media type:
+            we only accept application/json and application/yaml.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "429":
+          description: |-
+            Too many requests sent to the server.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "default":
+          description: >-
+            Client or server error during semantic score calculation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+components:
+  schemas:
+    OASDocument:
+      type: string
+      description: |-
+        An OpenAPI Specification Document
+        serialized as YAML or JSON.
+      format: binary
+      maxLength: 1000000
+      minLength: 100
+      externalDocs:
+        url: https://raw.githubusercontent.com/OAI/spec.openapis.org/refs/heads/main/oas/3.0/schema/2024-10-18
+        description: The OpenAPI 3.0 JSON Schema
+    CalculateSemanticScoreRequestDTO:
+      type: object
+      additionalProperties: false
+      properties:
+        file:
+          $ref: "#/components/schemas/OASDocument"
+      required:
+        - file
+    Problem:
+      additionalProperties: false
+      required:
+        - title
+      properties:
+        detail:
+          description: |
+            A human readable explanation specific to this occurrence of the
+            problem. You MUST NOT expose internal informations, personal
+            data or implementation details through this field.
+          example: Request took too long to complete.
+          type: string
+          maxLength: 512
+          pattern: ^
+        instance:
+          description: |
+            An absolute URI that identifies the specific occurrence of the problem.
+            It may or may not yield further information if dereferenced.
+          format: uri
+          type: string
+          maxLength: 1024
+        status:
+          description: |
+            The HTTP status code generated by the origin server for this occurrence
+            of the problem.
+          example: 503
+          exclusiveMaximum: true
+          format: int32
+          maximum: 600
+          minimum: 100
+          type: integer
+        title:
+          description: |
+            A short, summary of the problem type. Written in english and readable
+            for engineers (usually not suited for non technical stakeholders and
+            not localized); example: Service Unavailable
+          type: string
+          maxLength: 512
+        type:
+          default: about:blank
+          description: |
+            An absolute URI that identifies the problem type.  When dereferenced,
+            it SHOULD provide human-readable documentation for the problem type
+            (e.g., using HTML).
+          example: https://tools.ietf.org/html/rfc7231#section-6.6.4
+          format: uri
+          type: string
+          maxLength: 1024
+      type: object
