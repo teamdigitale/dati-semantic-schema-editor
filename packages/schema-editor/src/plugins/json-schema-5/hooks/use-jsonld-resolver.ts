@@ -1,7 +1,7 @@
 import { Map } from 'immutable';
 import { useEffect, useState } from 'react';
 import { AsyncState } from '../models';
-import { JsonLDResolverResult, resolvePropertyByJsonldContext } from '../utils';
+import { JsonLDResolverResult, resolvePropertyByJsonldContext } from '@teamdigitale/schema-editor-utils';
 
 export const useJsonLDResolver = (jsonldContext: Map<any, any> | any, keysPath: string[]) => {
   const [state, setState] = useState<AsyncState<JsonLDResolverResult>>({ status: 'pending' });

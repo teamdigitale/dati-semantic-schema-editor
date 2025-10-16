@@ -1,6 +1,6 @@
 import { Icon, Spinner } from 'design-react-kit';
 import { useRDFPropertyResolver } from '../../hooks';
-import { basename } from '../../utils';
+import { basename } from '@teamdigitale/schema-editor-utils';
 
 export function RDFOntologicalClassPropertyBlock({ fieldUri }) {
   const { data, status, error } = useRDFPropertyResolver(fieldUri);
