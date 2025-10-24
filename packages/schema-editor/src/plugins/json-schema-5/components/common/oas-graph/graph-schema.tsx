@@ -40,6 +40,14 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
     };
   }, [cyRef.current]);
 
+  const radius = (node) => {
+    const sizePerLink = 2;
+    const degree = node.degree();
+    const baseSize = node.data('label')?.length * 8;
+    return baseSize + degree * sizePerLink;
+  }
+
+  console.log('elements', elements);
   return (
     <CytoscapeComponent
       style={{ width: '100%', height: 'calc(100vh - 210px)' }}
@@ -50,15 +58,16 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
         fit: true,
         avoidOverlap: true,
         nodeDimensionsIncludeLabels: true,
-        spacingFactor: 1,
+        spacingFactor: 1.5,
+        idealEdgeLength: 100,
       }}
       stylesheet={[
         {
           selector: 'node',
           style: {
             label: 'data(label)',
-            width: (node) => node.data('label').length * 8,
-            height: (node) => node.data('label').length * 8,
+            width: radius,
+            height: radius,
             padding: '16px',
             'text-valign': 'center',
             'text-halign': 'center',
@@ -76,11 +85,19 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
           selector: 'node[type="blank"]',
           style: {
             'background-color': '#768593',
+            width: 'label',
+            height: 'label',
           },
         },
         {
           selector: 'node[type="@typed"]',
           style: {},
+        },
+        {
+          selector: 'node[leaf=1]',
+          style: {
+            shape: 'rectangle',
+          },
         },
         //
         // Edges
