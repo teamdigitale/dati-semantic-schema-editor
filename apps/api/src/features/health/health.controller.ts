@@ -45,9 +45,6 @@ export class HealthController {
     return {
       status: 200,
       title: 'OK',
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      environment: this.configService.get<string>('NODE_ENV', 'development'),
     };
   }
 }
