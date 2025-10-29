@@ -18,6 +18,7 @@ repos:
     # Check file syntax/format
     - id: check-xml
     - id: check-json
+      exclude: ^apps/api/tsconfig(.*)?\.json$  # Ignore tsconfig files
     - id: check-yaml
       args: [--allow-multiple-documents]
     # Security checks.

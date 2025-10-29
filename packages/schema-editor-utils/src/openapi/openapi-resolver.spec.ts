@@ -189,7 +189,7 @@ describe('OpenAPI resolver', () => {
           },
         },
       };
-      const normalizedSpecJson = normalizeOpenAPISpec(specJson);
+      const normalizedSpecJson = normalizeOpenAPISpec(specJson, 'http://localhost:3000/');
       expect(normalizedSpecJson).toEqual({
         openapi: '3.0.3',
         components: {
@@ -263,7 +263,7 @@ describe('OpenAPI resolver', () => {
           },
         },
       };
-      const normalizedSpecJson = normalizeOpenAPISpec(specJson);
+      const normalizedSpecJson = normalizeOpenAPISpec(specJson, 'http://localhost:3000/');
       expect(normalizedSpecJson).toEqual({
         openapi: '3.0.0',
         components: {

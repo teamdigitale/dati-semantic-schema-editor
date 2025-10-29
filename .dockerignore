@@ -3,6 +3,8 @@
 .github
 .gitlab
 
+.pnpm-store
+
 .vscode
 .turbo
 

@@ -54,7 +54,7 @@ import '@teamdigitale/schema-editor/dist/style.css';
 function App() {
   // By omitting both params the editor will be loaded as empty
   const params = {
-    url: 'https://raw.githubusercontent.com/samchungy/zod-openapi/master/examples/simple/openapi.yml', // OPTIONAL: an OpenAPI file url
+    url: 'https://raw.githubusercontent.com/teamdigitale/dati-semantic-schema-editor/refs/heads/main/apps/example/public/schemas/pratica-rendita.oas3.yaml', // OPTIONAL: an OpenAPI file url
     schema: '...', // OPTIONAL: an OpenAPI schema definition
     oasCheckerUrl: '...', // OPTIONAL
     schemaEditorUrl: '...', // OPTIONAL

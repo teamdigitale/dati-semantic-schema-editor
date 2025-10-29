@@ -1,10 +1,11 @@
 /**
  * A menu with right icons, see https://italia.github.io/design-react-kit/?path=/docs/documentazione-componenti-dropdown--documentazione#menu-icona-a-destra
  */
+import { normalizeOpenAPISpec } from '@teamdigitale/schema-editor-utils';
 import { Dropdown, DropdownMenu, DropdownToggle, Icon, LinkList, LinkListItem } from 'design-react-kit';
 import yaml from 'js-yaml';
 import { useConfiguration } from '../../configuration';
-import { compressAndBase64UrlSafe, copyToClipboard, normalizeOpenAPISpec } from '../utils';
+import { compressAndBase64UrlSafe, copyToClipboard } from '../utils';
 import { calculateSchemaSemanticScore } from '../utils/semantic-score';
 
 const copyAsB64zipToClipboard = (text: string, prefix: string = '') => {
@@ -25,7 +26,7 @@ const downloadContent = (content: any, mediaType: string, fileName: string) => {
 
 export const createBundle = async (specJson: object, options: { sparqlUrl: string }): Promise<object> => {
   let { resolvedSpecJson } = await calculateSchemaSemanticScore(specJson, { sparqlUrl: options.sparqlUrl });
-  resolvedSpecJson = normalizeOpenAPISpec(resolvedSpecJson);
+  resolvedSpecJson = normalizeOpenAPISpec(resolvedSpecJson, window.location.href);
   return resolvedSpecJson;
 };
 
