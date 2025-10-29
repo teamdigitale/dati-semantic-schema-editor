@@ -1,12 +1,13 @@
 # Schema Editor API
 
-A NestJS-based API service for schema semantic score. This API provides endpoints for calculating semantic scores of YAML schema files and health monitoring.
+A NestJS-based API service for schema semantic score.
+This API provides endpoints for calculating semantic scores of OpenAPI 3.0 schema files and health monitoring.
 
 ## Features
 
-- **Semantic Score Calculation**: Upload YAML files to calculate their semantic score based on content structure and semantic keywords
-- **Health Monitoring**: Built-in health check endpoint for service monitoring
-- **Swagger Documentation**: Interactive API documentation (available in development mode)
+- Semantic Score Calculation: Upload OpenAPI 3.0 files to calculate their semantic score based on content structure and semantic keywords
+- Health Monitoring: Built-in health check endpoint for service monitoring
+- OpenAPI 3.0 documentation: available at `http://localhost:3000/openapi.yaml`
 
 ## Environment Setup
 
@@ -75,10 +76,9 @@ $ pnpm run format
 
 When running in development mode, the API provides interactive documentation via Swagger UI:
 
-- **URL**: `http://localhost:3000/docs`
-- **URL**: `http://localhost:3000/docs-json`
-- **URL**: `http://localhost:3000/docs-yaml`
-- **Features**:
+- URL: `http://localhost:3000/openapi.yaml`
+
+- Features:
   - Interactive API testing
   - Request/response schemas
   - Authentication support
@@ -96,7 +96,8 @@ Response:
 
 ```json
 {
-  "status": 200
+  "status": 200,
+  "title": "OK"
 }
 ```
 
@@ -137,6 +138,7 @@ For production deployment:
    ```
 
 3. **Start the production server**:
+
    ```bash
    pnpm run start:prod
    ```
