@@ -67,38 +67,15 @@ export class GlobalErrorDTO {
   detail?: string;
 
   @ApiProperty({
-    description: 'An ISO string representing the timestamp of the error',
-    example: new Date().toISOString(),
+    description: `An absolute URI that identifies the specific occurrence of the problem. It may or may not yield further information if dereferenced.`,
+    format: 'uri',
     type: 'string',
     maxLength: 1024,
     required: false,
   })
   @MaxLength(1024)
   @IsString()
+  @IsUrl()
   @IsOptional()
-  timestamp?: string;
-
-  @ApiProperty({
-    description: 'The HTTP method of the endpoint where the error occurred',
-    example: 'POST',
-    type: 'string',
-    maxLength: 1024,
-    required: false,
-  })
-  @MaxLength(1024)
-  @IsString()
-  @IsOptional()
-  method?: string;
-
-  @ApiProperty({
-    description: 'The HTTP path of the endpoint where the error occurred',
-    example: '/path/to/endpoint',
-    type: 'string',
-    maxLength: 1024,
-    required: false,
-  })
-  @MaxLength(1024)
-  @IsString()
-  @IsOptional()
-  path?: string;
+  instance?: string;
 }
