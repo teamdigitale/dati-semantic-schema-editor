@@ -1,21 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import markdownText from './help.md?raw'; // Import the markdown file as a raw string
 
 export function TabHelp({ getComponent }) {
-  const [description, setDescription] = useState('');
-
   const Markdown = getComponent('Markdown', true);
-
-  useEffect(() => {
-    // Fetch the content of the description.md file
-    fetch('help.md')
-      .then((response) => response.text())
-      .then((text) => setDescription(text))
-      .catch((error) => console.error('Error loading description:', error));
-  }, []);
 
   return (
     <div>
-      <Markdown source={description} />
+      <Markdown source={markdownText} />
     </div>
   );
 }
