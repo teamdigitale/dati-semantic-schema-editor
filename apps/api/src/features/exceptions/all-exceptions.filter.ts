@@ -31,15 +31,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     const errorResponse = {
       title: HttpStatusCodes.getStatusText(status),
-      type: `https://httpstatuses.com/${status}`,
       status,
       detail:
         typeof errorMessage === 'string'
           ? errorMessage
           : (errorMessage['message'] as string) || '',
-      timestamp: new Date().toISOString(),
-      method: request.method,
-      path: request.url,
     } satisfies GlobalErrorDTO;
 
     this.logger.error(`${request.method} ${request.url}`);

@@ -1,8 +1,9 @@
 FROM docker.io/nginxinc/nginx-unprivileged:alpine3.22-perl AS nginx
+FROM docker.io/library/node:22-slim AS node
 
 # checkov:skip=CKV_DOCKER_2
 # checkov:skip=CKV_DOCKER_3
-FROM docker.io/library/node:22-slim AS base
+FROM node AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
@@ -27,6 +28,7 @@ COPY --from=build /prod/api/dist ./dist
 COPY --from=build /prod/api/node_modules ./node_modules
 EXPOSE 3000
 USER 1000
+ENV NODE_ENV=production
 CMD ["pnpm","start:prod"]
 
 # checkov:skip=CKV_DOCKER_2
