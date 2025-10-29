@@ -1,19 +1,19 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { fromJS } from 'immutable';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { useGlobalOntoScore, useOntoScore, useOntoScoreColor } from './use-onto-score';
+import { useSchemaSemanticScore, useSemanticScore, useSemanticScoreColor } from './use-semantic-score';
 import * as useSparqlQueryImport from './use-sparql';
 import * as configuration from '../../configuration';
 import * as utils from '../utils';
 
-describe('useOntoScore', () => {
+describe('useSemanticScore', () => {
   it('should return 0 without jsonldcontext', async () => {
     vi.spyOn(useSparqlQueryImport, 'useSparqlQuery').mockReturnValue({
       status: 'idle',
       error: undefined,
       data: {},
     });
-    const { result } = renderHook(() => useOntoScore(undefined, [['givenName']]));
+    const { result } = renderHook(() => useSemanticScore(undefined, [['givenName']]));
     expect(result.current).toEqual({
       status: 'idle',
       error: undefined,
@@ -35,7 +35,7 @@ describe('useOntoScore', () => {
       '@vocab': 'https://w3id.org/italia/onto/CPV/',
       givenName: 'givenName',
     });
-    const { result } = renderHook(() => useOntoScore(jsonldContext, undefined));
+    const { result } = renderHook(() => useSemanticScore(jsonldContext, undefined));
     expect(result.current).toEqual({
       status: 'idle',
       error: undefined,
@@ -57,7 +57,7 @@ describe('useOntoScore', () => {
       '@base': 'https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/',
       id: '@id',
     });
-    const { result } = renderHook(() => useOntoScore(jsonldContext, [['id']]));
+    const { result } = renderHook(() => useSemanticScore(jsonldContext, [['id']]));
     await waitFor(() => expect(useSparqlQuerySpy).toHaveBeenCalledTimes(2));
     expect(result.current).toEqual({
       status: 'idle',
@@ -92,7 +92,7 @@ describe('useOntoScore', () => {
       familyName: 'familyName',
       givenName: 'givenName',
     });
-    const { result } = renderHook(() => useOntoScore(jsonldContext, [['familyName'], ['givenName']]));
+    const { result } = renderHook(() => useSemanticScore(jsonldContext, [['familyName'], ['givenName']]));
     await waitFor(() => expect(useSparqlQuerySpy).toHaveBeenCalledTimes(2));
     expect(result.current).toEqual({
       status: 'idle',
@@ -114,13 +114,13 @@ describe('useOntoScore', () => {
   });
 });
 
-describe('useGlobalOntoScore', () => {
+describe('useSchemaSemanticScore', () => {
   beforeEach(() => {
     vi.spyOn(configuration, 'useConfiguration').mockReturnValue({ sparqlUrl: 'https://sparql.com' });
   });
 
   it('should return undefined score if no calculation is done', async () => {
-    const { result } = renderHook(() => useGlobalOntoScore({}));
+    const { result } = renderHook(() => useSchemaSemanticScore({}));
     expect(result.current).toEqual({
       status: 'idle',
       error: undefined,
@@ -133,8 +133,11 @@ describe('useGlobalOntoScore', () => {
   });
 
   it('should return isUpdated false if spec is changed', async () => {
-    vi.spyOn(utils, 'calculateGlobalOntoscore').mockResolvedValue({ globalOntoScore: 0.8, resolvedSpecJson: {} });
-    const { result, rerender } = renderHook((props) => useGlobalOntoScore(props ?? { foo: 'bar' }));
+    vi.spyOn(utils, 'calculateSchemaSemanticScore').mockResolvedValue({
+      schemaSemanticScore: 0.8,
+      resolvedSpecJson: {},
+    });
+    const { result, rerender } = renderHook((props) => useSchemaSemanticScore(props ?? { foo: 'bar' }));
     await result.current.recalculate();
     await waitFor(() => expect(result.current.data.isUpdated).toBe(true));
     rerender({ foo: 'baz' });
@@ -142,8 +145,11 @@ describe('useGlobalOntoScore', () => {
   });
 
   it('should return score and isUpdated if calculation is done', async () => {
-    vi.spyOn(utils, 'calculateGlobalOntoscore').mockResolvedValue({ globalOntoScore: 0.8, resolvedSpecJson: {} });
-    const { result } = renderHook(() => useGlobalOntoScore({ foo: 'bar' }));
+    vi.spyOn(utils, 'calculateSchemaSemanticScore').mockResolvedValue({
+      schemaSemanticScore: 0.8,
+      resolvedSpecJson: {},
+    });
+    const { result } = renderHook(() => useSchemaSemanticScore({ foo: 'bar' }));
     await result.current.recalculate();
     await waitFor(() =>
       expect(result.current).toEqual({
@@ -159,14 +165,14 @@ describe('useGlobalOntoScore', () => {
   });
 });
 
-describe('useOntoScoreColor', () => {
+describe('useSemanticScoreColor', () => {
   it('should return success if score is greater than 0.5', async () => {
-    const { result } = renderHook(() => useOntoScoreColor(0.9));
+    const { result } = renderHook(() => useSemanticScoreColor(0.9));
     expect(result.current).toEqual('success');
   });
 
   it('should return warning otherwise', async () => {
-    const { result } = renderHook(() => useOntoScoreColor(0.5));
+    const { result } = renderHook(() => useSemanticScoreColor(0.5));
     expect(result.current).toEqual('warning');
   });
 });

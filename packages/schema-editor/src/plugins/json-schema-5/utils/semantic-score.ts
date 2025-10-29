@@ -25,7 +25,7 @@ export async function determinePropertiesToValidate(jsonldContext: Map<any, any>
   return resolvedPropertiesGroups;
 }
 
-export function buildOntoScoreSparqlQuery(properties: string[]) {
+export function buildSemanticScoreSparqlQuery(properties: string[]) {
   return `
     SELECT (COUNT(DISTINCT  ?fieldUri) as ?count) WHERE {
       VALUES ?fieldUri { ${properties.map((propertyName) => `<${propertyName}>`).join(' ')} }
@@ -37,8 +37,8 @@ export function buildOntoScoreSparqlQuery(properties: string[]) {
   `;
 }
 
-export async function fetchValidOntoScorePropertiesCount(properties: string[], options: { sparqlUrl: string }) {
-  const sparqlQuery = buildOntoScoreSparqlQuery(properties);
+export async function fetchValidSemanticScorePropertiesCount(properties: string[], options: { sparqlUrl: string }) {
+  const sparqlQuery = buildSemanticScoreSparqlQuery(properties);
   const endpoint = `${options.sparqlUrl?.trim()}?format=json&query=${encodeURIComponent(sparqlQuery)}`;
   const response = await fetch(endpoint, { cache: 'force-cache' });
   if (!response.ok) {
@@ -48,7 +48,7 @@ export async function fetchValidOntoScorePropertiesCount(properties: string[], o
   return parseInt(sparqlData?.results?.bindings?.[0]?.count?.value || '0');
 }
 
-export const calculateGlobalOntoscore = async (specJson: any, options: { sparqlUrl: string }) => {
+export const calculateSchemaSemanticScore = async (specJson: any, options: { sparqlUrl: string }) => {
   const resolvedSpecJson = await resolveOpenAPISpec(specJson);
   const resolvedSpecOrderedMap = fromJS(resolvedSpecJson);
 
@@ -58,14 +58,14 @@ export const calculateGlobalOntoscore = async (specJson: any, options: { sparqlU
     throw 'No #/components/schemas models provided';
   }
 
-  // Calculate specific and global ontoscores
-  let globalOntoScoreModels = 0;
-  let globalOntoScoreSum = 0;
+  // Calculate specific and schema semantic score
+  let schemaSemanticScoreModels = 0;
+  let schemaSemanticScoreSum = 0;
 
-  const setOntoscoreValue = (dataModelKey: string, value: number) => {
-    resolvedSpecJson['components']['schemas'][dataModelKey]['x-ontoscore'] = value;
-    globalOntoScoreSum += value;
-    globalOntoScoreModels++;
+  const setSemanticScoreValue = (dataModelKey: string, value: number) => {
+    resolvedSpecJson['components']['schemas'][dataModelKey]['x-semantic-score'] = value;
+    schemaSemanticScoreSum += value;
+    schemaSemanticScoreModels++;
   };
 
   // Process every datamodel
@@ -78,18 +78,18 @@ export const calculateGlobalOntoscore = async (specJson: any, options: { sparqlU
 
     // Extract x-jsonld-context if present
     if (!dataModel.has('x-jsonld-context')) {
-      setOntoscoreValue(dataModelKey, 0);
+      setSemanticScoreValue(dataModelKey, 0);
       continue;
     }
 
     // Extract x-jsonld-context if present
     const jsonldContext = resolveJsonldContext(dataModel)?.get('@context');
     if (!jsonldContext) {
-      setOntoscoreValue(dataModelKey, 0);
+      setSemanticScoreValue(dataModelKey, 0);
       continue;
     }
 
-    // Determine data model's properties to use for ontoscore calculation
+    // Determine data model's properties to use for semantic score calculation
     const propertiesPaths: string[][] =
       dataModel
         .get('properties')
@@ -104,25 +104,25 @@ export const calculateGlobalOntoscore = async (specJson: any, options: { sparqlU
     );
 
     // Execute sparql fetch to check if mapped onto-properties are correct
-    const sparqlResultCount = await fetchValidOntoScorePropertiesCount(unknownPropertiesPaths, {
+    const sparqlResultCount = await fetchValidSemanticScorePropertiesCount(unknownPropertiesPaths, {
       sparqlUrl: options.sparqlUrl,
     });
     const semanticPropertiesCount = validPropertiesPaths.length + sparqlResultCount;
     const rawPropertiesCount = propertiesPaths?.length;
     const score = rawPropertiesCount > 0 ? semanticPropertiesCount / rawPropertiesCount : 0;
 
-    setOntoscoreValue(dataModelKey, score);
+    setSemanticScoreValue(dataModelKey, score);
   }
 
-  // Setting global onto score (calculated as an average ontoscore value)
+  // Setting schema semantic score (calculated as an average semantic score value)
   if (!resolvedSpecJson['info']) {
     resolvedSpecJson['info'] = {};
   }
-  const globalOntoScore = globalOntoScoreSum / globalOntoScoreModels;
-  resolvedSpecJson['info']['x-ontoscore'] = globalOntoScore;
+  const schemaSemanticScore = schemaSemanticScoreSum / schemaSemanticScoreModels;
+  resolvedSpecJson['info']['x-semantic-score'] = schemaSemanticScore;
 
   return {
     resolvedSpecJson,
-    globalOntoScore,
+    schemaSemanticScore,
   };
 };

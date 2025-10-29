@@ -12,7 +12,7 @@ import { RDFHelperButtonWithModal } from './common/helper';
 import { JsonLdContextAccordion } from './common/jsonld-context-accordion';
 import { ModelTitle } from './common/model-title';
 import { NavigateBack } from './common/navigate-back';
-import { OntoScoreBlock } from './common/onto-score-block';
+import { SemanticScoreBlock } from './common/semantic-score-block';
 import { PropertiesBlock } from './common/properties-block';
 import { RDFContentAccordion } from './common/rdf-content-accordion';
 import { RDFOntologicalClassBlock } from './common/rdf-ontological-class-block';
@@ -121,7 +121,7 @@ export const ObjectModel = ({
           )}
         </HeadingBlockLeft>
         <HeadingBlockRight>
-          <OntoScoreBlock jsonldContext={jsonldContext} propertiesPaths={propertiesPaths} />
+          <SemanticScoreBlock jsonldContext={jsonldContext} propertiesPaths={propertiesPaths} />
           <JumpToPath specPath={specPath} />
         </HeadingBlockRight>
       </HeadingBlock>
