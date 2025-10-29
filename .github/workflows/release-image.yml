@@ -67,7 +67,7 @@ jobs:
         id: extract_branch
 
       - name: Extract metadata (tags, labels) for Docker
-        id: meta
+        id: meta-webapp
         uses: docker/metadata-action@v5.8.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
@@ -88,6 +88,20 @@ jobs:
           target: webapp
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta-api
+        uses: docker/metadata-action@v5.8.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-api
+          labels: |
+            maintainer=teamdigitale
+            org.opencontainers.image.title=dati-semantic-schema-editor-api
+            org.opencontainers.image.source=${{ github.server_url }}/${{ env.IMAGE_NAME }}
+            org.opencontainers.image.source.branch=${{ steps.extract_branch.outputs.branch }}
+          tags: |
+            type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
+            type=raw,value=latest
 
       - name: Build and push Docker image "api"
         uses: docker/build-push-action@v6.18.0
