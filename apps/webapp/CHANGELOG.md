@@ -1,5 +1,13 @@
 # webapp
 
+## 0.0.7-next.2
+
+### Patch Changes
+
+- dbe43f3: help.md bundled as static asset
+- Updated dependencies [dbe43f3]
+  - @teamdigitale/schema-editor@0.0.7-next.1
+
 ## 0.0.7-next.1
 
 ### Patch Changes
