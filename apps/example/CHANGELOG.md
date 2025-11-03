@@ -1,5 +1,12 @@
 # example
 
+## 0.0.6-next.2
+
+### Patch Changes
+
+- Updated dependencies [dbe43f3]
+  - @teamdigitale/schema-editor@0.0.7-next.1
+
 ## 0.0.6-next.1
 
 ### Patch Changes
