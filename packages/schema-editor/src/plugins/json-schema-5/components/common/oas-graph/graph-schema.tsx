@@ -1,20 +1,24 @@
-import cytoscape, { Core } from 'cytoscape';
+import { Core } from 'cytoscape';
+import { Col, FormGroup, Row, Select, Toggle } from 'design-react-kit';
 import { List } from 'immutable';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
-
-// Initialize cytoscape layout
-// cola represents aggregations using clusters
-// breadthfirst has a good representation for layered graphs
-// dagre is better than cose with many trees
-// cose is ok for small graphs
-import fcose from 'cytoscape-fcose';
+import { Layouts, LAYOUTS_MAP } from './cytoscape-layouts';
 import { oasToGraph } from './oas-graph';
-cytoscape.use(fcose);
 
 export const GraphSchema = ({ specSelectors, editorActions }) => {
   const { elements } = useMemo(() => oasToGraph(specSelectors?.spec().toJSON()).graph, [specSelectors]);
   const cyRef = useRef<Core | null>(null);
+  const [showSemanticRelations, setShowSemanticRelations] = useState(false);
+  const [layout, setLayout] = useState<Layouts>('fcose');
+
+  // Update layout when layout state changes
+  useEffect(() => {
+    if (!cyRef.current || !LAYOUTS_MAP[layout]) {
+      return;
+    }
+    cyRef.current.layout(LAYOUTS_MAP[layout]).run();
+  }, [layout]);
 
   // Centra il grafico al load
   useEffect(() => {
@@ -45,81 +49,95 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
     const degree = node.degree();
     const baseSize = node.data('label')?.length * 8;
     return baseSize + degree * sizePerLink;
-  }
+  };
 
   console.log('elements', elements);
   return (
-    <CytoscapeComponent
-      style={{ width: '100%', height: 'calc(100vh - 210px)' }}
-      cy={(cy: Core) => (cyRef.current = cy)}
-      elements={elements}
-      layout={{
-        name: 'fcose',
-        fit: true,
-        avoidOverlap: true,
-        nodeDimensionsIncludeLabels: true,
-        spacingFactor: 1.5,
-        idealEdgeLength: 100,
-      }}
-      stylesheet={[
-        {
-          selector: 'node',
-          style: {
-            label: 'data(label)',
-            width: radius,
-            height: radius,
-            padding: '16px',
-            'text-valign': 'center',
-            'text-halign': 'center',
-            'background-color': '#11479e',
-            color: '#ffffff',
+    <div>
+      <Row>
+        <Col xs={12} md={6} lg={4} className="me-auto">
+          <FormGroup check>
+            <Toggle
+              label="Semantic Relations"
+              checked={showSemanticRelations}
+              onChange={(e) => setShowSemanticRelations(e.target.checked)}
+            />
+          </FormGroup>
+        </Col>
+
+        <Col xs={12} md={6}>
+          <Select label="Layout" value={layout} onChange={(value) => setLayout(value as Layouts)}>
+            <option value={'fcose' satisfies Layouts}>fcose</option>
+            <option value={'breadthfirst' satisfies Layouts}>breadthfirst</option>
+          </Select>
+        </Col>
+      </Row>
+
+      <CytoscapeComponent
+        style={{ width: '100%', height: 'calc(100vh - 210px)' }}
+        cy={(cy: Core) => (cyRef.current = cy)}
+        elements={elements}
+        layout={LAYOUTS_MAP['fcose']}
+        stylesheet={[
+          {
+            selector: 'node',
+            style: {
+              label: 'data(label)',
+              width: radius,
+              height: radius,
+              padding: '16px',
+              'text-valign': 'center',
+              'text-halign': 'center',
+              'background-color': '#11479e',
+              color: '#ffffff',
+            },
           },
-        },
-        {
-          selector: 'node[type="rdf"]',
-          style: {
-            'background-color': '#008055',
+          {
+            selector: 'node[type="rdf"]',
+            style: {
+              'background-color': '#008055',
+            },
           },
-        },
-        {
-          selector: 'node[type="blank"]',
-          style: {
-            'background-color': '#768593',
-            width: 'label',
-            height: 'label',
+          {
+            selector: 'node[type="blank"]',
+            style: {
+              'background-color': '#768593',
+              width: 'label',
+              height: 'label',
+            },
           },
-        },
-        {
-          selector: 'node[type="@typed"]',
-          style: {},
-        },
-        {
-          selector: 'node[leaf=1]',
-          style: {
-            shape: 'rectangle',
+          {
+            selector: 'node[type="@typed"]',
+            style: {},
           },
-        },
-        //
-        // Edges
-        {
-          selector: 'edge',
-          style: {
-            width: 2,
-            'curve-style': 'straight',
-            'line-color': '#9dbaea',
-            'target-arrow-color': '#9dbaea',
-            'target-arrow-shape': 'triangle',
+          {
+            selector: 'node[leaf=1]',
+            style: {
+              shape: 'rectangle',
+            },
           },
-        },
-        {
-          selector: 'edge[type="dashed"]',
-          style: {
-            'line-style': 'dashed',
-            'target-arrow-shape': 'none',
+          //
+          // Edges
+          {
+            selector: 'edge',
+            style: {
+              width: 2,
+              'curve-style': 'straight',
+              'line-color': '#9dbaea',
+              'target-arrow-color': '#9dbaea',
+              'target-arrow-shape': 'triangle',
+            },
           },
-        },
-      ]}
-    />
+          {
+            selector: 'edge[type="dashed"]',
+            style: {
+              'line-style': 'dashed',
+              'target-arrow-shape': 'none',
+            },
+          },
+        ]}
+      />
+    </div>
   );
 };
 

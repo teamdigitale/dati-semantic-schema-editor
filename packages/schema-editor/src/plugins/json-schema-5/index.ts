@@ -1,4 +1,5 @@
 import { ArrayModel } from './components/array-model';
+import { GraphSchema } from './components/common/oas-graph/graph-schema';
 import { Model } from './components/model';
 import { ModelCollapse } from './components/model-collapse';
 import { ModelRoot } from './components/model-root';
@@ -19,6 +20,7 @@ export const JSONSchema5Plugin = () => ({
     PrimitiveModel,
     ArrayModel,
     ObjectModel,
+    GraphSchema,
   },
 });
 

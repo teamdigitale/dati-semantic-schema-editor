@@ -1,3 +1,7 @@
-import { GraphSchema } from '../../../json-schema-5/components/common/oas-graph/graph-schema';
+export function TabGraph({ ...props }) {
+  const { getComponent } = props;
 
-export const TabGraph = GraphSchema;
+  const GraphSchema = getComponent('GraphSchema', true);
+
+  return <GraphSchema {...props} />;
+}
