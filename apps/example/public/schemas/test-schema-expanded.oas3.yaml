@@ -7,11 +7,11 @@ info:
     - [AUDIT_REST_02 ] Inoltro dati tracciati nel dominio del Fruitore REST con correlazione
     - [BLOCK_REST] Blocking REST
     - [INTEGRITY_REST_02] Integrità del payload messaggio REST in PDND
-  version: '1.0.0'
+  version: "1.0.0"
   contact:
     name: Segreteria Tecnica Istat - Progetto PNRR National Data Catalog
     email: ndc-segr-tec@istat.it
-  termsOfService: 'http://swagger.io/terms/'
+  termsOfService: "http://swagger.io/terms/"
   x-api-id: C001
   x-summary: Schema del Servizio di Notifica Generalità
 paths: {}
@@ -85,9 +85,9 @@ components:
           type: string
           description: Identificativo univoco attribuito all'operazione dall'ente. Deve essere numerico e crescente. Se esiste in ANPR, l'ente riceve come esito la risposta in precedenza fornita da ANPR con lo stesso ID; se non esiste ed e' inferiore all'ultimo inviato, l'elaborazione termina con errore.
         criteriRicerca:
-          $ref: '#/components/schemas/PersonaAnagraficamenteResidente'
+          $ref: "#/components/schemas/PersonaAnagraficamenteResidente"
         datiRichiesta:
-          $ref: '#/components/schemas/TipoDatiRichiesta'
+          $ref: "#/components/schemas/TipoDatiRichiesta"
     LuogoDiNascita:
       title: luogo di nascita
       description: |
@@ -101,54 +101,54 @@ components:
       description: |
         Persona fisica avente dimora abituale in un determinato Comune come risultante nell'anagrafe della popolazione residente (artt. 3 e 7 DPR n. 223/1989; art. 43 cc).
       type: object
-      x-jsonld-type: 'https://w3id.org/italia/onto/RPO/RegisteredResidentPerson'
+      x-jsonld-type: "RPO:RegisteredResidentPerson"
       x-jsonld-context:
-        '@vocab': 'https://w3id.org/italia/onto/CPV/'
+        "@vocab": "https://w3id.org/italia/onto/CPV/"
         RPO: https://w3id.org/italia/onto/RPO/
         SM: https://w3id.org/italia/onto/SM/
-        codiceFiscale: 'taxCode'
-        idANPR: '@id'
-        '@base': 'urn:anpr:'
-        nomeProprio: 'givenName'
-        cognome: 'familyName'
+        codiceFiscale: "taxCode"
+        idANPR: "@id"
+        "@base": "urn:anpr:"
+        nomeProprio: "givenName"
+        cognome: "familyName"
         haSesso:
-          '@id': hasSex
-          '@type': '@id'
-          '@context':
-            '@base': 'https://w3id.org/italia/controlled-vocabulary/classifications-for-people/sex/'
+          "@id": hasSex
+          "@type": "@id"
+          "@context":
+            "@base": "https://w3id.org/italia/controlled-vocabulary/classifications-for-people/sex/"
         dataDiNascita: dateOfBirth
         luogoDiNascita:
-          '@id': hasBirthPlace
-          '@type': '@id'
-          '@context':
-            '@base': 'https://w3id.org/italia/controlled-vocabulary/territorial-classifications/cities/'
-        haResidenzaAnagrafica: 'https://w3id.org/italia/onto/RPO/hasRegisteredResidence'
-        haPuntoDiContattoOnline: 'SM:hasOnlineContactPoint'
+          "@id": hasBirthPlace
+          "@type": "@id"
+          "@context":
+            "@base": "https://w3id.org/italia/controlled-vocabulary/territorial-classifications/cities/"
+        haResidenzaAnagrafica: "RPO:hasRegisteredResidence"
+        haPuntoDiContattoOnline: "SM:hasOnlineContactPoint"
       properties:
         codiceFiscale:
-          $ref: '#/components/schemas/TaxCode'
+          $ref: "#/components/schemas/TaxCode"
         idANPR:
-          $ref: '#/components/schemas/ANPRId'
+          $ref: "#/components/schemas/ANPRId"
         nomeProprio:
-          $ref: '#/components/schemas/NomeProprio'
+          $ref: "#/components/schemas/NomeProprio"
         cognome:
-          $ref: '#/components/schemas/Cognome'
+          $ref: "#/components/schemas/Cognome"
         haSesso:
-          $ref: '#/components/schemas/Sesso'
+          $ref: "#/components/schemas/Sesso"
         dataDiNascita:
-          $ref: '#/components/schemas/DataDiNascita'
+          $ref: "#/components/schemas/DataDiNascita"
         luogoDiNascita:
-          $ref: '#/components/schemas/LuogoDiNascita'
+          $ref: "#/components/schemas/LuogoDiNascita"
         haResidenzaAnagrafica:
-          $ref: '#/components/schemas/ResidenzaAnagrafica'
+          $ref: "#/components/schemas/ResidenzaAnagrafica"
         haPuntoDiContattoOnline:
-          $ref: '#/components/schemas/PuntoDiContattoOnline'
+          $ref: "#/components/schemas/PuntoDiContattoOnline"
       example:
         nomeProprio: Mario
         cognome: Rossi
-        dataDiNascita: '1977-07-01'
+        dataDiNascita: "1977-07-01"
         codiceFiscale: RSSMRA75L01H501A
-        luogoDiNascita: '001001'
+        luogoDiNascita: "001001"
         haSesso: M
         idANPR: A8D40R2PL
         haPuntoDiContattoOnline:
@@ -160,44 +160,44 @@ components:
       description: |
         Una persona in vita
       type: object
-      x-jsonld-type: 'Alive'
+      x-jsonld-type: "Alive"
       x-jsonld-context:
-        '@vocab': 'https://w3id.org/italia/onto/CPV/'
+        "@vocab": "https://w3id.org/italia/onto/CPV/"
         RPO: https://w3id.org/italia/onto/RPO/
         SM: https://w3id.org/italia/onto/SM/
-        codiceFiscale: 'taxCode'
-        idANPR: 'personID'
-        nomeProprio: 'givenName'
-        cognome: 'familyName'
+        codiceFiscale: "taxCode"
+        idANPR: "personID"
+        nomeProprio: "givenName"
+        cognome: "familyName"
         haSesso:
-          '@id': hasSex
-          '@type': '@id'
-          '@context':
-            '@base': 'https://w3id.org/italia/controlled-vocabulary/classifications-for-people/sex/'
+          "@id": hasSex
+          "@type": "@id"
+          "@context":
+            "@base": "https://w3id.org/italia/controlled-vocabulary/classifications-for-people/sex/"
         dataDiNascita: dateOfBirth
         luogoDiNascita:
-          '@id': hasBirthPlace
-          '@type': '@id'
-          '@context':
-            '@base': 'https://w3id.org/italia/controlled-vocabulary/territorial-classifications/cities'
-        haPuntoDiContattoOnline: 'SM:hasOnlineContactPoint'
+          "@id": hasBirthPlace
+          "@type": "@id"
+          "@context":
+            "@base": "https://w3id.org/italia/controlled-vocabulary/territorial-classifications/cities"
+        haPuntoDiContattoOnline: "SM:hasOnlineContactPoint"
       properties:
         codiceFiscale:
-          $ref: '#/components/schemas/TaxCode'
+          $ref: "#/components/schemas/TaxCode"
         idANPR:
-          $ref: '#/components/schemas/ANPRId'
+          $ref: "#/components/schemas/ANPRId"
         nomeProprio:
-          $ref: '#/components/schemas/NomeProprio'
+          $ref: "#/components/schemas/NomeProprio"
         cognome:
-          $ref: '#/components/schemas/Cognome'
+          $ref: "#/components/schemas/Cognome"
         haSesso:
-          $ref: '#/components/schemas/Sesso'
+          $ref: "#/components/schemas/Sesso"
         dataDiNascita:
-          $ref: '#/components/schemas/DataDiNascita'
+          $ref: "#/components/schemas/DataDiNascita"
         luogoDiNascita:
-          $ref: '#/components/schemas/LuogoDiNascita'
+          $ref: "#/components/schemas/LuogoDiNascita"
         haPuntoDiContattoOnline:
-          $ref: '#/components/schemas/PuntoDiContattoOnline'
+          $ref: "#/components/schemas/PuntoDiContattoOnline"
 
     PuntoDiContattoOnline:
       $ref: https://gist.githubusercontent.com/ioggstream/865c550a68e686b2854324efc0ae7dd5/raw/8ad5710c2297d76dafb440a944dfc0b352150e7d/prova.yaml#/components/schemas/PuntoDiContattoOnline
@@ -209,53 +209,53 @@ components:
       description: |
         Luogo in cui una persona ha fissato la dimora abituale (art. 43 c.c.) come risultante in anagrafe.
       type: object
-      x-jsonld-type: 'https://w3id.org/italia/onto/RPO/RegisteredResidence'
+      x-jsonld-type: "https://w3id.org/italia/onto/RPO/RegisteredResidence"
       x-jsonld-context:
-        '@vocab': 'https://w3id.org/italia/onto/RPO/'
+        "@vocab": "https://w3id.org/italia/onto/RPO/"
         residenzaInIndirizzo:
-          '@id': residenceInAddress
+          "@id": residenceInAddress
         residenzaInComune:
-          '@id': registeredResidenceInCity
-          '@type': '@id'
-          '@context':
-            '@base': 'https://w3id.org/italia/controlled-vocabulary/territorial-classifications/cities'
+          "@id": registeredResidenceInCity
+          "@type": "@id"
+          "@context":
+            "@base": "https://w3id.org/italia/controlled-vocabulary/territorial-classifications/cities"
       properties:
         residenzaInIndirizzo:
-          $ref: '#/components/schemas/Indirizzo'
+          $ref: "#/components/schemas/Indirizzo"
         residenzaInComune:
           type: string
           pattern: >-
             [A-Z0-9]{6}
       example:
         residenzaInIndirizzo:
-          haComune: '058091'
+          haComune: "058091"
           haNumeroCivico:
             valoreCivico: 20
           haAccessoInterno:
             scala: D
             interno: 8
-        residenzaInComune: '058091'
+        residenzaInComune: "058091"
     Indirizzo:
       title: Indirizzo
       description: |
         Questa classe rappresenta un oggetto spaziale indirizzabile o una rappresentazione indirizzabile. In particolare, nel contesto italiano, essa rappresenta l'accesso esterno da un'area di circolazione a una unità ecografica semplice (abitazioni, uffici, locali in cui sono ubicate attività economiche, ecc.).
       type: object
-      x-jsonld-type: 'https://w3id.org/italia/onto/CLV/Address'
+      x-jsonld-type: "https://w3id.org/italia/onto/CLV/Address"
       x-jsonld-context:
-        '@vocab': 'https://w3id.org/italia/onto/CLV/'
+        "@vocab": "https://w3id.org/italia/onto/CLV/"
         haComune:
-          '@id': hasCity
-          '@type': '@id'
-          '@context':
-            '@base': 'https://w3id.org/italia/controlled-vocabulary/territorial-classifications/cities'
+          "@id": hasCity
+          "@type": "@id"
+          "@context":
+            "@base": "https://w3id.org/italia/controlled-vocabulary/territorial-classifications/cities"
         haNumeroCivico:
-          '@id': hasNumber
+          "@id": hasNumber
         haOdonimo:
-          '@id': hasStreetToponym
+          "@id": hasStreetToponym
         haSezioneCensimento:
-          '@id': hasCensusSection
+          "@id": hasCensusSection
         haAccessoInterno:
-          '@id': hasInternalAccess
+          "@id": hasInternalAccess
         indirizzoCompleto: fullAddress
         cap: postCode
       properties:
@@ -267,13 +267,13 @@ components:
           pattern: >-
             [A-Z0-9]{6}
         haNumeroCivico:
-          $ref: '#/components/schemas/NumeroCivico'
+          $ref: "#/components/schemas/NumeroCivico"
         haAccessoInterno:
-          $ref: '#/components/schemas/AccessoInterno'
+          $ref: "#/components/schemas/AccessoInterno"
         haOdonimo:
-          $ref: '#/components/schemas/Odonimo'
+          $ref: "#/components/schemas/Odonimo"
         haSezioneCensimento:
-          $ref: '#/components/schemas/SezioneDiCensimento'
+          $ref: "#/components/schemas/SezioneDiCensimento"
         indirizzoCompleto:
           title: indirizzo completo
           description: |
@@ -286,7 +286,7 @@ components:
           type: string
           maxLength: 6
       example:
-        haComune: '058091'
+        haComune: "058091"
         haNumeroCivico:
           valoreCivico: 20
         haAccessoInterno:
@@ -298,9 +298,9 @@ components:
       description: |
         Questa classe rappresenta i numeri interni, relativi alll'accesso interno associato all'accesso esterno. Gli accessi interni sono quelli che da spazi privati o da scale immettono direttamente alle unità ecografiche semplici ossia abitazioni, esercizi commerciali, uffici e simili.
       type: object
-      x-jsonld-type: 'https://w3id.org/italia/onto/CLV/InternalAccess'
+      x-jsonld-type: "https://w3id.org/italia/onto/CLV/InternalAccess"
       x-jsonld-context:
-        '@vocab': 'https://w3id.org/italia/onto/CLV/'
+        "@vocab": "https://w3id.org/italia/onto/CLV/"
         scala: staircase
         interno: flatNumber
         edificio: building
@@ -344,66 +344,66 @@ components:
       type: object
       x-jsonld-type: CPV:Person
       x-jsonld-context:
-        '@vocab': https://w3id.org/italia/onto/CLV/
+        "@vocab": https://w3id.org/italia/onto/CLV/
         CPV: https://w3id.org/italia/onto/CPV/
         hasCensusSection: hasCensusSection
       properties:
         hasCensusSection:
-          $ref: '#/components/schemas/SezioneDiCensimento'
+          $ref: "#/components/schemas/SezioneDiCensimento"
       example:
         hasCensusSection:
-          id: '00100112345'
+          id: "00100112345"
     SezioneDiCensimento:
       title: Sezione di Censimento
       description: |
         Porzione di territorio su cui sono effettuate le rilevazioni dell'Istat in occasione dei censimenti. La popolazione media è di circa 170 individui.
       type: object
-      x-jsonld-type: 'https://w3id.org/italia/onto/CLV/CensusSection'
+      x-jsonld-type: "https://w3id.org/italia/onto/CLV/CensusSection"
       x-jsonld-context:
-        id: '@id'
-        '@base': 'https://identificativo-censimenti.istat.it#'
+        id: "@id"
+        "@base": "https://identificativo-censimenti.istat.it#"
       properties:
         id:
           type: string
           description: Identificativo della sezione di censimento
       example:
-        id: '00100212345'
+        id: "00100212345"
 
     A2:
       type: object
       x-jsonld-type: CPV:Person
       x-jsonld-context:
-        '@vocab': https://w3id.org/italia/onto/CLV/
+        "@vocab": https://w3id.org/italia/onto/CLV/
         CPV: https://w3id.org/italia/onto/CPV/
         hasCensusSection:
-          '@id': hasCensusSection
-          '@type': '@id'
-          '@context':
-            '@base': 'https://identificativo-censimenti.istat.it#'
+          "@id": hasCensusSection
+          "@type": "@id"
+          "@context":
+            "@base": "https://identificativo-censimenti.istat.it#"
       properties:
         hasCensusSection:
-          $ref: '#/components/schemas/SezioneDiCensimentoString'
+          $ref: "#/components/schemas/SezioneDiCensimentoString"
       example:
-        hasCensusSection: '00100112345'
+        hasCensusSection: "00100112345"
     SezioneDiCensimentoString:
       title: Sezione di Censimento
-      x-jsonld-type: 'xsd:string'
+      x-jsonld-type: "xsd:string"
       description: |
         Porzione di territorio su cui sono effettuate le rilevazioni dell'Istat in occasione dei censimenti. La popolazione media è di circa 170 individui.
 
         _:b0 ... "00100212345"^^<https://w3id.org/italia/onto/CLV/CensusSection>
       type: string
       pattern: ^[0-9]{11}$
-      example: '00100212345'
+      example: "00100212345"
 
     Odonimo:
       title: Toponimo Stradale
       description: |
         Questa classe rappresenta il toponimo stradale. Esso consiste nel nome dalla strada o denominazione urbanistica ufficiale - DUF (rappresentato attraverso la proprietà nome della strada) e della denominazione urbanistica generica (DUG) o qualitficatore del toponimo (e.g., via, viale, piazza, ecc.). La parte DUF può comprendere l'eventuale complemento alla specie (preposizioni non strettamente legate alla denominazione del toponimo come dei, di, delle, la, il, eccetera) e gli eventual complementi alla denominazione (esempio i titoli onorifici per i nomi propri) Esempi: 1) Via San Donato: Via (DUG o qualificatore del toponimo), San Donato (DUF - o nome della strada) 2) Via dei tulipani: Via (DUG), dei Tulipani (DUF) 3) Via A GENERALE CARLO ALBERTO DALLA CHIESA: Via (DUG) Generale Carlo Alberto Dalla Chiesa (DUF) Nel complesso questa componente spaziale dell'indirizzo può essere vista come il nome dell'area di circolazione ovvero il nome dell'area che individua ogni spazio del suolo pubblico, o aperto al pubblico, destinato alla viabilità. DUF e DUG sono due proprietà obbligatorie per la classe ed è possibile specificare un valore delle stesse valido per ciascuna lingua. L'odonimo infatti può essere registrato in lingue differenti, secondo quanto previsto dalle norme in materia di bilinguismo e sull'uso delle lingue delle minoranze linguistiche riconosciute.
       type: object
-      x-jsonld-type: 'https://w3id.org/italia/onto/CLV/StreetToponym'
+      x-jsonld-type: "https://w3id.org/italia/onto/CLV/StreetToponym"
       x-jsonld-context:
-        '@vocab': 'https://w3id.org/italia/onto/CLV/'
+        "@vocab": "https://w3id.org/italia/onto/CLV/"
         duf: officialStreetName
         dug: toponymQualifier
       properties:
@@ -422,9 +422,9 @@ components:
       description: |
         Questa classe rappresenta il numero civico dell'indirizzo che individua l' ACCESSO ESTERNO, cioè quello che dall'area di circolazione immette, direttamente o indirettamente, alle unità ecografiche semplici ossia abitazioni, esercizi commerciali, uffici e simili.
       type: object
-      x-jsonld-type: 'https://w3id.org/italia/onto/CLV/CivicNumbering'
+      x-jsonld-type: "https://w3id.org/italia/onto/CLV/CivicNumbering"
       x-jsonld-context:
-        '@vocab': 'https://w3id.org/italia/onto/CLV/'
+        "@vocab": "https://w3id.org/italia/onto/CLV/"
         valoreCivico: streetNumber
         esponente: exponent
         valoreMetrico: metric
@@ -456,9 +456,9 @@ components:
       description: |
         Certificato rilasciato dal Ministero dell'Interno in cui si attesta quanto risulta in anagrafe.
       type: object
-      x-jsonld-type: 'https://w3id.org/italia/onto/ACO/RegistrationCertificate'
+      x-jsonld-type: "https://w3id.org/italia/onto/ACO/RegistrationCertificate"
       x-jsonld-context:
-        '@vocab': 'https://w3id.org/italia/onto/ACO/'
+        "@vocab": "https://w3id.org/italia/onto/ACO/"
         protocolloANPR: ANPRProtocol
       properties:
         protocolloANPR:
@@ -477,7 +477,7 @@ components:
           type: string
           description: Data cui deve essere riferita la versione della scheda anagrafica
           format: date
-          example: '2021-11-15'
+          example: "2021-11-15"
         motivoRichiesta:
           type: string
           description: campo per l’indicazione obbligatoria del numero di riferimento della pratica per quale è effettuata l’interrogazione (es. numero di protocollo, fascicolo, verbale, etc.)
@@ -494,13 +494,13 @@ components:
           minItems: 0
           maxItems: 10
           items:
-            $ref: '#/components/schemas/PersonaAnagraficamenteResidente'
+            $ref: "#/components/schemas/PersonaAnagraficamenteResidente"
         listaAnomalie:
           type: array
           minItems: 0
           maxItems: 10
           items:
-            $ref: '#/components/schemas/TipoErroriAnomalia'
+            $ref: "#/components/schemas/TipoErroriAnomalia"
     RispostaKO:
       type: object
       properties:
@@ -511,7 +511,7 @@ components:
           minItems: 0
           maxItems: 10
           items:
-            $ref: '#/components/schemas/TipoErroriAnomalia'
+            $ref: "#/components/schemas/TipoErroriAnomalia"
     TipoErroriAnomalia:
       type: object
       properties:
@@ -530,7 +530,7 @@ components:
   securitySchemes:
     bearerAuth:
       type: http
-      description: 'A bearer token in the format of a JWS and conformed to the specifications included in [RFC8725](https://tools.ietf.org/html/RFC8725).'
+      description: "A bearer token in the format of a JWS and conformed to the specifications included in [RFC8725](https://tools.ietf.org/html/RFC8725)."
       scheme: bearer
       bearerFormat: JWT
     Agid-JWT-Signature:
