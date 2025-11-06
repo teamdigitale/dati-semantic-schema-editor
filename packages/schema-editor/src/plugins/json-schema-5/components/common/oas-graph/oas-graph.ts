@@ -27,7 +27,7 @@ export function oasToMap(oas: any) {
   // A state variable to store the result.
   const result: OasMap = {};
 
-  function collectRefs(schema: any, path: string, nested : boolean = false) {
+  function collectRefs(schema: any, path: string, nested: boolean = false) {
     if (!schema || typeof schema !== 'object') return;
     console.log('collectRefs', schema, path);
     for (const [key, value] of Object.entries(schema || {})) {
@@ -43,8 +43,7 @@ export function oasToMap(oas: any) {
           console.log('setting blank type for', path, result[path], key, value);
           result[path].type = 'blank';
         }
-      }
-      else if (key === 'x-jsonld-type') {
+      } else if (key === 'x-jsonld-type') {
         if (!result[path]) {
           result[path] = { label: lastpath(path), refs: [] };
         }
@@ -67,8 +66,7 @@ export function oasToMap(oas: any) {
         if (!result[value]) {
           result[value] = { label: lastpath(value), refs: [] };
         }
-      }
-      else if (typeof value === 'object') {
+      } else if (typeof value === 'object') {
         collectRefs(value, path, true);
       }
     }
@@ -94,9 +92,9 @@ export function mapToGraph(oasMap: OasMap) {
       data: {
         id: source,
         label,
-        leaf: (targets.length === 0 && type !== 'rdf') ? 1 : 0,
-        ...(type !== undefined && { type })
-      }
+        leaf: targets.length === 0 && type !== 'rdf' ? 1 : 0,
+        ...(type !== undefined && { type }),
+      },
     });
     // Create edges
     for (const target of targets) {
