@@ -3,7 +3,7 @@ import { Col, FormGroup, Row, Select, Toggle } from 'design-react-kit';
 import { List } from 'immutable';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
-import { Layouts, LAYOUTS_MAP } from './cytoscape-layouts';
+import { LAYOUTS, LAYOUTS_MAP, LayoutTypes } from './cytoscape-layouts';
 import { oasToGraph } from './oas-graph';
 
 export const GraphSchema = ({ specSelectors, editorActions }) => {
@@ -12,7 +12,7 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
 
   const cyRef = useRef<Core | null>(null);
   const [showSemanticRelations, setShowSemanticRelations] = useState(false);
-  const [layout, setLayout] = useState<Layouts>('fcose');
+  const [layout, setLayout] = useState<LayoutTypes>('fcose');
 
   // Update layout when layout state changes
   useEffect(() => {
@@ -53,7 +53,6 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
     return baseSize + degree * sizePerLink;
   };
 
-  console.log('elements', elements);
   return (
     <div>
       <Row>
@@ -68,9 +67,12 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
         </Col>
 
         <Col xs={12} md={6}>
-          <Select label="Layout" value={layout} onChange={(value) => setLayout(value as Layouts)}>
-            <option value={'fcose' satisfies Layouts}>fcose</option>
-            <option value={'breadthfirst' satisfies Layouts}>breadthfirst</option>
+          <Select label="Layout" value={layout} onChange={(value) => setLayout(value as LayoutTypes)}>
+            {LAYOUTS.map((x) => (
+              <option key={x} value={x}>
+                {LAYOUTS_MAP[x].name}
+              </option>
+            ))}
           </Select>
         </Col>
       </Row>
@@ -79,7 +81,7 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
         style={{ width: '100%', height: 'calc(100vh - 210px)' }}
         cy={(cy: Core) => (cyRef.current = cy)}
         elements={elements}
-        layout={LAYOUTS_MAP['fcose']}
+        layout={LAYOUTS_MAP[layout]}
         stylesheet={[
           {
             selector: 'node',
