@@ -7,7 +7,9 @@ import { Layouts, LAYOUTS_MAP } from './cytoscape-layouts';
 import { oasToGraph } from './oas-graph';
 
 export const GraphSchema = ({ specSelectors, editorActions }) => {
-  const { elements } = useMemo(() => oasToGraph(specSelectors?.spec().toJSON()).graph, [specSelectors]);
+  const specJson = specSelectors?.spec().toJSON();
+  const { elements } = useMemo(() => oasToGraph(specJson).graph, [JSON.stringify(specJson)]);
+
   const cyRef = useRef<Core | null>(null);
   const [showSemanticRelations, setShowSemanticRelations] = useState(false);
   const [layout, setLayout] = useState<Layouts>('fcose');
