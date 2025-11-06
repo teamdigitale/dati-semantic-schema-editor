@@ -1,5 +1,5 @@
 import { Core } from 'cytoscape';
-import { Col, FormGroup, Row, Select, Toggle } from 'design-react-kit';
+import { Col, FormGroup, Row, Toggle } from 'design-react-kit';
 import { List } from 'immutable';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
@@ -24,7 +24,9 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
 
   // Centra il grafico al load
   useEffect(() => {
-    cyRef.current?.center();
+    setTimeout(() => {
+      cyRef.current?.center();
+    }, 100);
   }, [cyRef.current]);
 
   // Click sui nodi
@@ -67,13 +69,15 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
         </Col>
 
         <Col xs={12} md={6}>
-          <Select label="Layout" value={layout} onChange={(value) => setLayout(value as LayoutTypes)}>
-            {LAYOUTS.map((x) => (
-              <option key={x} value={x}>
-                {LAYOUTS_MAP[x].name}
-              </option>
-            ))}
-          </Select>
+          <div className="select-wrapper">
+            <select value={layout} onChange={(e) => setLayout(e.target.value as LayoutTypes)}>
+              {LAYOUTS.map((x) => (
+                <option key={x} value={x}>
+                  Layout {LAYOUTS_MAP[x].name}
+                </option>
+              ))}
+            </select>
+          </div>
         </Col>
       </Row>
 
