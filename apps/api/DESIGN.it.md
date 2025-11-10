@@ -1,8 +1,12 @@
-# Documento di Progettazione API
+# API Design
 
 ## Panoramica
 
-L'API per il calcolo del semantic score è un servizio REST basato su **NestJS** che permette di calcolare il punteggio semantico di documenti OpenAPI 3.0. Il servizio analizza gli schemi presenti nel documento e valida le proprietà semantiche utilizzando un database **Virtuoso** tramite query SPARQL.
+L'API per il calcolo del semantic score è un servizio REST
+che calcola il punteggio semantico di documenti OpenAPI 3.0.
+Il servizio analizza gli schemi presenti nel documento e valida le proprietà semantiche utilizzando un database Virtuoso tramite query SPARQL.
+
+L'implementazione è basata su [NestJS](https://nestjs.com/).
 
 ## Funzionalità Principali
 
@@ -10,17 +14,17 @@ L'API per il calcolo del semantic score è un servizio REST basato su **NestJS**
 
 L'API espone un endpoint `POST /api/v1/semantic-score` che:
 
-1. **Accetta** documenti OpenAPI 3.0 in formato YAML o JSON (dimensione massima: 1MB)
-2. **Valida** la struttura del documento OpenAPI
-3. **Analizza** i modelli di dati presenti in `#/components/schemas`
-4. **Calcola** il semantic score per ogni modello basandosi sulle proprietà semantiche validate
-5. **Restituisce** il documento originale arricchito con:
+1. Accetta documenti OpenAPI 3.0 in formato YAML o JSON (dimensione massima: 1MB)
+2. Valida la struttura del documento OpenAPI
+3. Analizza i modelli di dati presenti in `#/components/schemas`
+4. Calcola il semantic score per ogni modello basandosi sulle proprietà semantiche validate
+5. Restituisce il documento originale arricchito con:
    - `#/info/x-semantic-score`: punteggio semantico globale (media dei punteggi dei modelli)
    - `#/info/x-semantic-score-timestamp`: timestamp del calcolo
 
 ### Integrazione con Virtuoso
 
-L'API si connette a un database **Virtuoso** (un database RDF/SPARQL) per validare le proprietà semantiche dei modelli di dati. Il processo funziona così:
+L'API si connette a un database Virtuoso (un database RDF/SPARQL) per validare le proprietà semantiche dei modelli di dati. Il processo funziona così:
 
 1. Per ogni modello di dati con `x-jsonld-context`, l'API estrae le proprietà definite
 2. Le proprietà vengono validate contro il vocabolario semantico tramite query SPARQL
@@ -30,18 +34,18 @@ La connessione a Virtuoso avviene tramite l'endpoint SPARQL configurato nella va
 
 ### Rate Limiting
 
-L'API implementa un sistema di **rate limiting** per proteggere il servizio da abusi:
+L'API implementa un sistema di rate limiting per proteggere il servizio da abusi:
 
-- **Limite**: 15 richieste per finestra temporale (configurabile via `THROTTLE_LIMIT`)
-- **Finestra temporale**: 60 secondi (configurabile via `THROTTLE_TTL`)
-- **Risposta**: Status code `429 Too Many Requests` quando il limite viene superato
+- Limite: 15 richieste per finestra temporale (configurabile via `THROTTLE_LIMIT`)
+- Finestra temporale: 60 secondi (configurabile via `THROTTLE_TTL`)
+- Risposta: Status code `429 Too Many Requests` quando il limite viene superato
 
 ### Sicurezza
 
-- **Helmet**: Middleware per la sicurezza HTTP
-- **CORS**: Configurabile tramite variabile d'ambiente
-- **Validazione input**: Validazione automatica dei documenti OpenAPI
-- **Limite dimensione file**: Massimo 1MB per richiesta
+- Helmet: Middleware per la sicurezza HTTP
+- CORS: Configurabile tramite variabile d'ambiente
+- Validazione input: Validazione automatica dei documenti OpenAPI
+- Limite dimensione file: Massimo 1MB per richiesta
 
 ## Configurazione
 
@@ -54,7 +58,7 @@ L'API implementa un sistema di **rate limiting** per proteggere il servizio da a
 | `CORS_ORIGIN`    | Origini CORS consentite               | `*`           | No           |
 | `THROTTLE_TTL`   | Finestra temporale rate limiting (ms) | `60000`       | No           |
 | `THROTTLE_LIMIT` | Numero massimo richieste per finestra | `15`          | No           |
-| `SPARQL_URL`     | URL endpoint SPARQL Virtuoso          | -             | **Sì**       |
+| `SPARQL_URL`     | URL endpoint SPARQL Virtuoso          | -             | Sì       |
 
 ### Esempio File `.env`
 
@@ -79,20 +83,20 @@ SPARQL_URL=https://virtuoso.example.com/sparql
 
 Per il deployment in ambiente locale, vanno eseguiti i seguenti passaggi:
 
-1. **Installazione dipendenze**:
+1. Installazione dipendenze:
 
    ```bash
    pnpm install
    ```
 
-2. **Build dell'applicazione**:
+2. Build dell'applicazione:
 
    ```bash
    cd apps/api
    pnpm run build
    ```
 
-3. **Avvio in produzione**:
+3. Avvio in produzione:
    ```bash
    pnpm run start:prod
    ```
@@ -118,11 +122,11 @@ docker run -d \
 
 ### Considerazioni per il Deployment
 
-- **Virtuoso**: Assicurarsi che l'endpoint SPARQL sia accessibile dall'ambiente di deployment
-- **Rate Limiting**: Regolare i parametri `THROTTLE_LIMIT` e `THROTTLE_TTL` in base al carico atteso
-- **CORS**: Configurare `CORS_ORIGIN` con le origini effettive in produzione (evitare `*`)
-- **Logging**: I log sono abilitati in produzione per il monitoraggio
-- **Swagger**: La documentazione Swagger è disabilitata in produzione per sicurezza
+- Virtuoso: Assicurarsi che l'endpoint SPARQL sia accessibile dall'ambiente di deployment
+- Rate Limiting: Regolare i parametri `THROTTLE_LIMIT` e `THROTTLE_TTL` in base al carico atteso
+- CORS: Configurare `CORS_ORIGIN` con le origini effettive in produzione (evitare `*`)
+- Logging: I log sono abilitati in produzione per il monitoraggio
+- Swagger: La documentazione Swagger è disabilitata in produzione per sicurezza
 
 ## Endpoint
 
@@ -132,10 +136,10 @@ Una descrizione degli endpoint in formato OpenAPI è disponibile all'indirizzo /
 
 L'API è strutturata in moduli NestJS:
 
-- **SemanticScoreModule**: Gestisce il calcolo del semantic score
-- **HealthModule**: Fornisce l'endpoint di health check
-- **ConfigModule**: Gestisce la configurazione e le variabili d'ambiente
-- **ThrottlerModule**: Implementa il rate limiting
+- SemanticScoreModule: Gestisce il calcolo del semantic score
+- HealthModule: Fornisce l'endpoint di health check
+- ConfigModule: Gestisce la configurazione e le variabili d'ambiente
+- ThrottlerModule: Implementa il rate limiting
 
 Il calcolo del semantic score utilizza la libreria `@teamdigitale/schema-editor-utils` che gestisce:
 
