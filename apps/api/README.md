@@ -15,12 +15,16 @@ Create a `.env` file in the `apps/api` directory with the following variables:
 
 ```env
 # Server Configuration
-NODE_ENV=development
+NODE_ENV=production
 PORT=3000
-CORS_ORIGIN=*
+CORS_ORIGIN=https://example.com
+
+# Rate Limiting
+THROTTLE_TTL=60000
+THROTTLE_LIMIT=15
 
 # SPARQL Configuration (required for semantic score calculation)
-SPARQL_URL=your_sparql_endpoint_url
+SPARQL_URL=https://virtuoso.example.com/sparql
 ```
 
 ## Installation
@@ -120,30 +124,85 @@ Response:
 
 ## Deployment
 
-For production deployment:
+### Prerequisites
 
-1. **Build the application**:
+- Node.js (version compatible with NestJS)
+- Access to a SPARQL endpoint
+- Environment variables configured
+
+### Build and Start
+
+For local environment deployment, follow these steps:
+
+1. **Install dependencies**:
 
    ```bash
+   pnpm install
+   ```
+
+2. **Build the application**:
+
+   ```bash
+   cd apps/api
    pnpm run build
    ```
 
-2. **Set production environment variables**:
+3. **Set production environment variables**:
 
-   ```env
-   NODE_ENV=production
-   PORT=3000
-   SPARQL_URL=your_production_sparql_url
-   etc...
-   ```
+```env
+NODE_ENV=production
+PORT=3000
+SPARQL_URL=your_production_sparql_url
+etc...
+```
 
-3. **Start the production server**:
+4. **Start the production server**:
 
-   ```bash
-   pnpm run start:prod
-   ```
+```bash
+pnpm run start:prod
+```
 
-Note: Swagger UI is disabled in production mode.
+### Docker
+
+The application can be deployed using Docker. Make sure to configure environment variables in the container:
+
+```bash
+docker build --target api --tag api:latest .
+```
+
+```bash
+docker run -d \
+  -p 3000:3000 \
+  -e NODE_ENV=production \
+  -e PORT=3000 \
+  -e SPARQL_URL=https://virtuoso.example.com/sparql \
+  -e THROTTLE_LIMIT=15 \
+  -e THROTTLE_TTL=60000 \
+  api:latest
+```
+
+### Deployment Considerations
+
+- **SPARQL**: Ensure the SPARQL endpoint is accessible from the deployment environment
+- **Rate Limiting**: Adjust `THROTTLE_LIMIT` and `THROTTLE_TTL` parameters based on expected load
+- **CORS**: Configure `CORS_ORIGIN` with actual origins in production (avoid `*`)
+- **Logging**: Logs are enabled in production for monitoring
+- **Swagger**: Swagger documentation is disabled in production for security
+
+## Architecture
+
+The API is structured in NestJS modules:
+
+- **SemanticScoreModule**: Handles semantic score calculation
+- **HealthModule**: Provides the health check endpoint
+- **ConfigModule**: Manages configuration and environment variables
+- **ThrottlerModule**: Implements rate limiting
+
+The semantic score calculation uses the `@teamdigitale/schema-editor-utils` library which handles:
+
+- JSON-LD reference resolution
+- SPARQL queries to Virtuoso
+- Semantic score calculation
 
 ## Contributing
 
