@@ -28,6 +28,7 @@ COPY --from=build /prod/api/dist ./dist
 COPY --from=build /prod/api/node_modules ./node_modules
 EXPOSE 3000
 USER 1000
+
 ENV NODE_ENV=production
 CMD ["pnpm","start:prod"]
 
