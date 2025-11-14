@@ -59,13 +59,13 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
     <div>
       <Row>
         <Col xs={12} md={6} lg={4} className="me-auto">
-          <FormGroup check>
+          {/* <FormGroup check>
             <Toggle
               label="Semantic Relations"
               checked={showSemanticRelations}
               onChange={(e) => setShowSemanticRelations(e.target.checked)}
             />
-          </FormGroup>
+          </FormGroup> */}
         </Col>
 
         <Col xs={12} md={6}>
