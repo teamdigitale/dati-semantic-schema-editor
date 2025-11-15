@@ -30,6 +30,7 @@ EXPOSE 3000
 USER 1000
 
 ENV NODE_ENV=production
+ENV HOME=/home/node
 CMD ["pnpm","start:prod"]
 
 # checkov:skip=CKV_DOCKER_2
