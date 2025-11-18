@@ -9,6 +9,7 @@ const OverviewContainer = ({ errSelectors, specSelectors, getComponent }) => {
   const Errors = getComponent('Errors', true);
   const InfoContainer = getComponent('InfoContainer', true);
   const TabHelp = getComponent('TabHelp', true);
+  const TabGraph = getComponent('TabGraph', true);
   const Models = getComponent('Models', true);
 
   const isSwagger2 = specSelectors.isSwagger2();
@@ -66,6 +67,7 @@ const OverviewContainer = ({ errSelectors, specSelectors, getComponent }) => {
   const tabs = [
     { id: 'models', title: 'Data Models', Component: Models },
     { id: 'information', title: 'Information', Component: InfoContainer },
+    { id: 'graph', title: 'Graph', Component: TabGraph },
     { id: 'help', title: 'Help', Component: TabHelp },
   ];
 
