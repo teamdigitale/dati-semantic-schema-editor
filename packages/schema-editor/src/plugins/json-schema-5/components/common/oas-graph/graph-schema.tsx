@@ -8,7 +8,12 @@ import { oasToGraph } from './oas-graph';
 
 export const GraphSchema = ({ specSelectors, editorActions }) => {
   const specJson = specSelectors?.spec().toJSON();
-  const { elements } = useMemo(() => oasToGraph(specJson).graph, [JSON.stringify(specJson)]);
+  const initialElements = useMemo(() => oasToGraph(specJson).graph.elements, [JSON.stringify(specJson)]);
+  const [elements, setElements] = useState(initialElements);
+
+  useEffect(() => {
+    setElements(initialElements);
+  }, [initialElements]);
 
   const cyRef = useRef<Core | null>(null);
   const [showSemanticRelations, setShowSemanticRelations] = useState(false);
@@ -20,7 +25,7 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
       return;
     }
     cyRef.current.layout(LAYOUTS_MAP[layout]).run();
-  }, [layout]);
+  }, [layout, elements]);
 
   // Centra il grafico al load
   useEffect(() => {
@@ -30,16 +35,28 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
   }, [cyRef.current]);
 
   // Click sui nodi
-  const handleNodeClick = useCallback((e) => {
-    e.stopPropagation();
-    const path: string = e.target._private.data.id;
-    if (!path.startsWith('#/')) {
-      return;
-    }
-    const specPath = List(path.split('/').slice(1));
-    const jumpPath = specSelectors.bestJumpPath({ specPath });
-    editorActions.jumpToLine(specSelectors.getSpecLineFromPath(jumpPath));
-  }, []);
+  const handleNodeClick = useCallback(
+    (e) => {
+      e.stopPropagation();
+      const node = e.target;
+      const path: string = node.data('id');
+      const type: string = node.data('type');
+
+      // Load RDF hierarchy.
+      if (type === 'rdf') {
+        const newNodeId = `new-node-${Math.floor(Math.random() * 5) }`;
+        setElements((els) => [...els, { data: { id: newNodeId, label: 'New Node', type: 'rdf'} }, { data: { source: path, target: newNodeId } }]);
+        return;
+      }
+
+      if (path.startsWith('#/')) {
+        const specPath = List(path.split('/').slice(1));
+        const jumpPath = specSelectors.bestJumpPath({ specPath });
+        editorActions.jumpToLine(specSelectors.getSpecLineFromPath(jumpPath));
+      }
+    },
+    [editorActions, specSelectors],
+  );
 
   useEffect(() => {
     cyRef.current?.on('click', 'node', handleNodeClick);
