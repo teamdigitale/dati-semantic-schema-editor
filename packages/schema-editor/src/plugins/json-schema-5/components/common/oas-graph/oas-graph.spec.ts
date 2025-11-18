@@ -50,10 +50,10 @@ const testcase_oas = {
   },
   graph: {
     elements: [
-      { data: { id: '#/components/schemas/A', label: 'A' } },
-      { data: { id: '#/components/schemas/C', label: 'C' } },
-      { data: { id: '#/components/schemas/B', label: 'B' } },
-      { data: { id: '#/components/schemas/D', label: 'D' } },
+      { data: { id: '#/components/schemas/A', label: 'A', leaf: 0 , type: 'nonscalar'} },
+      { data: { id: '#/components/schemas/C', label: 'C', leaf: 0 , type: 'nonscalar'} },
+      { data: { id: '#/components/schemas/B', label: 'B', leaf: 0 , type: 'ref'} },
+      { data: { id: '#/components/schemas/D', label: 'D', leaf: 0, type: 'nonscalar'} },
       //
       { data: { source: '#/components/schemas/A', target: '#/components/schemas/C' } },
       { data: { source: '#/components/schemas/C', target: '#/components/schemas/A' } },
@@ -67,11 +67,17 @@ const testcase_oas_2 = {
   oas: {
     components: {
       schemas: {
+        Z: {
+          $ref: '#/components/schemas/S',
+        },
         S: {
           type: 'string',
         },
         A: {
           'x-jsonld-type': 'CPV:AType',
+          'x-jsonld-context': {
+            CPV: 'https://w3id.org/italia/onto/CPV/',
+          },
           properties: {
             a: {
               type: 'string',
@@ -86,6 +92,9 @@ const testcase_oas_2 = {
         },
         C: {
           'x-jsonld-type': 'CPV:BType',
+          'x-jsonld-context': {
+            '@vocab': 'https://w3id.org/italia/onto/CPV/',
+          },
           properties: {
             c: {
               $ref: '#/components/schemas/A',
@@ -96,6 +105,7 @@ const testcase_oas_2 = {
           },
         },
         D: {
+          type: 'object',
           properties: {
             d: {
               properties: {
@@ -117,14 +127,16 @@ const testcase_oas_2 = {
   },
   graph: {
     elements: [
-      { data: { id: '#/components/schemas/S', label: 'S', type: 'blank' } },
-      { data: { id: '#/components/schemas/A', label: 'A', type: '@typed' } },
-      { data: { id: 'CPV:AType', label: 'CPV:AType', type: 'rdf' } },
-      { data: { id: '#/components/schemas/C', label: 'C', type: '@typed' } },
-      { data: { id: '#/components/schemas/B', label: 'B' } },
-      { data: { id: 'CPV:BType', label: 'CPV:BType', type: 'rdf' } },
-      { data: { id: '#/components/schemas/D', label: 'D' } },
+      { data: { id: '#/components/schemas/Z', label: 'Z', leaf: 0, type: 'ref' } },
+      { data: { id: '#/components/schemas/S', label: 'S', leaf: 1, type: 'blank' } },
+      { data: { id: '#/components/schemas/A', label: 'A', leaf: 0, type: '@typed' } },
+      { data: { id: 'CPV:AType', label: 'CPV:AType', leaf: 0, type: 'rdf' } },
+      { data: { id: '#/components/schemas/C', label: 'C', leaf: 0, type: '@typed' } },
+      { data: { id: '#/components/schemas/B', label: 'B', leaf: 0, type: 'ref' } },
+      { data: { id: 'CPV:BType', label: 'CPV:BType', type: 'rdf', leaf: 0 } },
+      { data: { id: '#/components/schemas/D', label: 'D', leaf: 0, type: 'nonscalar'} },
       //
+      { data: { source: '#/components/schemas/Z', target: '#/components/schemas/S' } },
       { data: { source: '#/components/schemas/A', target: 'CPV:AType', type: 'dashed' } },
       { data: { source: '#/components/schemas/A', target: '#/components/schemas/C' } },
       { data: { source: '#/components/schemas/C', target: 'CPV:BType', type: 'dashed' } },

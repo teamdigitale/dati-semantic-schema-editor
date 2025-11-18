@@ -30,11 +30,17 @@ export function oasToMap(oas: any) {
   function collectRefs(schema: any, path: string, nested: boolean = false) {
     if (!schema || typeof schema !== 'object') return;
     console.log('collectRefs', schema, path);
+
+    if (schema?.properties) {
+      schema.type = 'object';
+    }
+
     for (const [key, value] of Object.entries(schema || {})) {
       if (!value) continue;
-      if (['description', 'x-jsonld-context', 'title', 'default', 'example', 'examples'].includes(key)) {
+      if (['description', 'title', 'default', 'example', 'examples'].includes(key)) {
         continue;
       }
+
       console.log('processing key', key, value);
       if (key === 'type' && value !== 'object' && value !== 'array') {
         if (!result[path]) {
@@ -58,16 +64,28 @@ export function oasToMap(oas: any) {
       // A remote reference.
       else if (key === '$ref' && typeof value === 'string') {
         if (!result[path]) {
-          result[path] = { label: lastpath(path), refs: [] };
+          result[path] = { label: lastpath(path), refs: [], };
         }
         result[path].refs.push(value);
+
+        if (!result[path].type && !nested) {
+          result[path].type = 'ref';
+        }
 
         // Push the remote reference to the result.
         if (!result[value]) {
           result[value] = { label: lastpath(value), refs: [] };
         }
-      } else if (typeof value === 'object') {
+      }
+      // Recurse into object.
+      else if (typeof value === 'object') {
         collectRefs(value, path, true);
+        console.log('after recursion', path, result[path], key, value);
+        if (result[path]) {
+          result[path].type = result[path]?.type || 'nonscalar';
+        }
+      } else if (value === 'array') {
+        result[path].type = result[path]?.type || 'nonscalar';
       }
     }
   }
