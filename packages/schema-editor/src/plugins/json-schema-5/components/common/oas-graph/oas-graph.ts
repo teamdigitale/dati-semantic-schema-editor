@@ -1,4 +1,4 @@
-import { uri2shortUri } from '../../../utils/curie';
+import { uri2shortUri, resolveIri } from '../../../utils/curie';
 
 interface OasMap {
   [key: string]: {
@@ -22,6 +22,7 @@ export interface Node {
 function lastpath(s: string) {
   return s.split('/').slice(-1)[0];
 }
+
 
 export function oasToMap(oas: any) {
   // A state variable to store the result.
@@ -51,15 +52,16 @@ export function oasToMap(oas: any) {
         }
       } else if (key === 'x-jsonld-type') {
         if (!result[path]) {
-          result[path] = { label: lastpath(path), refs: [] };
+          result[path] = { label: lastpath(path), refs: [],  };
         }
 
         result[path].type = '@typed';
 
         const valueStr = value as string;
+        const jsonldTypeUri = resolveIri(valueStr, schema['x-jsonld-context'] || {});
         const jsonldType = /^(https?:\/\/|#\/)/.test(valueStr) ? uri2shortUri(valueStr) : valueStr;
-        result[jsonldType] = { label: jsonldType, refs: [], type: 'rdf' };
-        result[path].refs.push(jsonldType);
+        result[jsonldTypeUri] = { label: jsonldType, refs: [], type: 'rdf', };
+        result[path].refs.push(jsonldTypeUri);
       }
       // A remote reference.
       else if (key === '$ref' && typeof value === 'string') {

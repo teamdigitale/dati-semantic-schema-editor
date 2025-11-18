@@ -46,3 +46,34 @@ export function uri2shortUri(uri: string) {
     return '';
   }
 }
+
+/**
+ * Resolve an IRI against a json-ld context.
+ *
+ * if s is a compact IRI, expand it using the context.
+ * if s is already an absolute IRI or a fragment, return as is.
+ *
+ */
+export function resolveIri(s: string, context: object) {
+  if (s.startsWith('#/')) {
+    return s;
+  }
+  const protocol = s.includes(":") ? s.split(':')[0] : '';
+  if (['http', 'https', 'urn'].includes(protocol)) {
+    return s;
+  }
+
+  // If there's no protocol nor prefix,
+  //   I need to expand using @vocab.
+  if (!protocol) {
+    if (context["@vocab"]) {
+      return context["@vocab"] + s;
+    } else {
+      return s;
+    }
+  }
+  if (!(protocol in context)) {
+    return s;
+  }
+  return context[protocol] + s.substring(protocol.length + 1);
+}

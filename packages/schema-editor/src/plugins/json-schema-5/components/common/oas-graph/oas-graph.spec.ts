@@ -50,10 +50,10 @@ const testcase_oas = {
   },
   graph: {
     elements: [
-      { data: { id: '#/components/schemas/A', label: 'A', leaf: 0 , type: 'nonscalar'} },
-      { data: { id: '#/components/schemas/C', label: 'C', leaf: 0 , type: 'nonscalar'} },
-      { data: { id: '#/components/schemas/B', label: 'B', leaf: 0 , type: 'ref'} },
-      { data: { id: '#/components/schemas/D', label: 'D', leaf: 0, type: 'nonscalar'} },
+      { data: { id: '#/components/schemas/A', label: 'A', leaf: 0, type: 'nonscalar' } },
+      { data: { id: '#/components/schemas/C', label: 'C', leaf: 0, type: 'nonscalar' } },
+      { data: { id: '#/components/schemas/B', label: 'B', leaf: 0, type: 'ref' } },
+      { data: { id: '#/components/schemas/D', label: 'D', leaf: 0, type: 'nonscalar' } },
       //
       { data: { source: '#/components/schemas/A', target: '#/components/schemas/C' } },
       { data: { source: '#/components/schemas/C', target: '#/components/schemas/A' } },
@@ -91,7 +91,7 @@ const testcase_oas_2 = {
           $ref: '#/components/schemas/A',
         },
         C: {
-          'x-jsonld-type': 'CPV:BType',
+          'x-jsonld-type': 'https://w3id.org/italia/onto/CPV/BType',
           'x-jsonld-context': {
             '@vocab': 'https://w3id.org/italia/onto/CPV/',
           },
@@ -130,16 +130,16 @@ const testcase_oas_2 = {
       { data: { id: '#/components/schemas/Z', label: 'Z', leaf: 0, type: 'ref' } },
       { data: { id: '#/components/schemas/S', label: 'S', leaf: 1, type: 'blank' } },
       { data: { id: '#/components/schemas/A', label: 'A', leaf: 0, type: '@typed' } },
-      { data: { id: 'CPV:AType', label: 'CPV:AType', leaf: 0, type: 'rdf' } },
+      { data: { id: 'https://w3id.org/italia/onto/CPV/AType', label: 'CPV:AType', leaf: 0, type: 'rdf' } },
       { data: { id: '#/components/schemas/C', label: 'C', leaf: 0, type: '@typed' } },
       { data: { id: '#/components/schemas/B', label: 'B', leaf: 0, type: 'ref' } },
-      { data: { id: 'CPV:BType', label: 'CPV:BType', type: 'rdf', leaf: 0 } },
-      { data: { id: '#/components/schemas/D', label: 'D', leaf: 0, type: 'nonscalar'} },
+      { data: { id: 'https://w3id.org/italia/onto/CPV/BType', label: 'CPV:BType', type: 'rdf', leaf: 0 } },
+      { data: { id: '#/components/schemas/D', label: 'D', leaf: 0, type: 'nonscalar' } },
       //
       { data: { source: '#/components/schemas/Z', target: '#/components/schemas/S' } },
-      { data: { source: '#/components/schemas/A', target: 'CPV:AType', type: 'dashed' } },
+      { data: { source: '#/components/schemas/A', target: 'https://w3id.org/italia/onto/CPV/AType', type: 'dashed' } },
       { data: { source: '#/components/schemas/A', target: '#/components/schemas/C' } },
-      { data: { source: '#/components/schemas/C', target: 'CPV:BType', type: 'dashed' } },
+      { data: { source: '#/components/schemas/C', target: 'https://w3id.org/italia/onto/CPV/BType', type: 'dashed' } },
       { data: { source: '#/components/schemas/C', target: '#/components/schemas/A' } },
       { data: { source: '#/components/schemas/C', target: '#/components/schemas/B' } },
       { data: { source: '#/components/schemas/B', target: '#/components/schemas/A' } },
