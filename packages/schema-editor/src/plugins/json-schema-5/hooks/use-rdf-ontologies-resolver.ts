@@ -63,6 +63,53 @@ export function useRDFPropertyResolver(fieldUri: string | undefined): AsyncState
   };
 }
 
+/*
+*/
+export function useRDFClassTreeResolver(classUri: string | undefined) {
+  const {
+    data: sparqlData,
+    status: sparqlStatus,
+    error: sparqlError,
+  } = useSparqlQuery(
+    `
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+    SELECT DISTINCT
+      ?subclass
+      ?mid
+    WHERE {
+      VALUES ?rootClass { <{${classUri}> }
+
+      # Get all recursive subclasses with intermediate nodes
+      # excluding self-references
+      ?rootClass rdfs:subClassOf* ?mid .
+      ?mid rdfs:subClassOf ?subclass .
+
+      FILTER( !isBlank(?subclass))
+    }
+  `,
+    { skip: !classUri || !isUri(classUri) },
+  );
+
+  const content = sparqlData?.results?.bindings
+    ? Object.fromEntries(Object.entries(sparqlData.results.bindings[0] || {}).map(([k, v]: any[]) => [k, v.value]))
+    : undefined;
+
+  return {
+    data: {
+      hierarchy: [
+        ...(sparqlData?.results?.bindings.map((binding: any) =>
+          Object.fromEntries(Object.entries(binding).map(([k, v]: any[]) => [k, v.value])),
+        ) as { parent: string; child: string }[] || []),
+      ]
+    },
+    status: sparqlStatus,
+    error: sparqlError,
+  };
+}
+
+
 export function useRDFClassResolver(classUri: string | undefined) {
   const {
     data: sparqlData,
