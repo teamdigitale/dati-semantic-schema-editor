@@ -132,6 +132,20 @@ describe('useRDFClassTreeResolver', () => {
 
         expect(fetchSpy).not.toHaveBeenCalled();
     });
+
+    it('should handle empty responses', async () => {
+        const mockResponse = {
+            results: {
+                bindings: [],
+            },
+        };
+
+        vi.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
+
+        const { result }    = renderHook(() => useRDFClassTreeResolver('https://w3id.org/italia/onto/CPV/NonExistentClass'));
+        await waitFor(() => expect(result.current.status).toBe('fulfilled'));
+        expect(result.current.data?.hierarchy).toEqual([]);
+    });
 });
 
 describe('useRDFClassResolver', () => {
