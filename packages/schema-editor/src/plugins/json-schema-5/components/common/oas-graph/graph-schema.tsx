@@ -3,7 +3,7 @@ import { Col, Row } from 'design-react-kit';
 import { List } from 'immutable';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
-import { useRDFClassResolver } from '../../../hooks';
+import { useRDFClassTreeResolver } from '../../../hooks';
 import { LAYOUTS, LAYOUTS_MAP, LayoutTypes } from './cytoscape-layouts';
 import { oasToGraph, Node } from './oas-graph';
 
@@ -24,48 +24,64 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
   const [tooltipContent, setTooltipContent] = useState<string | null>(null);
   const [selectedClassUri, setSelectedClassUri] = useState<string | undefined>(undefined);
 
-  const { data: classData, status: classStatus } = useRDFClassResolver(selectedClassUri);
+  const { data: classData, status: classStatus } = useRDFClassTreeResolver(selectedClassUri);
 
   // Add superclasses to graph when loaded
   useEffect(() => {
-    if (classStatus === 'fulfilled' && classData.ontologicalClassSuperClasses && selectedClassUri) {
+    if (classStatus === 'fulfilled' && classData?.hierarchy && classData.hierarchy.length > 0 && selectedClassUri) {
       const newElements: Node[] = [];
-      const superClasses = classData.ontologicalClassSuperClasses;
+      const hierarchy = classData.hierarchy;
+      const seenNodes = new Set<string>();
+      const seenEdges = new Set<string>();
 
-      // Add all superclass nodes
-      superClasses.forEach((superClass) => {
-        if (!elements.find((el) => el.data?.id === superClass)) {
-          const label = superClass.split('/').pop() || superClass;
+      // Add all nodes from hierarchy (both child and parent)
+      hierarchy.forEach(({ child, parent }) => {
+        if (child && !seenNodes.has(child) && !elements.find((el) => el.data?.id === child)) {
+          const label = child.split('/').pop() || child;
           newElements.push({
             data: {
-              id: superClass,
+              id: child,
               label,
               type: 'rdf'
             }
           });
+          seenNodes.add(child);
+        }
+        if (parent && !seenNodes.has(parent) && !elements.find((el) => el.data?.id === parent)) {
+          const label = parent.split('/').pop() || parent;
+          newElements.push({
+            data: {
+              id: parent,
+              label,
+              type: 'rdf'
+            }
+          });
+          seenNodes.add(parent);
         }
       });
 
-      // Create edges between consecutive superclasses in the hierarchy:
-      // Note that the first element is always the selected class itself.
-      for (let i = 0; i < superClasses.length - 1; i++) {
-        const edgeId = `${superClasses[i]}->${superClasses[i + 1]}`;
-        if (!elements.find((el) => el.data?.id === edgeId)) {
-          newElements.push({
-            data: {
-              id: edgeId,
-              source: superClasses[i],
-              target: superClasses[i + 1],
-              type: 'dashed'
-            }
-          });
+      // Create edges between child and parent (child -> parent for rdfs:subClassOf)
+      hierarchy.forEach(({ child, parent }) => {
+        if (child && parent) {
+          const edgeId = `${child}->${parent}`;
+          if (!seenEdges.has(edgeId) && !elements.find((el) => el.data?.id === edgeId)) {
+            newElements.push({
+              data: {
+                id: edgeId,
+                source: child,
+                target: parent,
+                type: 'dashed'
+              }
+            });
+            seenEdges.add(edgeId);
+          }
         }
-      }
+      });
 
       if (newElements.length > 0) {
         setElements((els) => [...els, ...newElements]);
       }
-    } else if (classStatus === 'fulfilled' && !classData.ontologicalClassSuperClasses) {
+    } else if (classStatus === 'fulfilled' && (!classData?.hierarchy || classData.hierarchy.length === 0)) {
       // No superclasses found
       setTooltipContent(`⚠ No superclasses found for ${selectedClassUri}`);
     }
@@ -277,14 +293,14 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
             >
               {tooltipContent}
             </a>
-            {selectedClassUri && classStatus === 'fulfilled' && classData.ontologicalClassSuperClasses && classData.ontologicalClassSuperClasses.length > 1 && (
+            {selectedClassUri && classStatus === 'fulfilled' && classData?.hierarchy && classData.hierarchy.length > 0 && (
               <div style={{ marginTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.2)', paddingTop: '8px' }}>
                 <div style={{ fontSize: '11px', color: '#90ee90', marginBottom: '4px' }}>
-                  ✓ Added {classData.ontologicalClassSuperClasses.length - 1} superclass(es):
+                  ✓ Added {classData.hierarchy.length} class relationship(s):
                 </div>
-                {classData.ontologicalClassSuperClasses.map((superClass, idx) => (
+                {classData.hierarchy.map(({ child, parent }, idx) => (
                   <div key={idx} style={{ fontSize: '10px', marginLeft: '8px', marginTop: '2px', color: '#ddd' }}>
-                    • {superClass}
+                    • {child.split('/').pop()} → {parent.split('/').pop()}
                   </div>
                 ))}
               </div>

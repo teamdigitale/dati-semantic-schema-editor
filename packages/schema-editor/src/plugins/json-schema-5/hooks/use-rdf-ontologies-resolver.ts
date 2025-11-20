@@ -64,6 +64,7 @@ export function useRDFPropertyResolver(fieldUri: string | undefined): AsyncState
 }
 
 /*
+  This hook resolves the class hierarchy tree, returning parent-child relationships.
 */
 export function useRDFClassTreeResolver(classUri: string | undefined) {
   const {
@@ -76,30 +77,27 @@ export function useRDFClassTreeResolver(classUri: string | undefined) {
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
     SELECT DISTINCT
-      ?subclass
-      ?mid
+      ?child
+      ?parent
     WHERE {
-      VALUES ?rootClass { <{${classUri}> }
+      VALUES ?rootClass { <${classUri}> }
 
-      # Get all recursive subclasses with intermediate nodes
-      # excluding self-references
-      ?rootClass rdfs:subClassOf* ?mid .
-      ?mid rdfs:subClassOf ?subclass .
+      # Get all recursive superclasses with intermediate nodes
+      # excluding self-references and blank nodes
+      ?child rdfs:subClassOf* ?rootClass .
+      ?child rdfs:subClassOf ?parent .
 
-      FILTER( !isBlank(?subclass))
+      FILTER( !isBlank(?child) && !isBlank(?parent) && ?child != ?parent)
     }
   `,
     { skip: !classUri || !isUri(classUri) },
   );
 
-  const content = sparqlData?.results?.bindings
-    ? Object.fromEntries(Object.entries(sparqlData.results.bindings[0] || {}).map(([k, v]: any[]) => [k, v.value]))
-    : undefined;
-
   return {
     data: {
+      ontologicalClass: classUri,
       hierarchy: [
-        ...(sparqlData?.results?.bindings.map((binding: any) =>
+        ...(sparqlData?.results?.bindings?.map((binding: any) =>
           Object.fromEntries(Object.entries(binding).map(([k, v]: any[]) => [k, v.value])),
         ) as { parent: string; child: string }[] || []),
       ]
