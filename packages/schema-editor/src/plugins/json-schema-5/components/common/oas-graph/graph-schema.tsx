@@ -5,7 +5,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
 import { useRDFClassTreeResolver } from '../../../hooks';
 import { LAYOUTS, LAYOUTS_MAP, LayoutTypes } from './cytoscape-layouts';
-import { oasToGraph, Node } from './oas-graph';
+import { oasToGraph, Node, insertSpaceInCamelCase } from './oas-graph';
+
+
 
 export const GraphSchema = ({ specSelectors, editorActions }) => {
   const specJson = specSelectors?.spec().toJSON();
@@ -41,7 +43,7 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
           newElements.push({
             data: {
               id: child,
-              label,
+              label: insertSpaceInCamelCase(label),
               type: 'rdf'
             }
           });
@@ -52,7 +54,7 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
           newElements.push({
             data: {
               id: parent,
-              label,
+              label: insertSpaceInCamelCase(label),
               type: 'rdf'
             }
           });
@@ -156,7 +158,7 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
   const radius = (node) => {
     const sizePerLink = 2;
     const degree = node.degree();
-    const baseSize = node.data('label')?.length * 8;
+    const baseSize = 80 ; // node.data('label')?.length * 8;
     return baseSize + degree * sizePerLink;
   };
 
@@ -203,6 +205,9 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
               'text-halign': 'center',
               'background-color': '#11479e',
               color: '#ffffff',
+              'text-wrap': 'wrap',
+              'text-max-width': '80px',
+              'text-overflow-wrap': 'blank',
             },
           },
           {

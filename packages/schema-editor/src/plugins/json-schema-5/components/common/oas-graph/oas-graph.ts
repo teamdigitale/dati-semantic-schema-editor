@@ -105,6 +105,10 @@ export function oasToMap(oas: any) {
   return { result };
 }
 
+export function insertSpaceInCamelCase(label: string): string {
+  return label.replace(/([a-z])([A-Z])/g, '$1 $2');
+}
+
 export function mapToGraph(oasMap: OasMap) {
   const element_ids: Node[] = [];
   const element_links: Node[] = [];
@@ -113,7 +117,7 @@ export function mapToGraph(oasMap: OasMap) {
     element_ids.push({
       data: {
         id: source,
-        label,
+        label: insertSpaceInCamelCase(label),
         leaf: targets.length === 0 && type !== 'rdf' ? 1 : 0,
         ...(type !== undefined && { type }),
       },
