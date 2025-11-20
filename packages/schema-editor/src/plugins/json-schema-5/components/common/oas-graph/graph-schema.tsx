@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
 import { useRDFClassResolver } from '../../../hooks';
 import { LAYOUTS, LAYOUTS_MAP, LayoutTypes } from './cytoscape-layouts';
-import { oasToGraph } from './oas-graph';
+import { oasToGraph, Node } from './oas-graph';
 
 export const GraphSchema = ({ specSelectors, editorActions }) => {
   const specJson = specSelectors?.spec().toJSON();
@@ -25,6 +25,44 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
   const [selectedClassUri, setSelectedClassUri] = useState<string | undefined>(undefined);
 
   const { data: classData, status: classStatus } = useRDFClassResolver(selectedClassUri);
+
+  // Add superclasses to graph when loaded
+  useEffect(() => {
+    if (classStatus === 'fulfilled' && classData.ontologicalClassSuperClasses && selectedClassUri) {
+      const newElements: Node[] = [];
+
+      classData.ontologicalClassSuperClasses.forEach((superClass) => {
+        // Add superclass node if it doesn't exist
+        if (!elements.find((el) => el.data?.id === superClass)) {
+          const label = superClass.split('/').pop() || superClass;
+          newElements.push({
+            data: {
+              id: superClass,
+              label,
+              type: 'rdf'
+            }
+          });
+        }
+
+        // Add edge from selected class to superclass
+        const edgeId = `${selectedClassUri}->${superClass}`;
+        if (!elements.find((el) => el.data?.id === edgeId)) {
+          newElements.push({
+            data: {
+              id: edgeId,
+              source: selectedClassUri,
+              target: superClass,
+              type: 'dashed'
+            }
+          });
+        }
+      });
+
+      if (newElements.length > 0) {
+        setElements((els) => [...els, ...newElements]);
+      }
+    }
+  }, [classStatus, classData, selectedClassUri]);
 
   // Update layout when layout state changes
   useEffect(() => {
@@ -238,13 +276,8 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
               {tooltipContent}
             </a>
             {selectedClassUri && classStatus === 'fulfilled' && classData.ontologicalClassSuperClasses && (
-              <div style={{ marginTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.2)', paddingTop: '8px' }}>
-                <div style={{ fontSize: '11px', color: '#aaa', marginBottom: '4px' }}>Superclasses:</div>
-                {classData.ontologicalClassSuperClasses.map((superClass, idx) => (
-                  <div key={idx} style={{ fontSize: '11px', marginLeft: '8px', marginTop: '2px' }}>
-                    • {superClass}
-                  </div>
-                ))}
+              <div style={{ marginTop: '8px', fontSize: '11px', color: '#90ee90' }}>
+                ✓ Added {classData.ontologicalClassSuperClasses.length} superclass(es) to graph
               </div>
             )}
             {selectedClassUri && classStatus === 'pending' && (
@@ -252,7 +285,7 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
             )}
           </div>
         ) : (
-          <span style={{ color: '#999' }}>Hover over an RDF node or double-click to see details</span>
+          <span style={{ color: '#999' }}>Hover over an RDF node or Ctrl+click to load superclasses</span>
         )}
       </div>
     </div>

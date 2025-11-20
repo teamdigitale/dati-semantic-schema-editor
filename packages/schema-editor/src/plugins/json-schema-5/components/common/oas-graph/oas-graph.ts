@@ -87,7 +87,9 @@ export function oasToMap(oas: any) {
           result[path].type = result[path]?.type || 'nonscalar';
         }
       } else if (value === 'array') {
-        result[path].type = result[path]?.type || 'nonscalar';
+        if (result[path]) {
+          result[path].type = result[path]?.type || 'nonscalar';
+        }
       }
     }
   }
