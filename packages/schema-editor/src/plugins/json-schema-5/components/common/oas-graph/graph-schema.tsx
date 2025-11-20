@@ -46,23 +46,8 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
         }
       });
 
-      // Create edges representing the hierarchy
-      // Edge from selected class to its direct superclass (first in the list)
-      if (superClasses.length > 0) {
-        const edgeId = `${selectedClassUri}->${superClasses[0]}`;
-        if (!elements.find((el) => el.data?.id === edgeId)) {
-          newElements.push({
-            data: {
-              id: edgeId,
-              source: selectedClassUri,
-              target: superClasses[0],
-              type: 'dashed'
-            }
-          });
-        }
-      }
-
-      // Create edges between consecutive superclasses in the hierarchy
+      // Create edges between consecutive superclasses in the hierarchy:
+      // Note that the first element is always the selected class itself.
       for (let i = 0; i < superClasses.length - 1; i++) {
         const edgeId = `${superClasses[i]}->${superClasses[i + 1]}`;
         if (!elements.find((el) => el.data?.id === edgeId)) {
@@ -80,6 +65,9 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
       if (newElements.length > 0) {
         setElements((els) => [...els, ...newElements]);
       }
+    } else if (classStatus === 'fulfilled' && !classData.ontologicalClassSuperClasses) {
+      // No superclasses found
+      setTooltipContent(`⚠ No superclasses found for ${selectedClassUri}`);
     }
   }, [classStatus, classData, selectedClassUri]);
 
@@ -98,45 +86,29 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
     }, 100);
   }, [cyRef.current]);
 
-  // Click sui nodi
-  const handleNodeClick = useCallback(
+
+  // Click handler:
+  // - for RDF nodes to show superclasses
+  // - for schema nodes to jump to spec location
+  const handleNodeCtrlClick = useCallback(
     (e) => {
       e.stopPropagation();
       const node = e.target;
       const path: string = node.data('id');
       const type: string = node.data('type');
 
-      // Load RDF hierarchy.
-      if (type === 'rdf') {
-        const newNodeId = `new-node-${Math.floor(Math.random() * 5) }`;
-        setElements((els) => [...els, { data: { id: newNodeId, label: 'New Node', type: 'rdf'} }, { data: { source: path, target: newNodeId } }]);
-        return;
-      }
-
-      if (path.startsWith('#/')) {
+      // Check if Ctrl (or Cmd on Mac) is pressed
+      if ((e.originalEvent.ctrlKey || e.originalEvent.metaKey) && type === 'rdf') {
+        const id: string = node.data('id');
+        setSelectedClassUri(id);
+        setTooltipContent(id);
+      } else if (path.startsWith('#/')) {
         const specPath = List(path.split('/').slice(1));
         const jumpPath = specSelectors.bestJumpPath({ specPath });
         editorActions.jumpToLine(specSelectors.getSpecLineFromPath(jumpPath));
       }
     },
     [editorActions, specSelectors],
-  );
-
-  // Ctrl+Click handler for RDF nodes to show superclasses
-  const handleNodeCtrlClick = useCallback(
-    (e) => {
-      const node = e.target;
-      const type: string = node.data('type');
-
-      // Check if Ctrl (or Cmd on Mac) is pressed
-      if ((e.originalEvent.ctrlKey || e.originalEvent.metaKey) && type === 'rdf') {
-        e.stopPropagation();
-        const id: string = node.data('id');
-        setSelectedClassUri(id);
-        setTooltipContent(id);
-      }
-    },
-    [],
   );
 
   useEffect(() => {
@@ -268,7 +240,7 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
             selector: 'edge[type="dashed"]',
             style: {
               'line-style': 'dashed',
-              'target-arrow-shape': 'none',
+              'target-arrow-shape': 'triangle-open',
             },
           },
         ]}
@@ -305,10 +277,10 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
             >
               {tooltipContent}
             </a>
-            {selectedClassUri && classStatus === 'fulfilled' && classData.ontologicalClassSuperClasses && (
+            {selectedClassUri && classStatus === 'fulfilled' && classData.ontologicalClassSuperClasses && classData.ontologicalClassSuperClasses.length > 1 && (
               <div style={{ marginTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.2)', paddingTop: '8px' }}>
                 <div style={{ fontSize: '11px', color: '#90ee90', marginBottom: '4px' }}>
-                  ✓ Added {classData.ontologicalClassSuperClasses.length} superclass(es):
+                  ✓ Added {classData.ontologicalClassSuperClasses.length - 1} superclass(es):
                 </div>
                 {classData.ontologicalClassSuperClasses.map((superClass, idx) => (
                   <div key={idx} style={{ fontSize: '10px', marginLeft: '8px', marginTop: '2px', color: '#ddd' }}>
