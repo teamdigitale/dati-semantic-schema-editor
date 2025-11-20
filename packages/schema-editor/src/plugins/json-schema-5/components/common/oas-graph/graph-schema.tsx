@@ -30,9 +30,10 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
   useEffect(() => {
     if (classStatus === 'fulfilled' && classData.ontologicalClassSuperClasses && selectedClassUri) {
       const newElements: Node[] = [];
+      const superClasses = classData.ontologicalClassSuperClasses;
 
-      classData.ontologicalClassSuperClasses.forEach((superClass) => {
-        // Add superclass node if it doesn't exist
+      // Add all superclass nodes
+      superClasses.forEach((superClass) => {
         if (!elements.find((el) => el.data?.id === superClass)) {
           const label = superClass.split('/').pop() || superClass;
           newElements.push({
@@ -43,20 +44,38 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
             }
           });
         }
+      });
 
-        // Add edge from selected class to superclass
-        const edgeId = `${selectedClassUri}->${superClass}`;
+      // Create edges representing the hierarchy
+      // Edge from selected class to its direct superclass (first in the list)
+      if (superClasses.length > 0) {
+        const edgeId = `${selectedClassUri}->${superClasses[0]}`;
         if (!elements.find((el) => el.data?.id === edgeId)) {
           newElements.push({
             data: {
               id: edgeId,
               source: selectedClassUri,
-              target: superClass,
+              target: superClasses[0],
               type: 'dashed'
             }
           });
         }
-      });
+      }
+
+      // Create edges between consecutive superclasses in the hierarchy
+      for (let i = 0; i < superClasses.length - 1; i++) {
+        const edgeId = `${superClasses[i]}->${superClasses[i + 1]}`;
+        if (!elements.find((el) => el.data?.id === edgeId)) {
+          newElements.push({
+            data: {
+              id: edgeId,
+              source: superClasses[i],
+              target: superClasses[i + 1],
+              type: 'dashed'
+            }
+          });
+        }
+      }
 
       if (newElements.length > 0) {
         setElements((els) => [...els, ...newElements]);
@@ -205,6 +224,17 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
             },
           },
           {
+            selector: 'node[id^="https://w3id.org/italia/onto/l0"]',
+            style: {
+              'background-color': '#ffffff',
+              color: '#000000',
+              shape: 'ellipse',
+              'border-width': 3,
+              'border-color': '#008055',
+              'border-style': 'dotted',
+            },
+          },
+          {
             selector: 'node[type="blank"]',
             style: {
               'background-color': '#768593',
@@ -276,8 +306,15 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
               {tooltipContent}
             </a>
             {selectedClassUri && classStatus === 'fulfilled' && classData.ontologicalClassSuperClasses && (
-              <div style={{ marginTop: '8px', fontSize: '11px', color: '#90ee90' }}>
-                ✓ Added {classData.ontologicalClassSuperClasses.length} superclass(es) to graph
+              <div style={{ marginTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.2)', paddingTop: '8px' }}>
+                <div style={{ fontSize: '11px', color: '#90ee90', marginBottom: '4px' }}>
+                  ✓ Added {classData.ontologicalClassSuperClasses.length} superclass(es):
+                </div>
+                {classData.ontologicalClassSuperClasses.map((superClass, idx) => (
+                  <div key={idx} style={{ fontSize: '10px', marginLeft: '8px', marginTop: '2px', color: '#ddd' }}>
+                    • {superClass}
+                  </div>
+                ))}
               </div>
             )}
             {selectedClassUri && classStatus === 'pending' && (
