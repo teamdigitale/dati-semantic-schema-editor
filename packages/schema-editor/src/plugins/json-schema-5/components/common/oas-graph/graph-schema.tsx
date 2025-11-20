@@ -18,6 +18,7 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
   const cyRef = useRef<Core | null>(null);
   const [showSemanticRelations, setShowSemanticRelations] = useState(false);
   const [layout, setLayout] = useState<LayoutTypes>('fcose');
+  const [tooltipContent, setTooltipContent] = useState<string | null>(null);
 
   // Update layout when layout state changes
   useEffect(() => {
@@ -65,6 +66,25 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
     };
   }, [cyRef.current]);
 
+  // Tooltip for RDF nodes
+  useEffect(() => {
+    const handleMouseOver = (e) => {
+      const node = e.target;
+      const type: string = node.data('type');
+
+      if (type === 'rdf') {
+        const id: string = node.data('id');
+        setTooltipContent(id);
+      }
+    };
+
+    cyRef.current?.on('mouseover', 'node[type="rdf"]', handleMouseOver);
+
+    return () => {
+      cyRef.current?.off('mouseover', 'node[type="rdf"]', handleMouseOver);
+    };
+  }, [cyRef.current]);
+
   const radius = (node) => {
     const sizePerLink = 2;
     const degree = node.degree();
@@ -73,7 +93,7 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
   };
 
   return (
-    <div>
+    <div style={{ position: 'relative' }}>
       <Row>
         <Col xs={12} md={6} lg={4} className="me-auto">
           {/* <FormGroup check>
@@ -162,6 +182,41 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
           },
         ]}
       />
+
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '10px',
+          right: '10px',
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          color: '#fff',
+          padding: '8px 12px',
+          borderRadius: '4px',
+          fontSize: '12px',
+          maxWidth: '300px',
+          minHeight: '36px',
+          zIndex: 1000,
+        }}
+      >
+        {tooltipContent ? (
+          <a
+            href={tooltipContent}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: '#4fc3f7',
+              textDecoration: 'none',
+              wordBreak: 'break-all',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
+            onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
+          >
+            {tooltipContent}
+          </a>
+        ) : (
+          <span style={{ color: '#999' }}>Hover over an RDF node to see its URL</span>
+        )}
+      </div>
     </div>
   );
 };
