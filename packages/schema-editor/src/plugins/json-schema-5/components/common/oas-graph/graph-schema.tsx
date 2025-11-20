@@ -1,8 +1,9 @@
 import { Core } from 'cytoscape';
-import { Col, FormGroup, Row, Toggle } from 'design-react-kit';
+import { Col, Row } from 'design-react-kit';
 import { List } from 'immutable';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
+import { useRDFClassResolver } from '../../../hooks';
 import { LAYOUTS, LAYOUTS_MAP, LayoutTypes } from './cytoscape-layouts';
 import { oasToGraph } from './oas-graph';
 
@@ -15,10 +16,15 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
     setElements(initialElements);
   }, [initialElements]);
 
+  console.log('Elements', elements);
+
   const cyRef = useRef<Core | null>(null);
   const [showSemanticRelations, setShowSemanticRelations] = useState(false);
   const [layout, setLayout] = useState<LayoutTypes>('fcose');
   const [tooltipContent, setTooltipContent] = useState<string | null>(null);
+  const [selectedClassUri, setSelectedClassUri] = useState<string | undefined>(undefined);
+
+  const { data: classData, status: classStatus } = useRDFClassResolver(selectedClassUri);
 
   // Update layout when layout state changes
   useEffect(() => {
@@ -59,12 +65,29 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
     [editorActions, specSelectors],
   );
 
+  // Ctrl+Click handler for RDF nodes to show superclasses
+  const handleNodeCtrlClick = useCallback(
+    (e) => {
+      const node = e.target;
+      const type: string = node.data('type');
+
+      // Check if Ctrl (or Cmd on Mac) is pressed
+      if ((e.originalEvent.ctrlKey || e.originalEvent.metaKey) && type === 'rdf') {
+        e.stopPropagation();
+        const id: string = node.data('id');
+        setSelectedClassUri(id);
+        setTooltipContent(id);
+      }
+    },
+    [],
+  );
+
   useEffect(() => {
-    cyRef.current?.on('click', 'node', handleNodeClick);
+    cyRef.current?.on('click', 'node', handleNodeCtrlClick);
     return () => {
-      cyRef.current?.off('click', 'node', handleNodeClick);
+      cyRef.current?.off('click', 'node', handleNodeCtrlClick);
     };
-  }, [cyRef.current]);
+  }, [cyRef.current, handleNodeCtrlClick]);
 
   // Tooltip for RDF nodes
   useEffect(() => {
@@ -193,28 +216,43 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
           padding: '8px 12px',
           borderRadius: '4px',
           fontSize: '12px',
-          maxWidth: '300px',
+          maxWidth: '400px',
           minHeight: '36px',
           zIndex: 1000,
         }}
       >
         {tooltipContent ? (
-          <a
-            href={tooltipContent}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: '#4fc3f7',
-              textDecoration: 'none',
-              wordBreak: 'break-all',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
-            onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
-          >
-            {tooltipContent}
-          </a>
+          <div>
+            <a
+              href={tooltipContent}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: '#4fc3f7',
+                textDecoration: 'none',
+                wordBreak: 'break-all',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
+              onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
+            >
+              {tooltipContent}
+            </a>
+            {selectedClassUri && classStatus === 'fulfilled' && classData.ontologicalClassSuperClasses && (
+              <div style={{ marginTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.2)', paddingTop: '8px' }}>
+                <div style={{ fontSize: '11px', color: '#aaa', marginBottom: '4px' }}>Superclasses:</div>
+                {classData.ontologicalClassSuperClasses.map((superClass, idx) => (
+                  <div key={idx} style={{ fontSize: '11px', marginLeft: '8px', marginTop: '2px' }}>
+                    • {superClass}
+                  </div>
+                ))}
+              </div>
+            )}
+            {selectedClassUri && classStatus === 'pending' && (
+              <div style={{ marginTop: '8px', fontSize: '11px', color: '#aaa' }}>Loading superclasses...</div>
+            )}
+          </div>
         ) : (
-          <span style={{ color: '#999' }}>Hover over an RDF node to see its URL</span>
+          <span style={{ color: '#999' }}>Hover over an RDF node or double-click to see details</span>
         )}
       </div>
     </div>
