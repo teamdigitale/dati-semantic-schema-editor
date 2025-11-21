@@ -80,11 +80,8 @@ export function useRDFClassTreeResolver(classUri: string | undefined) {
       ?child
       ?parent
     WHERE {
-      VALUES ?rootClass { <${classUri}> }
 
-      # Get all recursive superclasses with intermediate nodes
-      # excluding self-references and blank nodes
-      ?child rdfs:subClassOf* ?rootClass .
+      <${classUri}> rdfs:subClassOf* ?child .
       ?child rdfs:subClassOf ?parent .
 
       FILTER( !isBlank(?child) && !isBlank(?parent) && ?child != ?parent)

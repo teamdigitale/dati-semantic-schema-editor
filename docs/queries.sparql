@@ -18,3 +18,22 @@ select distinct * where{
 
 ?onto a owl:Ontology .
 }
+
+---
+
+SELECT DISTINCT ?subclass ?mid
+WHERE {
+  VALUES ?rootClass { <https://w3id.org/italia/onto/CPV/Alive> }
+
+  # Get all recursive subclasses with intermediate nodes
+  ?rootClass rdfs:subClassOf* ?mid .
+  ?mid rdfs:subClassOf ?subclass .
+
+  # Exclude self-references
+  #FILTER ( ?subclass != ?mid )
+  FILTER( !isBlank(?subclass))
+OPTIONAL {
+    ?subclass rdfs:label ?label .
+    FILTER (lang(?label) = 'it' || lang(?label) = 'en' || lang(?label) = '')
+  }
+}
