@@ -1,5 +1,5 @@
+import { resolveJsonldContext } from '@teamdigitale/schema-editor-utils';
 import { OrderedMap } from 'immutable';
-import { resolveJsonldContext } from './resolve-jsonld-context';
 
 export const JSONLDContextPlugin = (system) => ({
   statePlugins: {

@@ -1,3 +1,4 @@
+import { to32CharString } from '@teamdigitale/schema-editor-utils';
 import { Map } from 'immutable';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useConfiguration } from '../../configuration';
@@ -7,7 +8,6 @@ import {
   calculateSchemaSemanticScore,
   determinePropertiesToValidate,
   ResolvedPropertiesGroups,
-  to32CharString,
 } from '../utils';
 import { useSparqlQuery } from './use-sparql';
 

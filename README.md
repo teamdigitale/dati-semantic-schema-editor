@@ -14,6 +14,7 @@ This repository uses [PNPM](https://pnpm.io) and [turborepo](https://turbo.build
 ## Table of contents
 
 - 💻 [Usage](#usage)
+- 🚀 [API](#api)
 - 📋 [Development](#development)
 - 📝 [Contributing](#contributing)
 - ⚖️ [License](#license)
@@ -29,7 +30,6 @@ docker run -d -p 8000:8000 ghcr.io/teamdigitale/dati-semantic-schema-editor:late
 ```
 
 or pick a specific version from the [github container registry](https://github.com/teamdigitale/dati-semantic-schema-editor/pkgs/container/dati-semantic-schema-editor).
-
 
 ### Usage with Docker
 
@@ -85,6 +85,19 @@ This repository contains various usage examples:
 - [apps/example/src/App.tsx](./apps/example/src/App.tsx) - Showcase webapp;
 - [apps/example/src/components/standalone](./apps/example/src/components/standalone) - Standalone editor;
 - [apps/example/src/components/swaggerui-plugins-collection](./apps/example/src/components/swaggerui-plugins-collection) - Use the SwaggerUI component only.
+
+## API
+
+The project includes a REST API based on NestJS for calculating the semantic score of OpenAPI documents.
+
+### Features
+
+- **Semantic Score Calculation**: Endpoint to calculate the semantic score of OpenAPI 3.0 files (YAML/JSON)
+- **Rate Limiting**: Protection against abuse through request throttling
+- **Validation**: Automatic validation of OpenAPI documents
+- **Documentation**: Swagger UI available in development mode
+
+For detailed information about the API, see [apps/api/README.md](./apps/api/README.md).
 
 ## Development
 

@@ -1,7 +1,9 @@
 import { fromJS, Map } from 'immutable';
-import { resolveJsonldContext } from '../../jsonld-context/resolve-jsonld-context';
-import { resolvePropertyByJsonldContext } from './jsonld-resolver';
-import { resolveOpenAPISpec } from './openapi-resolver';
+import {
+  resolveOpenAPISpec,
+  resolveJsonldContext,
+  resolvePropertyByJsonldContext,
+} from '@teamdigitale/schema-editor-utils';
 
 export class ResolvedPropertiesGroups {
   valid: string[] = [];

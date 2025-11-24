@@ -4,6 +4,14 @@
 # $ docker-compose up pre-commit
 #
 services:
+  api:
+   build:
+     context: .
+     target: api
+   env_file: apps/api/.env.example
+   ports:
+     - "3000:3000"
+
   app:
     build: .
     ports:

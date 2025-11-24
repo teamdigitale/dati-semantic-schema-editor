@@ -6,20 +6,20 @@ on:
     branches:
       - main
     paths-ignore:
-      - '*.md'
-      - 'LICENSE'
-      - 'tests/**'
-      - '.husky/**'
-      - '.changeset/**'
+      - "*.md"
+      - "LICENSE"
+      - "tests/**"
+      - ".husky/**"
+      - ".changeset/**"
   pull_request:
     branches:
       - main
     paths-ignore:
-      - '*.md'
-      - 'LICENSE'
-      - 'tests/**'
-      - '.husky/**'
-      - '.changeset/**'
+      - "*.md"
+      - "LICENSE"
+      - "tests/**"
+      - ".husky/**"
+      - ".changeset/**"
 env:
   CI: true
   REGISTRY: ghcr.io
@@ -80,7 +80,7 @@ jobs:
             type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
             type=raw,value=latest
 
-      - name: Build and push Docker image
+      - name: Build and push Docker image "webapp"
         uses: docker/build-push-action@v6.18.0
         with:
           context: .
@@ -88,3 +88,26 @@ jobs:
           target: webapp
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta_api
+        uses: docker/metadata-action@v5.8.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-api
+          labels: |
+            maintainer=teamdigitale
+            org.opencontainers.image.title=dati-semantic-schema-editor-api
+            org.opencontainers.image.source=${{ github.server_url }}/${{ env.IMAGE_NAME }}
+            org.opencontainers.image.source.branch=${{ steps.extract_branch.outputs.branch }}
+          tags: |
+            type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
+            type=raw,value=latest
+
+      - name: Build and push Docker image "api"
+        uses: docker/build-push-action@v6.18.0
+        with:
+          context: .
+          push: true
+          target: api
+          tags: ${{ steps.meta_api.outputs.tags }}
+          labels: ${{ steps.meta_api.outputs.labels }}

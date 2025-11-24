@@ -41,6 +41,11 @@
     "typescript-eslint": "^7.13.0",
     "vitest": "^3.2.4"
   },
+  "pnpm": {
+    "overrides": {
+      "rdf-canonize": "^4.0.1"
+    }
+  },
   "lint-staged": {
     "**/src/**/*.{js,ts,jsx,tsx}": [
       "eslint --fix"
