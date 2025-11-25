@@ -36,11 +36,11 @@ jobs:
           if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
             EDITOR_VERSION="latest"
           elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" =~ ^refs/tags/ ]]; then
-            REF_NAME="${{ github.ref_name }}"
-            EDITOR_VERSION="${REF_NAME//\//%2F}" # Replace slashes with %2F
+            EDITOR_VERSION="${{ github.ref_name }}"
           else
             EDITOR_VERSION="${UNTRUSTED_GITHUB_HEAD_REF}"
           fi
+          echo "EDITOR_VERSION=${EDITOR_VERSION//\//%2F}" >> "$GITHUB_ENV"
 
       - name: Set BASE_URL
         run: |
