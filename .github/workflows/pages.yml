@@ -6,7 +6,7 @@ on:
       - main
   push:
     tags:
-      - '*'
+      - "*"
     branches:
       - main
   workflow_dispatch:
@@ -18,7 +18,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
 
     steps:
       - name: Checkout repository
@@ -38,16 +37,10 @@ jobs:
             EDITOR_VERSION="latest"
           elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" =~ ^refs/tags/ ]]; then
             EDITOR_VERSION="${{ github.ref_name }}"
-          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          else
             EDITOR_VERSION="${UNTRUSTED_GITHUB_HEAD_REF}"
           fi
-
-          if [[ "$EDITOR_VERSION" =~ ^[a-zA-Z0-9.-]+$ ]]; then
-            echo "EDITOR_VERSION=$EDITOR_VERSION" >> "$GITHUB_ENV"
-          else
-            echo "Invalid EDITOR_VERSION: $EDITOR_VERSION"
-            exit 1
-          fi
+          echo "EDITOR_VERSION=${EDITOR_VERSION//\//%2F}" >> "$GITHUB_ENV"
 
       - name: Set BASE_URL
         run: |
@@ -72,7 +65,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/dist
-          publish_branch: gh-pages-new  # don't overwrite the existing gh-pages branch.
+          publish_branch: gh-pages-new # don't overwrite the existing gh-pages branch.
           destination_dir: ${{ github.ref == 'refs/heads/main' && 'latest' || env.EDITOR_VERSION }}
 
       - name: Post GitHub Pages URL as comment
