@@ -23,7 +23,6 @@ function lastpath(s: string) {
   return s.split('/').slice(-1)[0];
 }
 
-
 export function oasToMap(oas: any) {
   // A state variable to store the result.
   const result: OasMap = {};
@@ -52,7 +51,7 @@ export function oasToMap(oas: any) {
         }
       } else if (key === 'x-jsonld-type') {
         if (!result[path]) {
-          result[path] = { label: lastpath(path), refs: [],  };
+          result[path] = { label: lastpath(path), refs: [] };
         }
 
         result[path].type = '@typed';
@@ -60,13 +59,13 @@ export function oasToMap(oas: any) {
         const valueStr = value as string;
         const jsonldTypeUri = resolveIri(valueStr, schema['x-jsonld-context'] || {});
         const jsonldType = /^(https?:\/\/|#\/)/.test(valueStr) ? uri2shortUri(valueStr) : valueStr;
-        result[jsonldTypeUri] = { label: jsonldType, refs: [], type: 'rdf', };
+        result[jsonldTypeUri] = { label: jsonldType, refs: [], type: 'rdf' };
         result[path].refs.push(jsonldTypeUri);
       }
       // A remote reference.
       else if (key === '$ref' && typeof value === 'string') {
         if (!result[path]) {
-          result[path] = { label: lastpath(path), refs: [], };
+          result[path] = { label: lastpath(path), refs: [] };
         }
         result[path].refs.push(value);
 

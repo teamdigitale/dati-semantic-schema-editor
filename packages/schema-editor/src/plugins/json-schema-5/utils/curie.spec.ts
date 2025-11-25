@@ -46,7 +46,6 @@ describe('uri2shortUri', () => {
   });
 });
 
-
 describe('resolveIri', () => {
   it('should return the same IRI if it is absolute', async () => {
     const expected = 'http://example.org/resource';
@@ -56,13 +55,13 @@ describe('resolveIri', () => {
   });
   it('should resolve using @vocab', async () => {
     const expected = 'https://example.org/resource';
-    const context = { "@vocab": "https://example.org/" };
+    const context = { '@vocab': 'https://example.org/' };
     const resolved = resolveIri('resource', context);
     expect(resolved).toBe(expected);
   });
   it('should resolve against a namespace prefix in context', async () => {
     const expected = 'https://example.org/resource/Item';
-    const context = { "ex": "https://example.org/resource/" };
+    const context = { ex: 'https://example.org/resource/' };
     const resolved = resolveIri('ex:Item', context);
     expect(resolved).toBe(expected);
   });

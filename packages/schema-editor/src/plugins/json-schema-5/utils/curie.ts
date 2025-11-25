@@ -58,7 +58,7 @@ export function resolveIri(s: string, context: object) {
   if (s.startsWith('#/')) {
     return s;
   }
-  const protocol = s.includes(":") ? s.split(':')[0] : '';
+  const protocol = s.includes(':') ? s.split(':')[0] : '';
   if (['http', 'https', 'urn'].includes(protocol)) {
     return s;
   }
@@ -66,8 +66,8 @@ export function resolveIri(s: string, context: object) {
   // If there's no protocol nor prefix,
   //   I need to expand using @vocab.
   if (!protocol) {
-    if (context["@vocab"]) {
-      return context["@vocab"] + s;
+    if (context['@vocab']) {
+      return context['@vocab'] + s;
     } else {
       return s;
     }

@@ -7,8 +7,6 @@ import { useRDFClassTreeResolver } from '../../../hooks';
 import { LAYOUTS, LAYOUTS_MAP, LayoutTypes } from './cytoscape-layouts';
 import { oasToGraph, Node, insertSpaceInCamelCase } from './oas-graph';
 
-
-
 export const GraphSchema = ({ specSelectors, editorActions }) => {
   const specJson = specSelectors?.spec().toJSON();
   const initialElements = useMemo(() => oasToGraph(specJson).graph.elements, [JSON.stringify(specJson)]);
@@ -44,8 +42,8 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
             data: {
               id: child,
               label: insertSpaceInCamelCase(label),
-              type: 'rdf'
-            }
+              type: 'rdf',
+            },
           });
           seenNodes.add(child);
         }
@@ -55,8 +53,8 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
             data: {
               id: parent,
               label: insertSpaceInCamelCase(label),
-              type: 'rdf'
-            }
+              type: 'rdf',
+            },
           });
           seenNodes.add(parent);
         }
@@ -72,8 +70,8 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
                 id: edgeId,
                 source: child,
                 target: parent,
-                type: 'dashed'
-              }
+                type: 'dashed',
+              },
             });
             seenEdges.add(edgeId);
           }
@@ -103,7 +101,6 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
       cyRef.current?.center();
     }, 100);
   }, [cyRef.current]);
-
 
   // Click handler:
   // - for RDF nodes to show superclasses
@@ -158,7 +155,7 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
   const radius = (node) => {
     const sizePerLink = 2;
     const degree = node.degree();
-    const baseSize = 80 ; // node.data('label')?.length * 8;
+    const baseSize = 80; // node.data('label')?.length * 8;
     return baseSize + degree * sizePerLink;
   };
 
@@ -207,7 +204,7 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
               color: '#ffffff',
               'text-wrap': 'wrap',
               'text-max-width': '80px',
-              'text-overflow-wrap': 'blank',
+              'text-overflow-wrap': 'break-word',
             },
           },
           {
@@ -261,7 +258,7 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
             selector: 'edge[type="dashed"]',
             style: {
               'line-style': 'dashed',
-              'target-arrow-shape': 'triangle-open',
+              'target-arrow-shape': 'triangle',
             },
           },
         ]}
@@ -298,18 +295,21 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
             >
               {tooltipContent}
             </a>
-            {selectedClassUri && classStatus === 'fulfilled' && classData?.hierarchy && classData.hierarchy.length > 0 && (
-              <div style={{ marginTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.2)', paddingTop: '8px' }}>
-                <div style={{ fontSize: '11px', color: '#90ee90', marginBottom: '4px' }}>
-                  ✓ Added {classData.hierarchy.length} class relationship(s):
-                </div>
-                {classData.hierarchy.map(({ child, parent }, idx) => (
-                  <div key={idx} style={{ fontSize: '10px', marginLeft: '8px', marginTop: '2px', color: '#ddd' }}>
-                    • {child.split('/').pop()} → {parent.split('/').pop()}
+            {selectedClassUri &&
+              classStatus === 'fulfilled' &&
+              classData?.hierarchy &&
+              classData.hierarchy.length > 0 && (
+                <div style={{ marginTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.2)', paddingTop: '8px' }}>
+                  <div style={{ fontSize: '11px', color: '#90ee90', marginBottom: '4px' }}>
+                    ✓ Added {classData.hierarchy.length} class relationship(s):
                   </div>
-                ))}
-              </div>
-            )}
+                  {classData.hierarchy.map(({ child, parent }, idx) => (
+                    <div key={idx} style={{ fontSize: '10px', marginLeft: '8px', marginTop: '2px', color: '#ddd' }}>
+                      • {child.split('/').pop()} → {parent.split('/').pop()}
+                    </div>
+                  ))}
+                </div>
+              )}
             {selectedClassUri && classStatus === 'pending' && (
               <div style={{ marginTop: '8px', fontSize: '11px', color: '#aaa' }}>Loading superclasses...</div>
             )}
