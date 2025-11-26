@@ -33,7 +33,7 @@
     "cytoscape-fcose": "^2.2.0",
     "design-react-kit": "^5.2.0",
     "immutable": "^4.3.6",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.1.1",
     "jsonld": "^8.3.3",
     "lz-string": "^1.5.0",
     "react-cytoscapejs": "^2.0.0",
