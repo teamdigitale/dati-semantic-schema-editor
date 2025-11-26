@@ -18,7 +18,6 @@ components:
   schemas:
     IdPraticaRendita:
       type: string
-      x-refersTo: https://w3id.org/italia/social-security/onto/contributions/numeroPratica
       description: https://w3id.org/italia/social-security/onto/contributions/numeroPratica
       example: '5498551'
       maxLength: 50
@@ -184,17 +183,14 @@ components:
     Cf:
       type: string
       maxLength: 20
-      x-refersTo: https://w3id.org/italia/onto/CPV/taxCode
       example: 'RSSFRC64G58k152L'
 
     Nome:
       type: string
       maxLength: 50
-      x-refersTo: https://w3id.org/italia/onto/CPV/givenName
       example: 'Franco'
 
     Cognome:
       type: string
       maxLength: 50
-      x-refersTo: https://w3id.org/italia/onto/CPV/familyName
       example: 'Rossi'
