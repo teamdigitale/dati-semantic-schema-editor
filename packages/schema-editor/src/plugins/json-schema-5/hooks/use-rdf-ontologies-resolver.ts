@@ -94,16 +94,15 @@ export function useRDFClassTreeResolver(classUri: string | undefined) {
     data: {
       ontologicalClass: classUri,
       hierarchy: [
-        ...(sparqlData?.results?.bindings?.map((binding: any) =>
+        ...((sparqlData?.results?.bindings?.map((binding: any) =>
           Object.fromEntries(Object.entries(binding).map(([k, v]: any[]) => [k, v.value])),
-        ) as { parent: string; child: string }[] || []),
-      ]
+        ) as { parent: string; child: string }[]) || []),
+      ],
     },
     status: sparqlStatus,
     error: sparqlError,
   };
 }
-
 
 export function useRDFClassResolver(classUri: string | undefined) {
   const {
