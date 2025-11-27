@@ -24,8 +24,8 @@ function App() {
   }, []);
 
   const handleSelectUrl = (url: string) => {
-    // Navigate to the selected schema URL
-    window.location.href = `?url=${encodeURIComponent(url)}`;
+    // Navigate to the selected schema URL using fragment identifier
+    window.location.hash = `url=${encodeURIComponent(url)}`;
   };
 
   return (
