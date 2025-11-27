@@ -37,3 +37,22 @@ OPTIONAL {
     FILTER (lang(?label) = 'it' || lang(?label) = 'en' || lang(?label) = '')
   }
 }
+
+---
+
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+    SELECT DISTINCT
+      ?child
+      ?parent
+    WHERE {
+      VALUES ?rootClass { <${classUri}> }
+
+      # Get all recursive superclasses with intermediate nodes
+      # excluding self-references and blank nodes
+      ?child rdfs:subClassOf* ?rootClass .
+      ?child rdfs:subClassOf ?parent .
+
+      FILTER( !isBlank(?child) && !isBlank(?parent) && ?child != ?parent)
+    }
