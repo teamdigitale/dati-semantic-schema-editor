@@ -1,109 +1,35 @@
 import { Core } from 'cytoscape';
-import { Col, Row } from 'design-react-kit';
+import { Alert, Col, Row } from 'design-react-kit';
 import { List } from 'immutable';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
 import { useRDFClassTreeResolver } from '../../../hooks';
 import { LAYOUTS, LAYOUTS_MAP, LayoutTypes } from './cytoscape-layouts';
-import { oasToGraph, Node, insertSpaceInCamelCase } from './oas-graph';
+import { oasToGraph } from './oas-graph';
+import { useSuperclassDataToNodes } from './oas-graph-hooks';
 
 export const GraphSchema = ({ specSelectors, editorActions }) => {
-  const specJson = specSelectors?.spec().toJSON();
-  const initialElements = useMemo(() => oasToGraph(specJson).graph.elements, [JSON.stringify(specJson)]);
-  const [elements, setElements] = useState(initialElements);
-
-  useEffect(() => {
-    setElements(initialElements);
-  }, [initialElements]);
-
-  console.log('Elements', elements);
-
+  // Cytoscape reference
   const cyRef = useRef<Core | null>(null);
-  const [showSemanticRelations, setShowSemanticRelations] = useState(false);
-  const [layout, setLayout] = useState<LayoutTypes>('fcose');
-  const [tooltipContent, setTooltipContent] = useState<string | null>(null);
+
+  // Nodes from written spec
+  const specNodes = useMemo(
+    () => oasToGraph(specSelectors?.spec().toJSON()).graph.elements,
+    [JSON.stringify(specSelectors?.spec().toJSON())],
+  );
+
+  // Nodes from resolved superclasses
   const [selectedClassUri, setSelectedClassUri] = useState<string | undefined>(undefined);
+  const { data: superclassData = [], status: superclassStatus } = useRDFClassTreeResolver(selectedClassUri);
+  const superclassNodes = useSuperclassDataToNodes(superclassData);
 
-  const { data: classData, status: classStatus } = useRDFClassTreeResolver(selectedClassUri);
-
-  // Add superclasses to graph when loaded
-  useEffect(() => {
-    if (classStatus === 'fulfilled' && classData?.hierarchy && classData.hierarchy.length > 0 && selectedClassUri) {
-      const newElements: Node[] = [];
-      const hierarchy = classData.hierarchy;
-      const seenNodes = new Set<string>();
-      const seenEdges = new Set<string>();
-
-      // Add all nodes from hierarchy (both child and parent)
-      hierarchy.forEach(({ child, parent }) => {
-        if (child && !seenNodes.has(child) && !elements.find((el) => el.data?.id === child)) {
-          const label = child.split('/').pop() || child;
-          newElements.push({
-            data: {
-              id: child,
-              label: insertSpaceInCamelCase(label),
-              type: 'rdf',
-            },
-          });
-          seenNodes.add(child);
-        }
-        if (parent && !seenNodes.has(parent) && !elements.find((el) => el.data?.id === parent)) {
-          const label = parent.split('/').pop() || parent;
-          newElements.push({
-            data: {
-              id: parent,
-              label: insertSpaceInCamelCase(label),
-              type: 'rdf',
-            },
-          });
-          seenNodes.add(parent);
-        }
-      });
-
-      // Create edges between child and parent (child -> parent for rdfs:subClassOf)
-      hierarchy.forEach(({ child, parent }) => {
-        if (child && parent) {
-          const edgeId = `${child}->${parent}`;
-          if (!seenEdges.has(edgeId) && !elements.find((el) => el.data?.id === edgeId)) {
-            newElements.push({
-              data: {
-                id: edgeId,
-                source: child,
-                target: parent,
-                type: 'dashed',
-              },
-            });
-            seenEdges.add(edgeId);
-          }
-        }
-      });
-
-      if (newElements.length > 0) {
-        setElements((els) => [...els, ...newElements]);
-      }
-    } else if (classStatus === 'fulfilled' && (!classData?.hierarchy || classData.hierarchy.length === 0)) {
-      // No superclasses found
-      setTooltipContent(`⚠ No superclasses found for ${selectedClassUri}`);
-    }
-  }, [classStatus, classData, selectedClassUri]);
-
-  // Update layout when layout state changes
-  useEffect(() => {
-    if (!cyRef.current || !LAYOUTS_MAP[layout]) {
-      return;
-    }
-    cyRef.current.layout(LAYOUTS_MAP[layout]).run();
-  }, [layout, elements]);
-
-  // Centra il grafico al load
-  useEffect(() => {
-    setTimeout(() => {
-      cyRef.current?.center();
-    }, 100);
-  }, [cyRef.current]);
+  // All nodes (merge both spec and superclass nodes)
+  const allNodes = useMemo(() => {
+    return [...specNodes, ...superclassNodes.filter((node) => !specNodes.some((n) => n?.id === node?.id))]; // Avoid duplicates if already present in specNodes
+  }, [specNodes, superclassNodes]);
 
   // Click handler:
-  // - for RDF nodes to show superclasses
+  // - for RDF nodes to load superclasses
   // - for schema nodes to jump to spec location
   const handleNodeCtrlClick = useCallback(
     (e) => {
@@ -112,12 +38,12 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
       const path: string = node.data('id');
       const type: string = node.data('type');
 
-      // Check if Ctrl (or Cmd on Mac) is pressed
+      // If pressed Ctrl (or Cmd on Mac) and the node is an RDF node, load superclasses
       if ((e.originalEvent.ctrlKey || e.originalEvent.metaKey) && type === 'rdf') {
-        const id: string = node.data('id');
-        setSelectedClassUri(id);
-        setTooltipContent(id);
-      } else if (path.startsWith('#/')) {
+        setSelectedClassUri(path);
+      }
+      // If the node is a spec node, jump to the spec location in the editor
+      else if (path.startsWith('#/')) {
         const specPath = List(path.split('/').slice(1));
         const jumpPath = specSelectors.bestJumpPath({ specPath });
         editorActions.jumpToLine(specSelectors.getSpecLineFromPath(jumpPath));
@@ -133,25 +59,23 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
     };
   }, [cyRef.current, handleNodeCtrlClick]);
 
-  // Tooltip for RDF nodes
+  // Update layout when layout state changes
+  const [layout, setLayout] = useState<LayoutTypes>('fcose');
   useEffect(() => {
-    const handleMouseOver = (e) => {
-      const node = e.target;
-      const type: string = node.data('type');
+    if (!cyRef.current || !LAYOUTS_MAP[layout]) {
+      return;
+    }
+    cyRef.current.layout(LAYOUTS_MAP[layout]).run();
+  }, [layout, allNodes]);
 
-      if (type === 'rdf') {
-        const id: string = node.data('id');
-        setTooltipContent(id);
-      }
-    };
-
-    cyRef.current?.on('mouseover', 'node[type="rdf"]', handleMouseOver);
-
-    return () => {
-      cyRef.current?.off('mouseover', 'node[type="rdf"]', handleMouseOver);
-    };
+  // Centra il grafico al load
+  useEffect(() => {
+    setTimeout(() => {
+      cyRef.current?.center();
+    }, 100);
   }, [cyRef.current]);
 
+  // Balloon radius calculation function
   const radius = (node) => {
     const sizePerLink = 2;
     const degree = node.degree();
@@ -186,9 +110,9 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
       </Row>
 
       <CytoscapeComponent
-        style={{ width: '100%', height: 'calc(100vh - 210px)' }}
+        style={{ width: '100%', height: 'calc(100vh - 230px)' }}
         cy={(cy: Core) => (cyRef.current = cy)}
-        elements={elements}
+        elements={allNodes.map((x) => ({ data: x }))}
         layout={LAYOUTS_MAP[layout]}
         stylesheet={[
           {
@@ -264,59 +188,29 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
         ]}
       />
 
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '10px',
-          right: '10px',
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          color: '#fff',
-          padding: '8px 12px',
-          borderRadius: '4px',
-          fontSize: '12px',
-          maxWidth: '400px',
-          minHeight: '36px',
-          zIndex: 1000,
-        }}
-      >
-        {tooltipContent ? (
-          <div>
-            <a
-              href={tooltipContent}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                color: '#4fc3f7',
-                textDecoration: 'none',
-                wordBreak: 'break-all',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
-              onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
-            >
-              {tooltipContent}
-            </a>
-            {selectedClassUri &&
-              classStatus === 'fulfilled' &&
-              classData?.hierarchy &&
-              classData.hierarchy.length > 0 && (
-                <div style={{ marginTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.2)', paddingTop: '8px' }}>
-                  <div style={{ fontSize: '11px', color: '#90ee90', marginBottom: '4px' }}>
-                    ✓ Added {classData.hierarchy.length} class relationship(s):
-                  </div>
-                  {classData.hierarchy.map(({ child, parent }, idx) => (
-                    <div key={idx} style={{ fontSize: '10px', marginLeft: '8px', marginTop: '2px', color: '#ddd' }}>
-                      • {child.split('/').pop()} → {parent.split('/').pop()}
-                    </div>
-                  ))}
-                </div>
-              )}
-            {selectedClassUri && classStatus === 'pending' && (
-              <div style={{ marginTop: '8px', fontSize: '11px', color: '#aaa' }}>Loading superclasses...</div>
-            )}
-          </div>
-        ) : (
-          <span style={{ color: '#999' }}>Hover over an RDF node or Ctrl+click to load superclasses</span>
-        )}
+      {/* Alert superclasses resolver */}
+      <div className="position-absolute bottom-0 end-0 p-2">
+        <Alert
+          color={
+            superclassStatus === 'idle' || superclassStatus === 'pending'
+              ? 'info'
+              : superclassStatus === 'error'
+                ? 'error'
+                : !superclassData?.length
+                  ? 'warning'
+                  : 'success'
+          }
+        >
+          {superclassStatus === 'idle'
+            ? 'Hold CTRL/CMD + click on an RDF node to load its superclasses'
+            : superclassStatus === 'pending'
+              ? `Loading superclasses for ${selectedClassUri}...`
+              : superclassStatus === 'error'
+                ? `Error loading superclasses for ${selectedClassUri}`
+                : !superclassData?.length
+                  ? `No superclasses found for ${selectedClassUri}`
+                  : `Added ${superclassData.length} class relationship(s)`}
+        </Alert>
       </div>
     </div>
   );

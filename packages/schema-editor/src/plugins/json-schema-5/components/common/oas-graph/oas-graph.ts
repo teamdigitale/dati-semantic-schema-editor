@@ -1,22 +1,25 @@
-import { uri2shortUri, resolveIri } from '../../../utils/curie';
+import { resolveIri, uri2shortUri } from '../../../utils/curie';
 
-interface OasMap {
-  [key: string]: {
-    label: string;
-    refs: string[];
-    type?: string;
-  };
+export interface GraphNode {
+  id: string;
+  label: string;
+  type?: string;
+  leaf?: number;
 }
 
-export interface Node {
-  data: {
-    id?: string;
-    source?: string;
-    target?: string;
-    label?: string;
-    type?: string;
-    leaf?: number;
-  };
+export interface GraphEdge {
+  id: string;
+  source: string;
+  target: string;
+  type: 'solid' | 'dashed';
+}
+
+export type GraphElement = GraphNode | GraphEdge;
+
+interface OasMap {
+  label: string;
+  refs: string[];
+  type?: string;
 }
 
 function lastpath(s: string) {
@@ -25,7 +28,7 @@ function lastpath(s: string) {
 
 export function oasToMap(oas: any) {
   // A state variable to store the result.
-  const result: OasMap = {};
+  const result: Record<string, OasMap> = {};
 
   function collectRefs(schema: any, path: string, nested: boolean = false) {
     if (!schema || typeof schema !== 'object') return;
@@ -108,27 +111,38 @@ export function insertSpaceInCamelCase(label: string): string {
   return label.replace(/([a-z])([A-Z])/g, '$1 $2');
 }
 
-export function mapToGraph(oasMap: OasMap) {
-  const element_ids: Node[] = [];
-  const element_links: Node[] = [];
+export function mapToGraph(oasMap: Record<string, OasMap>) {
+  const nodes: GraphNode[] = [];
+  const edges: GraphEdge[] = [];
 
   for (const [source, { label, refs: targets, type }] of Object.entries(oasMap)) {
-    element_ids.push({
-      data: {
-        id: source,
-        label: insertSpaceInCamelCase(label),
-        leaf: targets.length === 0 && type !== 'rdf' ? 1 : 0,
-        ...(type !== undefined && { type }),
-      },
+    // Create nodes
+    nodes.push({
+      id: source,
+      label: insertSpaceInCamelCase(label),
+      leaf: targets.length === 0 && type !== 'rdf' ? 1 : 0,
+      ...(type !== undefined && { type }),
     });
+
     // Create edges
     for (const target of targets) {
       const targetType = oasMap[target].type;
-      element_links.push({ data: { source, target, ...(targetType === 'rdf' ? { type: 'dashed' } : {}) } });
+      edges.push({
+        id: `${source}->${target}`,
+        source,
+        target,
+        type: targetType === 'rdf' ? 'dashed' : 'solid',
+      });
     }
   }
-  const elements = [...element_ids, ...element_links];
-  return { graph: { elements } };
+
+  return {
+    graph: {
+      nodes,
+      edges,
+      elements: [...nodes, ...edges] satisfies GraphElement[],
+    },
+  };
 }
 
 export function oasToGraph(oas: any) {
