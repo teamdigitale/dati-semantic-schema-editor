@@ -39,10 +39,11 @@ export function useSuperclassDataToNodes(superclassData: { parent: string; child
       }
     }
 
-    setAllNodes((existingElements) => [
-      ...existingElements,
-      ...newElements.filter((ne) => !existingElements.some((ee) => ee?.id === ne?.id)), // Avoid duplicates
-    ]);
+    const filteredNewElements = newElements.filter((ne) => !allNodes.some((an) => an?.id === ne?.id)); // Avoid duplicates
+    if (filteredNewElements.length === 0) {
+      return;
+    }
+    setAllNodes((existingElements) => [...existingElements, ...filteredNewElements]);
   }, [JSON.stringify(superclassData)]);
 
   return allNodes;

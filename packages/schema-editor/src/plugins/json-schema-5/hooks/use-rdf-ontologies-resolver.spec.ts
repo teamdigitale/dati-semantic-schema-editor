@@ -116,8 +116,8 @@ describe('useRDFClassTreeResolver', () => {
 
     await waitFor(() => expect(result.current.status).toBe('fulfilled'));
 
-    expect(result.current.data?.hierarchy).toHaveLength(5);
-    expect(result.current.data?.hierarchy).toEqual([
+    expect(result.current.data).toHaveLength(5);
+    expect(result.current.data).toEqual([
       {
         parent: 'https://w3id.org/italia/onto/l0/Entity',
         child: 'https://w3id.org/italia/onto/l0/Agent',
@@ -160,7 +160,7 @@ describe('useRDFClassTreeResolver', () => {
 
     const { result } = renderHook(() => useRDFClassTreeResolver('https://w3id.org/italia/onto/CPV/NonExistentClass'));
     await waitFor(() => expect(result.current.status).toBe('fulfilled'));
-    expect(result.current.data?.hierarchy).toEqual([]);
+    expect(result.current.data).toEqual([]);
   });
 });
 
