@@ -22,10 +22,10 @@ describe('<Editor />', () => {
     expect(screen.getByText('Test')).toBeTruthy();
   });
 
-  it('should use the URL from search parameters if present', async () => {
+  it('should use the URL from hash fragment if present', async () => {
     const testUrl = 'https://example.com/schema.yaml';
     const originalLocation = window.location;
-    window.location = { ...originalLocation, search: `?url=${encodeURIComponent(testUrl)}` };
+    window.location = { ...originalLocation, hash: `#url=${encodeURIComponent(testUrl)}` };
     render(<Editor />);
     expect(schemaEditorSpy).toHaveBeenCalledWith(
       { url: testUrl, spec: undefined, oasCheckerUrl: 'https://test.com' },
@@ -34,13 +34,12 @@ describe('<Editor />', () => {
     window.location = originalLocation;
   });
 
-  it('should use the fragment from hash if URL is not present', async () => {
+  it('should use the OAS spec from hash if URL is not present', async () => {
     const testFragment = '#oas:MYSwhg9gUEA';
     const originalLocation = window.location;
     window.location = {
       ...originalLocation,
       hash: testFragment,
-      search: '',
     };
     render(<Editor />);
     expect(schemaEditorSpy).toHaveBeenCalledWith(
@@ -50,33 +49,15 @@ describe('<Editor />', () => {
     window.location = originalLocation;
   });
 
-  it('should default to the starter schema URL if neither URL nor fragment is present', async () => {
+  it('should default to the starter schema URL if no hash is present', async () => {
     const originalLocation = window.location;
     window.location = {
       ...originalLocation,
-      search: '',
       hash: '',
     };
     render(<Editor />);
     expect(schemaEditorSpy).toHaveBeenCalledWith(
       { url: 'schemas/starter-schema.oas3.yaml', spec: undefined, oasCheckerUrl: 'https://test.com' },
-      {},
-    );
-    window.location = originalLocation;
-  });
-
-  it('should prioritize URL from search parameters over fragment from hash', async () => {
-    const testUrl = 'https://example.com/schema.yaml';
-    const testFragment = '#oas:MYSwhg9gUEA';
-    const originalLocation = window.location;
-    window.location = {
-      ...originalLocation,
-      search: `?url=${encodeURIComponent(testUrl)}`,
-      hash: testFragment,
-    };
-    render(<Editor />);
-    expect(schemaEditorSpy).toHaveBeenCalledWith(
-      { url: testUrl, spec: undefined, oasCheckerUrl: 'https://test.com' },
       {},
     );
     window.location = originalLocation;
