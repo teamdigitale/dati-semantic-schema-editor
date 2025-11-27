@@ -30,14 +30,16 @@ function App() {
 
   return (
     <ConfigurationProvider>
-      <Layout>
-        <Editor />
-      </Layout>
-      <CommandPalette
-        isOpen={isCommandPaletteOpen}
-        onClose={() => setIsCommandPaletteOpen(false)}
-        onSelectUrl={handleSelectUrl}
-      />
+      <>
+        <Layout>
+          <Editor />
+        </Layout>
+        <CommandPalette
+          isOpen={isCommandPaletteOpen}
+          onClose={() => setIsCommandPaletteOpen(false)}
+          onSelectUrl={handleSelectUrl}
+        />
+      </>
     </ConfigurationProvider>
   );
 }
