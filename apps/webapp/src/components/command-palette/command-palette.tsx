@@ -1,34 +1,37 @@
 import { useState, useEffect, useRef } from 'react';
 import { Modal, ModalHeader, ModalBody, Input } from 'design-react-kit';
+import { useConfiguration } from '../../features/configuration';
+import { executeSparqlQuery } from '../../utils/sparql';
 import './command-palette.scss';
 
 interface SchemaUrl {
   id: string;
+  label: string;
   url: string;
-  rawUrl?: string;
 }
 
-const SCHEMA_URLS: SchemaUrl[] = [
-  {
-    id: 'categoria-pensione',
-    url: 'https://w3id.org/italia/schemas/categoria-pensione/latest/categoria-pensione.oas3.yaml',
-    rawUrl: 'https://raw.githubusercontent.com/INPS-it/NDC/main/assets/schemas/categoria-pensione/latest/categoria-pensione.oas3.yaml',
-  },
-  {
-    id: 'contratto-di-lavoro-domestico',
-    url: 'https://w3id.org/italia/schemas/contratto-di-lavoro-domestico/latest/contratto-di-lavoro-domestico.oas3.yaml',
-    rawUrl: 'https://raw.githubusercontent.com/INPS-it/NDC/main/assets/schemas/contratto-di-lavoro-domestico/latest/contratto-di-lavoro-domestico.oas3.yaml',
-  },
-  {
-    id: 'datore-di-lavoro-domestico',
-    url: 'https://w3id.org/italia/schemas/datore-di-lavoro-domestico/latest/datore-di-lavoro-domestico.oas3.yaml',
-    rawUrl: 'https://raw.githubusercontent.com/INPS-it/NDC/main/assets/schemas/datore-di-lavoro-domestico/latest/datore-di-lavoro-domestico.oas3.yaml',
-  },
-  {
-    id: 'domanda-naspi',
-    url: 'https://w3id.org/italia/schemas/domanda-naspi/latest/domanda-naspi.oas3.yaml',
-  },
-];
+const SPARQL_QUERY = `
+prefix admsapit: <https://w3id.org/italia/onto/ADMS/>
+prefix COV: <https://w3id.org/italia/onto/COV/>
+prefix dcat: <http://www.w3.org/ns/dcat#>
+prefix dcatapit: <http://dati.gov.it/onto/dcatapit#>
+prefix dct: <http://purl.org/dc/terms/>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+select distinct ?label ?url where {
+  ?s
+    a dcatapit:Distribution ;
+    dcat:downloadURL ?url ;
+    rdfs:label ?label
+  .
+  FILTER(
+    STRSTARTS(
+      STR(?s),
+      "https://w3id.org/italia/schemas/"
+    )
+  )
+}
+`;
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -39,9 +42,56 @@ interface CommandPaletteProps {
 export function CommandPalette({ isOpen, onClose, onSelectUrl }: CommandPaletteProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [schemas, setSchemas] = useState<SchemaUrl[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { config } = useConfiguration();
 
-  const filteredUrls = SCHEMA_URLS.filter((schema) =>
+  // Fetch schemas from SPARQL when component mounts or when modal opens
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const fetchSchemas = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const sparqlUrl = config?.sparqlUrl || window.__ENV?.sparqlUrl;
+        if (!sparqlUrl) {
+          throw new Error('SPARQL endpoint not configured');
+        }
+
+        const response = await executeSparqlQuery(sparqlUrl, SPARQL_QUERY);
+
+        const schemaList: SchemaUrl[] = response.results.bindings.map((binding) => {
+          const label = binding.label.value;
+          const url = binding.url.value;
+
+          // Extract ID from URL (e.g., "categoria-pensione" from the URL)
+          const urlParts = url.split('/');
+          const id = urlParts[urlParts.length - 2] || urlParts[urlParts.length - 1];
+
+          return {
+            id,
+            label,
+            url
+          };
+        });
+
+        setSchemas(schemaList);
+      } catch (e) {
+        console.error('Failed to fetch schemas:', e);
+        setError(e instanceof Error ? e.message : 'Failed to load schemas');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSchemas();
+  }, [isOpen, config]);
+
+  const filteredUrls = schemas.filter((schema) =>
+    schema.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
     schema.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
     schema.id.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -66,8 +116,7 @@ export function CommandPalette({ isOpen, onClose, onSelectUrl }: CommandPaletteP
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (filteredUrls[selectedIndex]) {
-        const selectedUrl = filteredUrls[selectedIndex].rawUrl || filteredUrls[selectedIndex].url;
-        onSelectUrl(selectedUrl);
+        onSelectUrl(filteredUrls[selectedIndex].url);
         handleClose();
       }
     } else if (e.key === 'Escape') {
@@ -83,8 +132,7 @@ export function CommandPalette({ isOpen, onClose, onSelectUrl }: CommandPaletteP
   };
 
   const handleSelectUrl = (schema: SchemaUrl) => {
-    const selectedUrl = schema.rawUrl || schema.url;
-    onSelectUrl(selectedUrl);
+    onSelectUrl(schema.url);
     handleClose();
   };
 
@@ -109,10 +157,18 @@ export function CommandPalette({ isOpen, onClose, onSelectUrl }: CommandPaletteP
             onKeyDown={handleKeyDown}
             innerRef={inputRef}
             autoFocus
+            disabled={loading}
           />
         </div>
         <div className="command-palette-results">
-          {filteredUrls.length > 0 ? (
+          {loading ? (
+            <div className="loading-state">Loading schemas...</div>
+          ) : error ? (
+            <div className="error-state">
+              <p>Error: {error}</p>
+              <p className="error-hint">Please check the SPARQL endpoint configuration.</p>
+            </div>
+          ) : filteredUrls.length > 0 ? (
             <ul className="list-unstyled">
               {filteredUrls.map((schema, index) => (
                 <li
@@ -121,16 +177,15 @@ export function CommandPalette({ isOpen, onClose, onSelectUrl }: CommandPaletteP
                   onClick={() => handleSelectUrl(schema)}
                   onMouseEnter={() => setSelectedIndex(index)}
                 >
-                  <div className="schema-id">{schema.id}</div>
+                  <div className="schema-id">{schema.label}</div>
                   <div className="schema-url">{schema.url}</div>
-                  {schema.rawUrl && (
-                    <div className="schema-raw-url">→ {schema.rawUrl}</div>
-                  )}
                 </li>
               ))}
             </ul>
           ) : (
-            <div className="no-results">No schemas found</div>
+            <div className="no-results">
+              {schemas.length === 0 ? 'No schemas available' : 'No schemas found'}
+            </div>
           )}
         </div>
       </ModalBody>

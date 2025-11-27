@@ -52,7 +52,7 @@
     word-break: break-all;
   }
 
-  .schema-raw-url {
+  .schema-download-url {
     font-size: 0.85rem;
     color: #666;
     margin-top: 0.25rem;
@@ -61,8 +61,21 @@
   }
 }
 
-.no-results {
+.no-results,
+.loading-state {
   padding: 2rem;
   text-align: center;
   color: #666;
+}
+
+.error-state {
+  padding: 2rem;
+  text-align: center;
+  color: #d32f2f;
+
+  .error-hint {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+  }
 }
