@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
 import { useRDFClassTreeResolver } from '../../../hooks';
 import { LAYOUTS, LAYOUTS_MAP, LayoutTypes } from './cytoscape-layouts';
+import { GraphLegend } from './graph-legend';
 import { oasToGraph } from './oas-graph';
 import { useSuperclassDataToNodes } from './oas-graph-hooks';
 
@@ -124,7 +125,7 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
   return (
     <div>
       <Row>
-        <Col xs={12} md={6} lg={4} className="me-auto">
+        <Col xs="auto" className="me-auto">
           <FormGroup check>
             <Toggle
               label="Toggle Semantic Superclasses"
@@ -135,7 +136,7 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
           </FormGroup>
         </Col>
 
-        <Col xs={12} md={6}>
+        <Col xs={12} md={6} lg={4}>
           <div className="select-wrapper">
             <select value={layout} onChange={(e) => setLayout(e.target.value as LayoutTypes)}>
               {LAYOUTS.map((x) => (
@@ -149,6 +150,8 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
       </Row>
 
       <div className="position-relative overflow-hidden">
+        <GraphLegend />
+
         <CytoscapeComponent
           style={{ width: '100%', height: 'calc(100vh - 230px)' }}
           cy={(cy: Core) => (cyRef.current = cy)}
