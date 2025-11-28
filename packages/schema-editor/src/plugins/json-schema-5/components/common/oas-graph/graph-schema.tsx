@@ -109,9 +109,15 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
 
   // Centra il grafico al load
   useEffect(() => {
-    setTimeout(() => {
+    const centerGraph = () => {
       cyRef.current?.center();
-    }, 100);
+      cyRef.current?.fit();
+    };
+    centerGraph();
+    cyRef.current?.on('dbltap', centerGraph);
+    return () => {
+      cyRef.current?.off('dbltap', centerGraph);
+    };
   }, [cyRef.current]);
 
   // Balloon radius calculation function
@@ -123,7 +129,14 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
   };
 
   return (
-    <div>
+    <div className="d-flex flex-column" style={{ height: 'calc(100vh - 190px)' }}>
+      <div>
+        <p>
+          This tab shows the schema as a graph. It shows the RDF classes and properties as nodes and the relationships
+          between them as edges. You can open the legend to understand the different elements of the graph.
+        </p>
+      </div>
+
       <Row>
         <Col xs="auto" className="me-auto">
           <FormGroup check>
@@ -149,11 +162,11 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
         </Col>
       </Row>
 
-      <div className="position-relative overflow-hidden">
+      <div className="position-relative overflow-x-hidden w-100 h-100 flex-grow-1">
         <GraphLegend />
 
         <CytoscapeComponent
-          style={{ width: '100%', height: 'calc(100vh - 230px)' }}
+          className="w-100 h-100"
           cy={(cy: Core) => (cyRef.current = cy)}
           elements={allNodes.map((x) => ({ data: x }))}
           layout={LAYOUTS_MAP[layout]}
