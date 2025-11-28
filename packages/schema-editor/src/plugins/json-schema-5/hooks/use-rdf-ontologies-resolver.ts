@@ -63,6 +63,40 @@ export function useRDFPropertyResolver(fieldUri: string | undefined): AsyncState
   };
 }
 
+/*
+  This hook resolves the class hierarchy tree, returning parent-child relationships.
+*/
+export function useRDFClassTreeResolver(classUri: string | undefined): AsyncState<{ parent: string; child: string }[]> {
+  const { data, status, error } = useSparqlQuery(
+    `
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+    SELECT DISTINCT
+      ?child
+      ?parent
+    WHERE {
+
+      <${classUri}> rdfs:subClassOf* ?child .
+      ?child rdfs:subClassOf ?parent .
+
+      FILTER( !isBlank(?child) && !isBlank(?parent) && ?child != ?parent)
+    }
+  `,
+    { skip: !classUri || !isUri(classUri) },
+  );
+
+  const items = data?.results?.bindings?.map((binding: any) =>
+    Object.fromEntries(Object.entries(binding).map(([k, v]: any[]) => [k, v.value])),
+  ) as { parent: string; child: string }[];
+
+  return {
+    data: items,
+    status,
+    error,
+  };
+}
+
 export function useRDFClassResolver(classUri: string | undefined) {
   const {
     data: sparqlData,
