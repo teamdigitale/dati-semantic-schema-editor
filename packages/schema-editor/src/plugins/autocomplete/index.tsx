@@ -7,7 +7,8 @@ SELECT DISTINCT ?class ?label ?description WHERE {
   ?class a owl:Class .
   OPTIONAL { ?class rdfs:label ?label }
   OPTIONAL { ?class rdfs:comment ?description }
-  FILTER(STRSTARTS(STR(?class), "https://w3id.org/italia/onto/"))
+  # Filter out blank nodes
+  FILTER(!isBlank(?class))
 }
 ORDER BY ?class
 `;
@@ -29,6 +30,18 @@ type SuggestionMap = Record<string, Suggestion[]>;
 let cachedSuggestionMap: SuggestionMap | null = null;
 let isLoading = false;
 let loadPromise: Promise<SuggestionMap> | null = null;
+let lastSparqlUrl: string | null = null;
+
+// Function to reset cache when SPARQL endpoint changes
+function resetCacheIfNeeded(sparqlUrl: string) {
+  if (lastSparqlUrl && lastSparqlUrl !== sparqlUrl) {
+    console.log('SPARQL endpoint changed, resetting autocomplete cache');
+    cachedSuggestionMap = null;
+    isLoading = false;
+    loadPromise = null;
+  }
+  lastSparqlUrl = sparqlUrl;
+}
 
 // Function to fetch ontology classes from SPARQL
 async function fetchOntologyClasses(sparqlUrl: string): Promise<Suggestion[]> {
@@ -70,6 +83,9 @@ async function fetchOntologyClasses(sparqlUrl: string): Promise<Suggestion[]> {
 
 // Function to initialize and merge suggestions
 async function initializeSuggestions(sparqlUrl: string): Promise<SuggestionMap> {
+  // Reset cache if SPARQL endpoint changed
+  resetCacheIfNeeded(sparqlUrl);
+
   if (cachedSuggestionMap) {
     return cachedSuggestionMap;
   }
@@ -321,15 +337,6 @@ export const EditorAutosuggestCustomPlugin = () => {
         wrapActions: {
           addAutosuggestionCompleters: (ori, system) => (context) => {
             try {
-              // Trigger async initialization once when the system is available
-              const sparqlUrl = system.getConfigs()?.sparqlUrl;
-              if (sparqlUrl && !cachedSuggestionMap && !isLoading) {
-                console.log('Initializing SPARQL autocomplete suggestions...');
-                initializeSuggestions(sparqlUrl).catch((err) => {
-                  console.error('Failed to initialize SPARQL suggestions:', err);
-                });
-              }
-
               return ori(context).concat([
                 {
                   getCompletions(editor, session, pos, prefix, cb) {
@@ -339,6 +346,20 @@ export const EditorAutosuggestCustomPlugin = () => {
                       editorValue: editor.getValue(),
                       AST: system.fn.AST,
                     });
+
+                    // Check if SPARQL URL has changed and initialize/reinitialize if needed
+                    const sparqlUrl = system.getConfigs()?.sparqlUrl;
+                    if (sparqlUrl) {
+                      // This will reset cache if URL changed, or use existing cache if unchanged
+                      if (!cachedSuggestionMap || (lastSparqlUrl && lastSparqlUrl !== sparqlUrl)) {
+                        if (!isLoading) {
+                          console.log('Initializing SPARQL autocomplete suggestions...');
+                          initializeSuggestions(sparqlUrl).catch((err) => {
+                            console.error('Failed to initialize SPARQL suggestions:', err);
+                          });
+                        }
+                      }
+                    }
 
                     // Use cached suggestions if available, otherwise fall back to static
                     const currentSuggestionMap = cachedSuggestionMap || suggestionMap;
