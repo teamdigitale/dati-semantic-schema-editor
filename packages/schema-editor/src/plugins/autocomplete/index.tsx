@@ -1,3 +1,5 @@
+import { uri2shortUri } from '../json-schema-5/utils/curie';
+
 // SPARQL query to fetch all ontology classes
 const ONTOLOGY_CLASSES_QUERY = `
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -61,11 +63,8 @@ async function fetchOntologyClasses(sparqlUrl: string): Promise<Suggestion[]> {
       const label = binding.label?.value || classUri.split('/').pop();
       const description = binding.description?.value;
 
-      // Extract ontology prefix (e.g., "CPV:Person" from "https://w3id.org/italia/onto/CPV/Person")
-      const parts = classUri.replace('https://w3id.org/italia/onto/', '').split('/');
-      const prefix = parts[0];
-      const className = parts.slice(1).join('/') || prefix;
-      const caption = `${prefix}:${className}`;
+      // Convert URI to compact CURIE format using uri2shortUri
+      const caption = uri2shortUri(classUri);
 
       return {
         snippet: classUri,
