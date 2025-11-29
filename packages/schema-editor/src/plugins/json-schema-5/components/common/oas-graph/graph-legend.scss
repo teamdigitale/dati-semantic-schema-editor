@@ -1,0 +1,6 @@
+.callout {
+  &:before,
+  &:after {
+    content: none !important;
+  }
+}
