@@ -102,7 +102,7 @@ export function useSchemaSemanticScore(specJson: any): Omit<AsyncState<SchemaSem
     status: state.status,
     error: state.error,
     data: {
-      score: state.data?.score,
+      score: state.data?.score ?? specJson?.['info']?.['x-semantic-score'],
       isUpdated: !!lastHash && !!currentHash && lastHash === currentHash,
     },
     recalculate,
