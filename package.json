@@ -17,6 +17,7 @@
   "scripts": {
     "preinstall": "npx -y only-allow pnpm",
     "test": "vitest",
+    "test:ci": "vitest run",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "eslint --fix",
