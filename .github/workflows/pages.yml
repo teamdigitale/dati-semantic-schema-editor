@@ -41,7 +41,7 @@ jobs:
         run: |
           echo "BASE_URL=/${{ github.event.repository.name }}/${{ env.EDITOR_VERSION }}" >> "$GITHUB_ENV"
 
-      - uses: ./.github/actions/ci-setup
+      - uses: ./.github/actions/install
 
       - name: Build project
         env:

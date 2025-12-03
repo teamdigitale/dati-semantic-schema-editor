@@ -1,4 +1,4 @@
-name: Release
+name: Unit Tests
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - uses: ./.github/actions/ci-setup
+      - uses: ./.github/actions/install
 
       - name: Run tests
         run: pnpm test
