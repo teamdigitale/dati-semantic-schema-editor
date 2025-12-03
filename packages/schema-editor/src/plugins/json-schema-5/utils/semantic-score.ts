@@ -32,9 +32,8 @@ export function buildSemanticScoreSparqlQuery(properties: string[]) {
     SELECT (COUNT(DISTINCT  ?fieldUri) as ?count) WHERE {
       VALUES ?fieldUri { ${properties.map((propertyName) => `<${propertyName}>`).join(' ')} }
 
-      ?fieldUri
-        rdfs:range ?class
-      .
+      ?fieldUri rdf:type ?validType .
+      FILTER(?validType IN (rdf:Property, owl:ObjectProperty, owl:DatatypeProperty, owl:FunctionalProperty))
     }
   `;
 }
