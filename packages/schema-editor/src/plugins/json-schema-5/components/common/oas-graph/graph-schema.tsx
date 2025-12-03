@@ -1,26 +1,72 @@
 import { Core } from 'cytoscape';
-import { Col, FormGroup, Row, Toggle } from 'design-react-kit';
+import { Alert, Col, Row } from 'design-react-kit';
 import { List } from 'immutable';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
+import { useRDFClassTreeResolver } from '../../../hooks';
 import { LAYOUTS, LAYOUTS_MAP, LayoutTypes } from './cytoscape-layouts';
 import { oasToGraph } from './oas-graph';
+import { useSuperclassDataToNodes } from './oas-graph-hooks';
 
 export const GraphSchema = ({ specSelectors, editorActions }) => {
-  const specJson = specSelectors?.spec().toJSON();
-  const { elements } = useMemo(() => oasToGraph(specJson).graph, [JSON.stringify(specJson)]);
-
+  // Cytoscape reference
   const cyRef = useRef<Core | null>(null);
-  const [showSemanticRelations, setShowSemanticRelations] = useState(false);
-  const [layout, setLayout] = useState<LayoutTypes>('fcose');
+
+  // Nodes from written spec
+  const specNodes = useMemo(
+    () => oasToGraph(specSelectors?.spec().toJSON()).graph.elements,
+    [JSON.stringify(specSelectors?.spec().toJSON())],
+  );
+
+  // Nodes from resolved superclasses
+  const [selectedClassUri, setSelectedClassUri] = useState<string | undefined>(undefined);
+  const { data: superclassData = [], status: superclassStatus } = useRDFClassTreeResolver(selectedClassUri);
+  const superclassNodes = useSuperclassDataToNodes(superclassData);
+
+  // All nodes (merge both spec and superclass nodes)
+  const allNodes = useMemo(() => {
+    return [...specNodes, ...superclassNodes.filter((node) => !specNodes.some((n) => n?.id === node?.id))]; // Avoid duplicates if already present in specNodes
+  }, [specNodes, superclassNodes]);
+
+  // Click handler:
+  // - for RDF nodes to load superclasses
+  // - for schema nodes to jump to spec location
+  const handleNodeCtrlClick = useCallback(
+    (e) => {
+      e.stopPropagation();
+      const node = e.target;
+      const path: string = node.data('id');
+      const type: string = node.data('type');
+
+      // If pressed Ctrl (or Cmd on Mac) and the node is an RDF node, load superclasses
+      if ((e.originalEvent.ctrlKey || e.originalEvent.metaKey) && type === 'rdf') {
+        setSelectedClassUri(path);
+      }
+      // If the node is a spec node, jump to the spec location in the editor
+      else if (path.startsWith('#/')) {
+        const specPath = List(path.split('/').slice(1));
+        const jumpPath = specSelectors.bestJumpPath({ specPath });
+        editorActions.jumpToLine(specSelectors.getSpecLineFromPath(jumpPath));
+      }
+    },
+    [editorActions, specSelectors],
+  );
+
+  useEffect(() => {
+    cyRef.current?.on('click', 'node', handleNodeCtrlClick);
+    return () => {
+      cyRef.current?.off('click', 'node', handleNodeCtrlClick);
+    };
+  }, [cyRef.current, handleNodeCtrlClick]);
 
   // Update layout when layout state changes
+  const [layout, setLayout] = useState<LayoutTypes>('fcose');
   useEffect(() => {
     if (!cyRef.current || !LAYOUTS_MAP[layout]) {
       return;
     }
     cyRef.current.layout(LAYOUTS_MAP[layout]).run();
-  }, [layout]);
+  }, [layout, allNodes]);
 
   // Centra il grafico al load
   useEffect(() => {
@@ -29,34 +75,16 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
     }, 100);
   }, [cyRef.current]);
 
-  // Click sui nodi
-  const handleNodeClick = useCallback((e) => {
-    e.stopPropagation();
-    const path: string = e.target._private.data.id;
-    if (!path.startsWith('#/')) {
-      return;
-    }
-    const specPath = List(path.split('/').slice(1));
-    const jumpPath = specSelectors.bestJumpPath({ specPath });
-    editorActions.jumpToLine(specSelectors.getSpecLineFromPath(jumpPath));
-  }, []);
-
-  useEffect(() => {
-    cyRef.current?.on('click', 'node', handleNodeClick);
-    return () => {
-      cyRef.current?.off('click', 'node', handleNodeClick);
-    };
-  }, [cyRef.current]);
-
+  // Balloon radius calculation function
   const radius = (node) => {
     const sizePerLink = 2;
     const degree = node.degree();
-    const baseSize = node.data('label')?.length * 8;
+    const baseSize = 80; // node.data('label')?.length * 8;
     return baseSize + degree * sizePerLink;
   };
 
   return (
-    <div>
+    <div style={{ position: 'relative' }}>
       <Row>
         <Col xs={12} md={6} lg={4} className="me-auto">
           {/* <FormGroup check>
@@ -82,9 +110,9 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
       </Row>
 
       <CytoscapeComponent
-        style={{ width: '100%', height: 'calc(100vh - 210px)' }}
+        style={{ width: '100%', height: 'calc(100vh - 230px)' }}
         cy={(cy: Core) => (cyRef.current = cy)}
-        elements={elements}
+        elements={allNodes.map((x) => ({ data: x }))}
         layout={LAYOUTS_MAP[layout]}
         stylesheet={[
           {
@@ -98,12 +126,26 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
               'text-halign': 'center',
               'background-color': '#11479e',
               color: '#ffffff',
+              'text-wrap': 'wrap',
+              'text-max-width': '80px',
+              'text-overflow-wrap': 'break-word',
             },
           },
           {
             selector: 'node[type="rdf"]',
             style: {
               'background-color': '#008055',
+            },
+          },
+          {
+            selector: 'node[id^="https://w3id.org/italia/onto/l0"]',
+            style: {
+              'background-color': '#ffffff',
+              color: '#000000',
+              shape: 'ellipse',
+              'border-width': 3,
+              'border-color': '#008055',
+              'border-style': 'dotted',
             },
           },
           {
@@ -140,11 +182,36 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
             selector: 'edge[type="dashed"]',
             style: {
               'line-style': 'dashed',
-              'target-arrow-shape': 'none',
+              'target-arrow-shape': 'triangle',
             },
           },
         ]}
       />
+
+      {/* Alert superclasses resolver */}
+      <div className="position-absolute bottom-0 end-0 p-2">
+        <Alert
+          color={
+            superclassStatus === 'idle' || superclassStatus === 'pending'
+              ? 'info'
+              : superclassStatus === 'error'
+                ? 'error'
+                : !superclassData?.length
+                  ? 'warning'
+                  : 'success'
+          }
+        >
+          {superclassStatus === 'idle'
+            ? 'Hold CTRL/CMD + click on an RDF node to load its superclasses'
+            : superclassStatus === 'pending'
+              ? `Loading superclasses for ${selectedClassUri}...`
+              : superclassStatus === 'error'
+                ? `Error loading superclasses for ${selectedClassUri}`
+                : !superclassData?.length
+                  ? `No superclasses found for ${selectedClassUri}`
+                  : `Added ${superclassData.length} class relationship(s)`}
+        </Alert>
+      </div>
     </div>
   );
 };
