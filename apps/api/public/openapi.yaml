@@ -58,7 +58,7 @@ paths:
         - health
   /semantic-score:
     post:
-      summary: Calculate semantic score for a YAML file
+      summary: Calculate semantic score from an OpenAPI document.
       tags:
         - semantic-score
       description: |-
@@ -79,21 +79,14 @@ paths:
                 contentType: application/yaml, application/json
             schema:
               $ref: "#/components/schemas/CalculateSemanticScoreRequestDTO"
-      responses:
+      responses: &semanticScoreResponses
         "200":
           description: |-
-            An OpenAPI specification document containing
-            the #/info/x-semantic-score and #/info/x-semantic-score-timestamp
-            properties.
-
-            When a YAML file is received, comments and order is not preserved.
+            The Semantic Score has been correctly computed.
           content:
-            application/yaml:
-              schema:
-                $ref: "#/components/schemas/OASDocument"
             application/json:
               schema:
-                $ref: "#/components/schemas/OASDocument"
+                $ref: "#/components/schemas/SemanticScore"
         "406":
           description: |-
             The provided file is not a valid OpenAPI 3.0 specification document.
@@ -130,8 +123,93 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /semantic-score-oas:
+    post:
+      summary: Calculate semantic score for a YAML file
+      tags:
+        - semantic-score
+      description: |-
+        Process an OpenAPI 3.0 specification document containing
+        a schema and computes its semantic score
+        using the associated REST API Linked Data Keywords.
+      operationId: SemanticScoreController_updateSchemaSemanticScore_v1
+      requestBody:
+        required: true
+        description: |-
+          The OpenAPI specification document containing
+          a schema annotated with the REST API Linked Data Keywords.
+        content:
+          multipart/form-data:
+            # The file should be in the following formats.
+            encoding:
+              file:
+                contentType: application/yaml, application/json
+            schema:
+              $ref: "#/components/schemas/CalculateSemanticScoreRequestDTO"
+      responses:
+        <<: *semanticScoreResponses
+        "200":
+          description: |-
+            An OpenAPI specification document containing
+            the #/info/x-semantic-score and #/info/x-semantic-score-timestamp
+            properties.
+
+            When a YAML file is received, comments and order is not preserved.
+          content:
+            application/yaml:
+              schema:
+                $ref: "#/components/schemas/OASDocument"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OASDocument"
 components:
+  headers:
+    Digest:
+      description: |-
+        The Digest header contains the
+        digest of the request payload.
+
+        See [RFC 3230](https://datatracker.ietf.org/doc/html/rfc3230) for more details.
+      schema:
+        type: string
+        maxLength: 1024
+      example: SHA-256=AbCdEf1234567890+
+    Agid-JWT-Signature:
+      description: |-
+        The AGID-JWT-Signature header contains the JWT signature
+        of the request payload.
+      schema:
+        type: string
   schemas:
+    SemanticScore:
+      type: object
+      additionalProperties: false
+      properties:
+        oas_digest:
+          type: string
+          description: |-
+            The digest of the OpenAPI Specification document
+            used to compute the semantic score.
+          example: SHA-256=AbCdEf1234567890+
+        score:
+          type: number
+          format: float
+          description: The computed semantic score.
+          minimum: 0
+          maximum: 1
+        timestamp:
+          type: integer
+          format: int64
+          description: |-
+            The UNIX timestamp of when the semantic score was computed.
+      required:
+        - score
+        - timestamp
+        - oas_digest
+      example:
+        score: 0.85
+        timestamp: 1764770779
+        oas_digest: SHA-256=AbCdEf1234567890+
     OASDocument:
       type: string
       description: |-
