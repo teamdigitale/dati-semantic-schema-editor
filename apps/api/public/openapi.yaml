@@ -27,6 +27,9 @@ servers:
   - url: http://localhost:3000/api/v1
     description: Local development server
     x-sandbox: true
+  - url: https://schema-editor-api-ndc-dev.apps.cloudpub.testedev.istat.it/api/v1
+    description: Development server
+    x-sandbox: true
 security:
   # Anyone can use this API.
   - {}
@@ -83,6 +86,11 @@ paths:
         "200":
           description: |-
             The Semantic Score has been correctly computed.
+          headers:
+            Digest:
+              $ref: "#/components/headers/Digest"
+            Agid-JWT-Signature:
+              $ref: "#/components/headers/Agid-JWT-Signature"
           content:
             application/json:
               schema:
