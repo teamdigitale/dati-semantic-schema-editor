@@ -69,6 +69,21 @@ paths:
         a schema and computes its semantic score
         using the associated REST API Linked Data Keywords.
       operationId: SemanticScoreController_updateSchemaSemanticScore_v1
+      parameters:
+        - in: header
+          name: Accept-Encoding
+          description: |-
+            To ensure proper data integrity,
+            only the identity encoding is supported.
+
+            If no Accept-Encoding header is provided,
+            identity encoding is assumed.
+          required: false
+          schema:
+            type: string
+            default: identity
+            enum:
+              - identity
       requestBody:
         required: true
         description: |-
@@ -111,8 +126,12 @@ paths:
                 $ref: "#/components/schemas/Problem"
         "415":
           description: |-
-            The provided file has an unsupported media type:
-            we only accept application/json and application/yaml.
+            The provided file has:
+            - an unsupported media type,
+              as we only accept application/json and application/yaml;
+            - an unsupported content encoding,
+              as we only accept identity encoding (i.e., no content-encoding
+              header in the request).
           content:
             application/problem+json:
               schema:
@@ -187,8 +206,96 @@ components:
         The AGID-JWT-Signature header contains the JWT signature
         of the request payload.
       schema:
-        type: string
+        $ref: "#/components/schemas/AgidJWTSignature"
+      encoding:
+        contentType: application/jose
   schemas:
+    AgidJWTSignature:
+      description: |-
+        The JSON serialization of an AGID JWT signature
+        as described in https://www.agid.gov.it/sites/agid/files/2024-05/1._piattaforma_acquisizione_dati%20%281%29.pdf
+      type: object
+      additionalProperties: false
+      properties:
+        payload:
+          $ref: "#/components/schemas/AgidJWTPayload"
+        signatures:
+          type: array
+          description: The JWT signatures.
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              protected:
+                type: string
+                description: The protected header.
+              signature:
+                type: string
+                description: The signature.
+
+    AgidJWTHeader:
+      description: |-
+        The JSON serialization header of an AGID JWT signature
+      type: object
+      additionalProperties: false
+      required:
+        - alg
+        - kid
+      properties:
+        alg:
+          type: string
+          description: The algorithm used for the signature.
+        kid:
+          type: string
+          description: The key identifier.
+    AgidJWTPayload:
+      description: |-
+        The payload of an AGID JWT signature
+        as described in https://www.agid.gov.it/sites/agid/files/2024-05/1._piattaforma_acquisizione_dati%20%281%29.pdf
+      type: object
+      additionalProperties: false
+      required:
+        - iss
+        - aud
+        - iat
+        - exp
+        - signed_headers
+      properties:
+        iss:
+          type: string
+          description: The issuer of the JWT.
+        iat:
+          type: integer
+          format: int64
+          description: The issued at timestamp.
+        exp:
+          type: integer
+          format: int64
+          description: The expiration timestamp.
+        aud:
+          type: string
+          description: The audience of the JWT.
+        signed_headers:
+          example:
+          - digest: SHA-256=AbCdEf1234567890+
+          - content-type: application/json
+          type: array
+          description: |-
+            The list of HTTP headers that have been signed.
+          items:
+            anyOf:
+            - type: object
+              additionalProperties: false
+              properties:
+                digest:
+                  type: string
+                  description: The digest of the payload.
+            - type: object
+              additionalProperties: false
+              properties:
+                content-type:
+                  type: string
+                  description: The content type of the payload.
     SemanticScore:
       type: object
       additionalProperties: false
