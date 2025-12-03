@@ -19,7 +19,8 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - uses: ./.github/actions/install
+      - name: Install dependencies
+        uses: ./.github/actions/install
 
       - name: Run tests
         run: pnpm test

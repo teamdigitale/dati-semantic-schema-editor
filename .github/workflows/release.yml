@@ -23,7 +23,8 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - uses: ./.github/actions/install
+      - name: Install dependencies
+        uses: ./.github/actions/install
 
       - name: Create Release Pull Request or Publish
         id: changesets
