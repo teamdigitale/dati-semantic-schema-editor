@@ -1,74 +1,155 @@
 import { Core } from 'cytoscape';
-import { Col, FormGroup, Row, Toggle } from 'design-react-kit';
+import { Alert, Col, FormGroup, Row, Toggle } from 'design-react-kit';
 import { List } from 'immutable';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
+import { useRDFClassTreeResolver } from '../../../hooks';
 import { LAYOUTS, LAYOUTS_MAP, LayoutTypes } from './cytoscape-layouts';
+import { GraphLegend } from './graph-legend';
 import { oasToGraph } from './oas-graph';
+import { useSuperclassDataToNodes } from './oas-graph-hooks';
 
 export const GraphSchema = ({ specSelectors, editorActions }) => {
-  const specJson = specSelectors?.spec().toJSON();
-  const { elements } = useMemo(() => oasToGraph(specJson).graph, [JSON.stringify(specJson)]);
-
+  // Cytoscape reference
   const cyRef = useRef<Core | null>(null);
-  const [showSemanticRelations, setShowSemanticRelations] = useState(false);
-  const [layout, setLayout] = useState<LayoutTypes>('fcose');
+
+  // Nodes from written spec
+  const specNodes = useMemo(
+    () => oasToGraph(specSelectors?.spec().toJSON()).graph.elements,
+    [JSON.stringify(specSelectors?.spec().toJSON())],
+  );
+
+  // Nodes from resolved superclasses
+  const [selectedClassUri, setSelectedClassUri] = useState<string | undefined>(undefined);
+  const { data: superclassData = [], status: superclassStatus } = useRDFClassTreeResolver(selectedClassUri);
+  const superclassNodes = useSuperclassDataToNodes(superclassData);
+
+  // Toggle superclasses visibility
+  const [showSuperclasses, setShowSuperclasses] = useState(true);
+
+  // All nodes (merge both spec and superclass nodes)
+  const allNodes = useMemo(
+    () => [
+      ...specNodes,
+      ...(showSuperclasses ? superclassNodes.filter((node) => !specNodes.some((n) => n?.id === node?.id)) : []), // Avoid duplicates if already present in specNodes
+    ],
+    [specNodes, superclassNodes, showSuperclasses],
+  );
+
+  // Click handler:
+  // - for RDF nodes to load superclasses
+  // - for schema nodes to jump to spec location
+  const handleNodeCtrlClick = useCallback(
+    (e) => {
+      e.stopPropagation();
+      const node = e.target;
+      const path: string = node.data('id');
+      const type: string = node.data('type');
+
+      // If pressed Ctrl (or Cmd on Mac) and the node is an RDF node, load superclasses
+      if ((e.originalEvent.ctrlKey || e.originalEvent.metaKey) && type === 'rdf') {
+        setSelectedClassUri(path);
+      }
+      // If the node is a spec node, jump to the spec location in the editor
+      else if (path.startsWith('#/')) {
+        const specPath = List(path.split('/').slice(1));
+        const jumpPath = specSelectors.bestJumpPath({ specPath });
+        editorActions.jumpToLine(specSelectors.getSpecLineFromPath(jumpPath));
+      }
+    },
+    [editorActions, specSelectors],
+  );
+
+  useEffect(() => {
+    cyRef.current?.on('click', 'node', handleNodeCtrlClick);
+    return () => {
+      cyRef.current?.off('click', 'node', handleNodeCtrlClick);
+    };
+  }, [cyRef.current, handleNodeCtrlClick]);
+
+  // Hover
+  const [nodeHovers, setNodeHovers] = useState<
+    { position: Pick<DOMRect, 'top' | 'left' | 'width' | 'height'>; text: string }[]
+  >([]);
+  useEffect(() => {
+    const handleMouseEnter = (e) => {
+      e.stopPropagation();
+      const node = e.target;
+      const path: string = node.data('id');
+      const { h, w, x1, y1 } = node.renderedBoundingBox();
+      setNodeHovers((curr) => [
+        ...curr.filter((x) => x.text !== path),
+        { position: { top: y1, left: x1, width: w, height: h }, text: path },
+      ]);
+    };
+
+    const handleMouseOut = (e) => {
+      e.stopPropagation();
+      const node = e.target;
+      const path: string = node.data('id');
+      setNodeHovers((curr) => curr.filter((x) => x.text !== path));
+    };
+
+    cyRef.current?.on('mouseover', 'node', handleMouseEnter);
+    cyRef.current?.on('mouseout', 'node', handleMouseOut);
+    return () => {
+      cyRef.current?.off('mouseover', 'node', handleMouseEnter);
+      cyRef.current?.off('mouseout', 'node', handleMouseOut);
+    };
+  }, [cyRef.current]);
 
   // Update layout when layout state changes
+  const [layout, setLayout] = useState<LayoutTypes>('fcose');
   useEffect(() => {
     if (!cyRef.current || !LAYOUTS_MAP[layout]) {
       return;
     }
     cyRef.current.layout(LAYOUTS_MAP[layout]).run();
-  }, [layout]);
+  }, [layout, allNodes]);
 
   // Centra il grafico al load
   useEffect(() => {
-    setTimeout(() => {
+    const centerGraph = () => {
       cyRef.current?.center();
-    }, 100);
-  }, [cyRef.current]);
-
-  // Click sui nodi
-  const handleNodeClick = useCallback((e) => {
-    e.stopPropagation();
-    const path: string = e.target._private.data.id;
-    if (!path.startsWith('#/')) {
-      return;
-    }
-    const specPath = List(path.split('/').slice(1));
-    const jumpPath = specSelectors.bestJumpPath({ specPath });
-    editorActions.jumpToLine(specSelectors.getSpecLineFromPath(jumpPath));
-  }, []);
-
-  useEffect(() => {
-    cyRef.current?.on('click', 'node', handleNodeClick);
+      cyRef.current?.fit();
+    };
+    centerGraph();
+    cyRef.current?.on('dbltap', centerGraph);
     return () => {
-      cyRef.current?.off('click', 'node', handleNodeClick);
+      cyRef.current?.off('dbltap', centerGraph);
     };
   }, [cyRef.current]);
 
+  // Balloon radius calculation function
   const radius = (node) => {
     const sizePerLink = 2;
     const degree = node.degree();
-    const baseSize = node.data('label')?.length * 8;
+    const baseSize = 80; // node.data('label')?.length * 8;
     return baseSize + degree * sizePerLink;
   };
 
   return (
-    <div>
+    <div className="d-flex flex-column" style={{ height: 'calc(100vh - 190px)' }}>
+      <div>
+        <p>
+          This tab shows the schema as a graph. It shows the RDF classes and properties as nodes and the relationships
+          between them as edges. You can open the legend to understand the different elements of the graph.
+        </p>
+      </div>
+
       <Row>
-        <Col xs={12} md={6} lg={4} className="me-auto">
-          {/* <FormGroup check>
+        <Col xs="auto" className="me-auto">
+          <FormGroup check>
             <Toggle
-              label="Semantic Relations"
-              checked={showSemanticRelations}
-              onChange={(e) => setShowSemanticRelations(e.target.checked)}
+              label="Toggle Semantic Superclasses"
+              checked={showSuperclasses}
+              onChange={(e) => setShowSuperclasses(e.target.checked)}
+              disabled={superclassStatus === 'idle'}
             />
-          </FormGroup> */}
+          </FormGroup>
         </Col>
 
-        <Col xs={12} md={6}>
+        <Col xs={12} md={6} lg={4}>
           <div className="select-wrapper">
             <select value={layout} onChange={(e) => setLayout(e.target.value as LayoutTypes)}>
               {LAYOUTS.map((x) => (
@@ -81,70 +162,132 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
         </Col>
       </Row>
 
-      <CytoscapeComponent
-        style={{ width: '100%', height: 'calc(100vh - 210px)' }}
-        cy={(cy: Core) => (cyRef.current = cy)}
-        elements={elements}
-        layout={LAYOUTS_MAP[layout]}
-        stylesheet={[
-          {
-            selector: 'node',
-            style: {
-              label: 'data(label)',
-              width: radius,
-              height: radius,
-              padding: '16px',
-              'text-valign': 'center',
-              'text-halign': 'center',
-              'background-color': '#11479e',
-              color: '#ffffff',
+      <div className="position-relative overflow-x-hidden w-100 h-100 flex-grow-1">
+        <GraphLegend />
+
+        <CytoscapeComponent
+          className="w-100 h-100"
+          cy={(cy: Core) => (cyRef.current = cy)}
+          elements={allNodes.map((x) => ({ data: x }))}
+          layout={LAYOUTS_MAP[layout]}
+          stylesheet={[
+            {
+              selector: 'node',
+              style: {
+                label: 'data(label)',
+                width: radius,
+                height: radius,
+                padding: '16px',
+                'text-valign': 'center',
+                'text-halign': 'center',
+                'background-color': '#11479e',
+                color: '#ffffff',
+                'text-wrap': 'wrap',
+                'text-max-width': '80px',
+                'text-overflow-wrap': 'break-word',
+              },
             },
-          },
-          {
-            selector: 'node[type="rdf"]',
-            style: {
-              'background-color': '#008055',
+            {
+              selector: 'node[type="rdf"]',
+              style: {
+                'background-color': '#008055',
+              },
             },
-          },
-          {
-            selector: 'node[type="blank"]',
-            style: {
-              'background-color': '#768593',
-              width: 'label',
-              height: 'label',
+            {
+              selector: 'node[id^="https://w3id.org/italia/onto/l0"]',
+              style: {
+                'background-color': '#ffffff',
+                color: '#000000',
+                shape: 'ellipse',
+                'border-width': 3,
+                'border-color': '#008055',
+                'border-style': 'dotted',
+              },
             },
-          },
-          {
-            selector: 'node[type="@typed"]',
-            style: {},
-          },
-          {
-            selector: 'node[leaf=1]',
-            style: {
-              shape: 'rectangle',
+            {
+              selector: 'node[type="blank"]',
+              style: {
+                'background-color': '#768593',
+                width: 'label',
+                height: 'label',
+              },
             },
-          },
-          //
-          // Edges
-          {
-            selector: 'edge',
-            style: {
-              width: 2,
-              'curve-style': 'straight',
-              'line-color': '#9dbaea',
-              'target-arrow-color': '#9dbaea',
-              'target-arrow-shape': 'triangle',
+            {
+              selector: 'node[type="@typed"]',
+              style: {},
             },
-          },
-          {
-            selector: 'edge[type="dashed"]',
-            style: {
-              'line-style': 'dashed',
-              'target-arrow-shape': 'none',
+            {
+              selector: 'node[leaf=1]',
+              style: {
+                shape: 'rectangle',
+              },
             },
-          },
-        ]}
-      />
+            //
+            // Edges
+            {
+              selector: 'edge',
+              style: {
+                width: 2,
+                'curve-style': 'straight',
+                'line-color': '#9dbaea',
+                'target-arrow-color': '#9dbaea',
+                'target-arrow-shape': 'triangle',
+              },
+            },
+            {
+              selector: 'edge[type="dashed"]',
+              style: {
+                'line-style': 'dashed',
+                'target-arrow-shape': 'triangle',
+              },
+            },
+          ]}
+        />
+
+        {/* Tooltip */}
+        {nodeHovers.map((nodeHover) => (
+          <div
+            key={nodeHover.text}
+            className="tooltip show"
+            role="tooltip"
+            style={{
+              position: 'absolute',
+              transform: `translate(calc(-50% + ${nodeHover.position.width / 2}px), -100%)`,
+              top: nodeHover.position.top,
+              left: nodeHover.position.left,
+            }}
+          >
+            <div className="tooltip-inner" role="tooltip">
+              {nodeHover.text}
+            </div>
+          </div>
+        ))}
+
+        {/* Alert superclasses resolver */}
+        <div className="position-absolute bottom-0 end-0 p-2">
+          <Alert
+            color={
+              superclassStatus === 'idle' || superclassStatus === 'pending'
+                ? 'info'
+                : superclassStatus === 'error'
+                  ? 'error'
+                  : !superclassData?.length
+                    ? 'warning'
+                    : 'success'
+            }
+          >
+            {superclassStatus === 'idle'
+              ? 'Hold CTRL/CMD + click on an RDF node to load its superclasses'
+              : superclassStatus === 'pending'
+                ? `Loading superclasses for ${selectedClassUri}...`
+                : superclassStatus === 'error'
+                  ? `Error loading superclasses for ${selectedClassUri}`
+                  : !superclassData?.length
+                    ? `No superclasses found for ${selectedClassUri}`
+                    : `Added ${superclassData.length} class relationship(s)`}
+          </Alert>
+        </div>
+      </div>
     </div>
   );
 };
