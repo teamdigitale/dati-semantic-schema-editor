@@ -2,6 +2,10 @@ import { Map, OrderedMap } from 'immutable';
 import { JSONLD_VOCABULARY } from '../common/vocabulary';
 import { SwaggerError } from '../models/error';
 
+/**
+ * Validates the @-prefixed keywords in the jsonld context and their values.
+ * @returns An array of Swagger Editor's errors.
+ */
 export const validateJsonldReservedKeys = (system): SwaggerError[] => {
   // Get basePath from spec
   const specJson = system.specSelectors.specJson() as OrderedMap<string, any>;
@@ -12,12 +16,29 @@ export const validateJsonldReservedKeys = (system): SwaggerError[] => {
 
   const executeDeeply = (path: string[], isInContext: boolean) => {
     const partialSpec = specJson.getIn(path);
-    if (Map.isMap(partialSpec)) {
-      for (const [key, value] of partialSpec.entries() as IterableIterator<[string, unknown]>) {
-        const innerPath = [...path, key];
-        if (key === 'x-jsonld-context') {
-          executeDeeply(innerPath, true);
-        } else if (isInContext && key.startsWith('@') && !JSONLD_VOCABULARY.includes(key)) {
+    if (!Map.isMap(partialSpec)) {
+      return;
+    }
+
+    for (const [key, value] of partialSpec.entries() as IterableIterator<[string, unknown]>) {
+      const innerPath = [...path, key];
+
+      // Perform validation only if we are inside a jsonld context
+      if (isInContext) {
+        // Validate @base value
+        if (key === '@base' && !['#', '/', ':'].some((x) => value?.toString().endsWith(x))) {
+          errors.push({
+            type: 'spec',
+            source,
+            level: 'warning',
+            message: `The provided @base value is not valid. It should end with #, /, or :`,
+            path: innerPath,
+            line: system.specSelectors.getSpecLineFromPath(innerPath),
+          });
+        }
+
+        // Validate jsonld keywords
+        if (key.startsWith('@') && !JSONLD_VOCABULARY.includes(key)) {
           errors.push({
             type: 'spec',
             source,
@@ -26,10 +47,11 @@ export const validateJsonldReservedKeys = (system): SwaggerError[] => {
             path: innerPath,
             line: system.specSelectors.getSpecLineFromPath(innerPath),
           });
-        } else {
-          executeDeeply(innerPath, isInContext);
         }
       }
+
+      // Continue to validate nested properties
+      executeDeeply(innerPath, key === 'x-jsonld-context' ? true : isInContext);
     }
   };
 
