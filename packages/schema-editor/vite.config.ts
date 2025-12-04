@@ -11,7 +11,8 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, './src/index.ts'),
       name: 'schema-editor',
-      fileName: (format) => `index.${format}.js`,
+      fileName: 'index',
+      formats: ['es', 'umd'],
     },
     rollupOptions: {
       external: ['react', 'react-dom', 'react/jsx-runtime', 'swagger-editor', 'swagger-ui'],
@@ -25,7 +26,5 @@ export default defineConfig({
         },
       },
     },
-    sourcemap: true,
-    emptyOutDir: true,
   },
 });

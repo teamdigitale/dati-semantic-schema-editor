@@ -18,6 +18,8 @@ describe('SchemaSemanticScoreButton', () => {
   });
 
   it('should render button with initial state', () => {
+    const mockSpecSelectors = getMockSpecSelectors();
+    render(<SchemaSemanticScoreButton specSelectors={mockSpecSelectors} />);
     const button = screen.getByRole('button');
     expect(button).toBeTruthy();
     expect(button.innerHTML).toContain('Schema Semantic Score β: -');
@@ -28,6 +30,8 @@ describe('SchemaSemanticScoreButton', () => {
     const calculateSchemaSemanticScoreSpy = vi
       .spyOn(utils, 'calculateSchemaSemanticScore')
       .mockResolvedValueOnce({ resolvedSpecJson: {}, schemaSemanticScore: 0.5 });
+    const mockSpecSelectors = getMockSpecSelectors();
+    render(<SchemaSemanticScoreButton specSelectors={mockSpecSelectors} />);
     const button = screen.getByRole('button');
     fireEvent.click(button);
     await waitFor(() => {
