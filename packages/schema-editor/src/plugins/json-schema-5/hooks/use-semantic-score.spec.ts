@@ -132,6 +132,24 @@ describe('useSchemaSemanticScore', () => {
     });
   });
 
+  it('should return global semantic score from specJson if no calculation has been triggered yet', async () => {
+    const specJson = {
+      info: {
+        'x-semantic-score': 0.75,
+      },
+    };
+    const { result } = renderHook(() => useSchemaSemanticScore(specJson));
+    expect(result.current).toEqual({
+      status: 'idle',
+      error: undefined,
+      data: {
+        score: 0.75,
+        isUpdated: false,
+      },
+      recalculate: expect.any(Function),
+    });
+  });
+
   it('should return isUpdated false if spec is changed', async () => {
     vi.spyOn(utils, 'calculateSchemaSemanticScore').mockResolvedValue({
       schemaSemanticScore: 0.8,
