@@ -1,6 +1,6 @@
+import { basename } from '@teamdigitale/schema-editor-utils';
 import { Icon, Spinner } from 'design-react-kit';
 import { useRDFPropertyResolver } from '../../hooks';
-import { basename } from '@teamdigitale/schema-editor-utils';
 
 export function RDFOntologicalClassPropertyBlock({ fieldUri }) {
   const { data, status, error } = useRDFPropertyResolver(fieldUri);
@@ -30,10 +30,10 @@ export function RDFOntologicalClassPropertyBlock({ fieldUri }) {
   }
 
   // Not found item
-  if (!data?.ontologicalClass) {
+  if (!data?.result) {
     return (
       <span
-        className="rdf-ontological-class-property fw-normal"
+        className="rdf-ontological-class-property"
         title={`URI not found: ${fieldUri}. Do you need to disassociate it from the @context?`}
       >
         [⚠]
@@ -44,17 +44,22 @@ export function RDFOntologicalClassPropertyBlock({ fieldUri }) {
   // Resolved item
   return (
     <span className="rdf-ontological-class-property">
+      {!data.ontologicalClass && (
+        <span title={`Cannot retrieve domain class for property ${fieldUri}`}>[⚠]&nbsp;</span>
+      )}
       {'['}
-      <a href={data.ontologicalClass} target="_blank" rel="noreferrer">
-        {basename(data.ontologicalClass)}
-      </a>
-      {data.ontologicalProperty && (
+      {data.ontologicalClass && (
         <>
-          .
-          <a href={data.ontologicalProperty} target="_blank" rel="noreferrer">
-            {basename(data.ontologicalProperty)}
+          <a href={data.ontologicalClass} target="_blank" rel="noreferrer">
+            {basename(data.ontologicalClass)}
           </a>
+          .
         </>
+      )}
+      {data.ontologicalProperty && (
+        <a href={data.ontologicalProperty} target="_blank" rel="noreferrer">
+          {basename(data.ontologicalProperty)}
+        </a>
       )}
       {']'}
     </span>
