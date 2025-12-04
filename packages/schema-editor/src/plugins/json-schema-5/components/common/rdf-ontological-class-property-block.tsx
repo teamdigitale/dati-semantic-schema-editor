@@ -44,18 +44,18 @@ export function RDFOntologicalClassPropertyBlock({ fieldUri }) {
   // Resolved item
   return (
     <span className="rdf-ontological-class-property">
-      {!data.ontologicalClass && (
-        <span title={`Cannot retrieve domain class for property ${fieldUri}`}>[⚠]&nbsp;</span>
-      )}
       {'['}
+      <>
       {data.ontologicalClass && (
-        <>
           <a href={data.ontologicalClass} target="_blank" rel="noreferrer">
             {basename(data.ontologicalClass)}
           </a>
-          .
-        </>
-      )}
+      ) || (
+        <span title={`Cannot retrieve an explicit rdfs:domain for property ${fieldUri} (e.g., rdfs:domain and rdfs:range may be associated via rdfs:subPropertyOf): inspect the property URI for further information.`}>ⓘ</span>
+      )
+      }
+      .
+      </>
       {data.ontologicalProperty && (
         <a href={data.ontologicalProperty} target="_blank" rel="noreferrer">
           {basename(data.ontologicalProperty)}
