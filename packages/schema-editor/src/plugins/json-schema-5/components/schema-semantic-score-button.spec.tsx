@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as configuration from '../../configuration';
-import * as utils from '../utils';
+import * as utils from '@teamdigitale/schema-editor-utils';
 import { SchemaSemanticScoreButton } from './schema-semantic-score-button';
 
 describe('SchemaSemanticScoreButton', () => {
@@ -18,6 +18,8 @@ describe('SchemaSemanticScoreButton', () => {
   });
 
   it('should render button with initial state', () => {
+    const mockSpecSelectors = getMockSpecSelectors();
+    render(<SchemaSemanticScoreButton specSelectors={mockSpecSelectors} />);
     const button = screen.getByRole('button');
     expect(button).toBeTruthy();
     expect(button.innerHTML).toContain('Schema Semantic Score β: -');
@@ -28,6 +30,8 @@ describe('SchemaSemanticScoreButton', () => {
     const calculateSchemaSemanticScoreSpy = vi
       .spyOn(utils, 'calculateSchemaSemanticScore')
       .mockResolvedValueOnce({ resolvedSpecJson: {}, schemaSemanticScore: 0.5 });
+    const mockSpecSelectors = getMockSpecSelectors();
+    render(<SchemaSemanticScoreButton specSelectors={mockSpecSelectors} />);
     const button = screen.getByRole('button');
     fireEvent.click(button);
     await waitFor(() => {

@@ -5,12 +5,10 @@ export default mergeConfig(
   viteConfig,
   defineProject({
     test: {
-      environment: 'jsdom',
-      server: {
-        deps: {
-          inline: ['design-react-kit'],
-        },
-      },
+      globals: true,
+      clearMocks: true,
+      environment: 'node',
+      include: ['src/**/*.spec.{ts,tsx}'],
     },
   }),
 );

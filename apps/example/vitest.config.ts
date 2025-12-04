@@ -5,7 +5,10 @@ export default mergeConfig(
   viteConfig,
   defineProject({
     test: {
-      environment: 'jsdom',
+      globals: true,
+      clearMocks: true,
+      environment: 'happy-dom',
+      include: ['src/**/*.spec.{ts,tsx}'],
     },
   }),
 );

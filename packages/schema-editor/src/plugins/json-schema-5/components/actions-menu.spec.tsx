@@ -1,3 +1,4 @@
+import * as utils from '@teamdigitale/schema-editor-utils';
 import { render, waitFor } from '@testing-library/react';
 import { Map } from 'immutable';
 import yaml from 'js-yaml';
@@ -13,6 +14,11 @@ describe('ActionsMenu', () => {
       oasCheckerUrl: 'https://test.com',
       schemaEditorUrl: 'https://test.com',
       sparqlUrl,
+    });
+
+    vi.spyOn(utils, 'calculateSchemaSemanticScore').mockResolvedValue({
+      resolvedSpecJson: { info: { 'x-semantic-score': 1 } },
+      schemaSemanticScore: 0.5,
     });
   });
 

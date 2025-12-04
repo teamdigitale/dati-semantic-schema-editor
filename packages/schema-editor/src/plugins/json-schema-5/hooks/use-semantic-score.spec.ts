@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useSchemaSemanticScore, useSemanticScore, useSemanticScoreColor } from './use-semantic-score';
 import * as useSparqlQueryImport from './use-sparql';
 import * as configuration from '../../configuration';
-import * as utils from '../utils';
+import * as utils from '@teamdigitale/schema-editor-utils';
 
 describe('useSemanticScore', () => {
   it('should return 0 without jsonldcontext', async () => {

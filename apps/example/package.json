@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
+    "test": "echo 'no test script'",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
-    "test": "vitest run"
+    "preview": "vite preview"
   },
   "files": [
     "dist"

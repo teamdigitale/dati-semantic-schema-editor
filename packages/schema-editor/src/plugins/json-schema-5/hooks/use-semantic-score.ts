@@ -1,14 +1,14 @@
-import { to32CharString } from '@teamdigitale/schema-editor-utils';
-import { Map } from 'immutable';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useConfiguration } from '../../configuration';
-import { AsyncState } from '../models';
 import {
   buildSemanticScoreSparqlQuery,
   calculateSchemaSemanticScore,
   determinePropertiesToValidate,
   ResolvedPropertiesGroups,
-} from '../utils';
+  to32CharString,
+} from '@teamdigitale/schema-editor-utils';
+import { Map } from 'immutable';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useConfiguration } from '../../configuration';
+import { AsyncState } from '../models';
 import { useSparqlQuery } from './use-sparql';
 
 interface SemanticScoreResult {

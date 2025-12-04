@@ -1,12 +1,11 @@
 /**
  * A menu with right icons, see https://italia.github.io/design-react-kit/?path=/docs/documentazione-componenti-dropdown--documentazione#menu-icona-a-destra
  */
-import { normalizeOpenAPISpec } from '@teamdigitale/schema-editor-utils';
+import { calculateSchemaSemanticScore, normalizeOpenAPISpec } from '@teamdigitale/schema-editor-utils';
 import { Dropdown, DropdownMenu, DropdownToggle, Icon, LinkList, LinkListItem } from 'design-react-kit';
 import yaml from 'js-yaml';
 import { useConfiguration } from '../../configuration';
 import { compressAndBase64UrlSafe, copyToClipboard } from '../utils';
-import { calculateSchemaSemanticScore } from '../utils/semantic-score';
 
 const copyAsB64zipToClipboard = (text: string, prefix: string = '') => {
   copyToClipboard(`${prefix}${compressAndBase64UrlSafe(text)}`);
