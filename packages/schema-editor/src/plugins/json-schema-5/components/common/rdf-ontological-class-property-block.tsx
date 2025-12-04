@@ -30,7 +30,7 @@ export function RDFOntologicalClassPropertyBlock({ fieldUri }) {
   }
 
   // Not found item
-  if (!data?.result) {
+  if (!data?.isFound) {
     return (
       <span
         className="rdf-ontological-class-property"

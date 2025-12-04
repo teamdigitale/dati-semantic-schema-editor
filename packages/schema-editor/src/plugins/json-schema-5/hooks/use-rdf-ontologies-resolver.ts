@@ -3,12 +3,12 @@ import { isUri } from '../utils';
 import { useSparqlQuery } from './use-sparql';
 
 export interface RDFProperty {
-  result?: any;
-  ontologicalProperty?: string;
+  isFound: boolean;
+  ontologicalProperty: string | undefined;
   ontologicalClass?: string;
-  ontologicalType?: string | undefined;
-  ontologicalPropertyComment?: string | undefined;
-  controlledVocabulary?: string | undefined;
+  ontologicalType?: string;
+  ontologicalPropertyComment?: string;
+  controlledVocabulary?: string;
 }
 
 export function useRDFPropertyResolver(fieldUri: string | undefined): AsyncState<RDFProperty> {
@@ -63,12 +63,12 @@ export function useRDFPropertyResolver(fieldUri: string | undefined): AsyncState
 
   return {
     data: {
-      result: content,
-      ontologicalClass: content?.domain as string | undefined,
-      ontologicalProperty: fieldUri as string | undefined,
-      ontologicalType: content?.class as string | undefined,
-      ontologicalPropertyComment: content?.comment as string | undefined,
-      controlledVocabulary: content?.controlledVocabulary as string | undefined,
+      isFound: !!content,
+      ontologicalProperty: fieldUri,
+      ontologicalClass: content?.domain,
+      ontologicalType: content?.class,
+      ontologicalPropertyComment: content?.comment,
+      controlledVocabulary: content?.controlledVocabulary,
     },
     status: sparqlStatus,
     error: sparqlError,

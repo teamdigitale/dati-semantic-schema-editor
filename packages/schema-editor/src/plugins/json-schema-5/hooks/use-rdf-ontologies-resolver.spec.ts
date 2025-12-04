@@ -34,6 +34,7 @@ describe('useRDFPropertyResolver', () => {
     await waitFor(() => expect(result.current.status).toBe('fulfilled'));
 
     expect(result.current.data).toEqual({
+      isFound: true,
       ontologicalClass: 'https://w3id.org/italia/onto/CPV/Person',
       ontologicalProperty: 'https://w3id.org/italia/onto/CPV/givenName',
       ontologicalType: 'https://w3id.org/italia/onto/CPV/Text',
