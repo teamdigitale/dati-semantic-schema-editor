@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as configuration from '../../configuration';
-import * as utils from '../utils';
+import * as utils from '@teamdigitale/schema-editor-utils';
 import { SchemaSemanticScoreButton } from './schema-semantic-score-button';
 
 describe('SchemaSemanticScoreButton', () => {
