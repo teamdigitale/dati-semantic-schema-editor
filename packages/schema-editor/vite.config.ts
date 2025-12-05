@@ -8,6 +8,7 @@ export default defineConfig({
   plugins: [react(), dts({ insertTypesEntry: true })],
   assetsInclude: ['**/*.md'],
   build: {
+    sourcemap: true,
     lib: {
       entry: path.resolve(__dirname, './src/index.ts'),
       name: 'schema-editor',
