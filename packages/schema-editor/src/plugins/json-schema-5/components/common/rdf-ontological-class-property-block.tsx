@@ -32,11 +32,14 @@ export function RDFOntologicalClassPropertyBlock({ fieldUri }) {
   // Not found item
   if (!data?.isFound) {
     return (
-      <span
-        className="rdf-ontological-class-property"
-        title={`URI not found: ${fieldUri}. Do you need to disassociate it from the @context?`}
-      >
-        [⚠]
+      <span className="rdf-ontological-class-property">
+        [
+        <Icon
+          size="sm"
+          icon="it-error"
+          title={`URI not found: ${fieldUri}. Do you need to disassociate it from the @context?`}
+        />
+        ]
       </span>
     );
   }
@@ -46,15 +49,18 @@ export function RDFOntologicalClassPropertyBlock({ fieldUri }) {
     <span className="rdf-ontological-class-property">
       {'['}
       <>
-      {data.ontologicalClass && (
+        {(data.ontologicalClass && (
           <a href={data.ontologicalClass} target="_blank" rel="noreferrer">
             {basename(data.ontologicalClass)}
           </a>
-      ) || (
-        <span title={`Cannot retrieve an explicit rdfs:domain for property ${fieldUri} (e.g., rdfs:domain and rdfs:range may be associated via rdfs:subPropertyOf): inspect the property URI for further information.`}>ⓘ</span>
-      )
-      }
-      .
+        )) || (
+          <Icon
+            size="sm"
+            icon="it-info-circle"
+            title={`Cannot retrieve an explicit rdfs:domain for property ${fieldUri} (e.g., rdfs:domain and rdfs:range may be associated via rdfs:subPropertyOf): inspect the property URI for further information.`}
+          />
+        )}
+        .
       </>
       {data.ontologicalProperty && (
         <a href={data.ontologicalProperty} target="_blank" rel="noreferrer">

@@ -57,7 +57,7 @@ export function useRDFPropertyResolver(fieldUri: string | undefined): AsyncState
     { skip: !fieldUri },
   );
 
-  const content = sparqlData?.results?.bindings
+  const content = sparqlData?.results?.bindings?.[0]
     ? Object.fromEntries(Object.entries(sparqlData.results.bindings[0] || {}).map(([k, v]: any[]) => [k, v.value]))
     : undefined;
 
