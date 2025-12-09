@@ -76,6 +76,23 @@ describe('useRDFPropertyResolver', () => {
       'https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level',
     );
   });
+
+  it('should return not found when property is not found', async () => {
+    const mockResponse = {
+      results: {
+        bindings: [],
+      },
+    };
+
+    vi.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
+
+    const { result } = renderHook(() => useRDFPropertyResolver('https://w3id.org/italia/onto/CPV/hasEducationLevel'));
+
+    await waitFor(() => expect(result.current.status).toBe('fulfilled'));
+
+    expect(result.current.data?.isFound).toBe(false);
+    expect(result.current.data?.controlledVocabulary).toBe(undefined);
+  });
 });
 
 describe('useRDFClassTreeResolver', () => {

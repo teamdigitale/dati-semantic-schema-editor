@@ -102,9 +102,12 @@ export async function calculateSchemaSemanticScore(specJson: any, options: { spa
     );
 
     // Execute sparql fetch to check if mapped onto-properties are correct
-    const sparqlResultCount = await fetchValidSemanticScorePropertiesCount(unknownPropertiesPaths, {
-      sparqlUrl: options.sparqlUrl,
-    });
+    let sparqlResultCount = 0;
+    if (unknownPropertiesPaths.length > 0) {
+      sparqlResultCount = await fetchValidSemanticScorePropertiesCount(unknownPropertiesPaths, {
+        sparqlUrl: options.sparqlUrl,
+      });
+    }
     const semanticPropertiesCount = validPropertiesPaths.length + sparqlResultCount;
     const rawPropertiesCount = propertiesPaths?.length;
     const score = rawPropertiesCount > 0 ? semanticPropertiesCount / rawPropertiesCount : 0;

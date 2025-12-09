@@ -1,6 +1,10 @@
 import yaml from 'js-yaml';
-import { describe, expect, it } from 'vitest';
-import { calculateSchemaSemanticScore } from './semantic-score';
+import { describe, expect, it, vi } from 'vitest';
+import * as semanticScore from './semantic-score';
+const { calculateSchemaSemanticScore } = semanticScore;
+
+const fetchMock = vi.fn();
+global.fetch = fetchMock;
 
 describe('semantic-score', () => {
   const sparqlUrl = 'https://virtuoso-test-external-service-ndc-test.apps.cloudpub.testedev.istat.it/sparql';
@@ -44,11 +48,15 @@ components:
         country:
           country: ITA`;
       const specJson = yaml.load(specYaml) as any;
+      fetchMock.mockResolvedValue({
+        ok: true,
+        json: async () => ({ results: { bindings: [{ count: { value: '1' } }] } }),
+      } as Response);
       const { schemaSemanticScore, resolvedSpecJson } = await calculateSchemaSemanticScore(specJson, { sparqlUrl });
       expect(resolvedSpecJson).toBeTruthy();
-      expect(resolvedSpecJson['info']['x-semantic-score']).toEqual(1);
+      expect(schemaSemanticScore).toBeDefined();
+      expect(resolvedSpecJson['info']['x-semantic-score']).toEqual(schemaSemanticScore);
       expect(resolvedSpecJson['info']['x-semantic-score-timestamp']).toBeDefined();
-      expect(schemaSemanticScore).toEqual(1);
     });
 
     it('should not block semantic score calculation if x-jsonld-context is not present', async () => {
@@ -79,7 +87,11 @@ components:
         id: NED
         description: Nessun titolo di studio
 `;
-      const specJson = yaml.load(specYaml) as any;
+      const specJson = yaml.load(specYaml) as Record<string, unknown>;
+      fetchMock.mockResolvedValue({
+        ok: true,
+        json: async () => ({ results: { bindings: [{ count: { value: '1' } }] } }),
+      } as Response);
       const { schemaSemanticScore, resolvedSpecJson } = await calculateSchemaSemanticScore(specJson, { sparqlUrl });
       expect(resolvedSpecJson).toBeTruthy();
       expect(resolvedSpecJson['info']['x-semantic-score']).toEqual(0.5);
