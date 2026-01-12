@@ -42,12 +42,13 @@ jobs:
           files: Dockerfile
           policy: .docker-security.rego
 
-  container-image:
+  container-webapp:
     timeout-minutes: 15
     runs-on: ubuntu-latest
-    # FIXME: re-enable the following line before merging.
-    # if: github.event_name != 'pull_request'
-
+    if: |
+      github.ref == 'refs/heads/main' ||
+      startsWith(github.ref, 'refs/tags/webapp@') ||
+      github.event_name == 'pull_request'
     permissions:
       contents: read
       packages: write
@@ -64,42 +65,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract branch name
-        shell: bash
-        run: echo "branch=${GITHUB_REF##*/}" >> "${GITHUB_OUTPUT}"
-        id: extract_branch
-
-      - name: Determine webapp version
-        id: webapp_version
-        shell: bash
+      - name: Determine version
+        id: version
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "version=latest" >> "${GITHUB_OUTPUT}"
-            echo "Webapp version: latest (main branch)"
+            echo "value=latest" >> "$GITHUB_OUTPUT"
           elif [[ "${{ github.ref }}" =~ ^refs/tags/webapp@(.+)$ ]]; then
-            echo "version=${BASH_REMATCH[1]}" >> "${GITHUB_OUTPUT}"
-            echo "Webapp version: ${BASH_REMATCH[1]} (from tag)"
-          else
-            echo "version=" >> "${GITHUB_OUTPUT}"
-            echo "No webapp version set"
+            echo "value=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Determine api version
-        id: api_version
-        shell: bash
-        run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "version=latest" >> "${GITHUB_OUTPUT}"
-            echo "API version: latest (main branch)"
-          elif [[ "${{ github.ref }}" =~ ^refs/tags/api@(.+)$ ]]; then
-            echo "version=${BASH_REMATCH[1]}" >> "${GITHUB_OUTPUT}"
-            echo "API version: ${BASH_REMATCH[1]} (from tag)"
-          else
-            echo "version=" >> "${GITHUB_OUTPUT}"
-            echo "No api version set"
-          fi
-
-      - name: Extract metadata (tags, labels) for Docker
+      - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5.8.0
         with:
@@ -107,42 +82,68 @@ jobs:
           labels: |
             maintainer=teamdigitale
             org.opencontainers.image.title=dati-semantic-schema-editor
-            org.opencontainers.image.source=${{ github.server_url }}/${{ env.IMAGE_NAME }}
-            org.opencontainers.image.source.branch=${{ steps.extract_branch.outputs.branch }}
           tags: |
             type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
-            type=raw,value=${{ steps.webapp_version.outputs.version }},enable=${{ steps.webapp_version.outputs.version != '' }}
+            type=raw,value=${{ steps.version.outputs.value }},enable=${{ steps.version.outputs.value != '' }}
 
-      - name: Build and push Docker image "webapp"
-        if: steps.webapp_version.outputs.version != '' || github.event_name == 'pull_request'
+      - name: Build and push
         uses: docker/build-push-action@v6.18.0
         with:
           context: .
-          push: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'push-container:webapp') }}
           target: webapp
+          push: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'push-container:webapp') }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta_api
+  container-api:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    if: |
+      github.ref == 'refs/heads/main' ||
+      startsWith(github.ref, 'refs/tags/api@') ||
+      github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      packages: write
+    needs:
+      - security
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to the Github Container registry
+        uses: docker/login-action@v3.6.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "value=latest" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.ref }}" =~ ^refs/tags/api@(.+)$ ]]; then
+            echo "value=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Extract metadata
+        id: meta
         uses: docker/metadata-action@v5.8.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-api
           labels: |
             maintainer=teamdigitale
             org.opencontainers.image.title=dati-semantic-schema-editor-api
-            org.opencontainers.image.source=${{ github.server_url }}/${{ env.IMAGE_NAME }}
-            org.opencontainers.image.source.branch=${{ steps.extract_branch.outputs.branch }}
           tags: |
             type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
-            type=raw,value=${{ steps.api_version.outputs.version }},enable=${{ steps.api_version.outputs.version != '' }}
+            type=raw,value=${{ steps.version.outputs.value }},enable=${{ steps.version.outputs.value != '' }}
 
-      - name: Build and push Docker image "api"
-        if: steps.api_version.outputs.version != '' || github.event_name == 'pull_request'
+      - name: Build and push
         uses: docker/build-push-action@v6.18.0
         with:
           context: .
-          push: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'push-container:api') }}
           target: api
-          tags: ${{ steps.meta_api.outputs.tags }}
-          labels: ${{ steps.meta_api.outputs.labels }}
+          push: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'push-container:api') }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
