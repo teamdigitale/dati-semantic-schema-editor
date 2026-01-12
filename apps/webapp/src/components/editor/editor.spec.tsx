@@ -3,10 +3,12 @@ import { SchemaEditor } from '@teamdigitale/schema-editor';
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, MockInstance, vi } from 'vitest';
 import * as configuration from '../../features/configuration';
+import * as navigation from '../../features/navigation';
 import { Editor } from './editor';
 
 describe('<Editor />', () => {
   let schemaEditorSpy: MockInstance<typeof SchemaEditor>;
+  let useNavigationSpy: MockInstance<typeof navigation.useNavigation>;
 
   beforeEach(() => {
     schemaEditorSpy = vi.spyOn(schemaEditor, 'SchemaEditor').mockReturnValue(<div>Test</div>);
@@ -14,6 +16,11 @@ describe('<Editor />', () => {
     vi.spyOn(configuration, 'useConfiguration').mockReturnValue({
       config: { oasCheckerUrl: 'https://test.com' },
       setConfig: () => ({}),
+    });
+
+    useNavigationSpy = vi.spyOn(navigation, 'useNavigation').mockReturnValue({
+      query: new URLSearchParams(),
+      hash: '',
     });
   });
 
@@ -24,42 +31,38 @@ describe('<Editor />', () => {
 
   it('should use the URL from hash fragment if present', async () => {
     const testUrl = 'https://example.com/schema.yaml';
-    const originalLocation = window.location;
-    window.location = { ...originalLocation, hash: `#url=${encodeURIComponent(testUrl)}` };
+    useNavigationSpy.mockReturnValue({
+      query: new URLSearchParams(),
+      hash: `url=${encodeURIComponent(testUrl)}`,
+    });
     render(<Editor />);
     expect(schemaEditorSpy).toHaveBeenCalledWith(
       { url: testUrl, spec: undefined, oasCheckerUrl: 'https://test.com' },
       {},
     );
-    window.location = originalLocation;
   });
 
   it('should use the OAS spec from hash if URL is not present', async () => {
-    const testFragment = '#oas:MYSwhg9gUEA';
-    const originalLocation = window.location;
-    window.location = {
-      ...originalLocation,
-      hash: testFragment,
-    };
+    useNavigationSpy.mockReturnValue({
+      query: new URLSearchParams(),
+      hash: 'oas:MYSwhg9gUEA',
+    });
     render(<Editor />);
     expect(schemaEditorSpy).toHaveBeenCalledWith(
       { url: undefined, spec: 'ciao\n', oasCheckerUrl: 'https://test.com' },
       {},
     );
-    window.location = originalLocation;
   });
 
   it('should default to the starter schema URL if no hash is present', async () => {
-    const originalLocation = window.location;
-    window.location = {
-      ...originalLocation,
+    useNavigationSpy.mockReturnValue({
+      query: new URLSearchParams(),
       hash: '',
-    };
+    });
     render(<Editor />);
     expect(schemaEditorSpy).toHaveBeenCalledWith(
       { url: 'schemas/starter-schema.oas3.yaml', spec: undefined, oasCheckerUrl: 'https://test.com' },
       {},
     );
-    window.location = originalLocation;
   });
 });

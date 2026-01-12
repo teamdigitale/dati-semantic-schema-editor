@@ -1,22 +1,18 @@
 import { decompressAndBase64UrlSafe, SchemaEditor } from '@teamdigitale/schema-editor';
-import { useState, useEffect } from 'react';
 import { Alert } from 'design-react-kit';
+import { useState } from 'react';
 import { useConfiguration } from '../../features/configuration';
+import { useNavigation } from '../../features/navigation';
 
 export function Editor() {
   const { config } = useConfiguration();
-  const [showQueryParamWarning, setShowQueryParamWarning] = useState(false);
+  const { query, hash } = useNavigation();
 
   // Check if URL query parameter is used (deprecated)
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('url')) {
-      setShowQueryParamWarning(true);
-    }
-  }, []);
+  const showQueryParamWarning = query.has('url');
+  const [isWarningDismissed, setIsWarningDismissed] = useState(false);
 
   // Parse hash fragment
-  const hash = window.location.hash.slice(1); // Remove leading #
   let schemaUrl: string | undefined;
   let schemaSpec: string | undefined;
 
@@ -29,7 +25,6 @@ export function Editor() {
     const fragment = hash.replace('oas:', '');
     schemaSpec = fragment ? decompressAndBase64UrlSafe(fragment) : undefined;
   }
-
   // Priority low: Default schema URL if nothing else provided
   if (!schemaSpec && !schemaUrl) {
     schemaUrl = 'schemas/starter-schema.oas3.yaml';
@@ -37,12 +32,14 @@ export function Editor() {
 
   return (
     <>
-      {showQueryParamWarning && (
-        <Alert color="warning" isOpen={showQueryParamWarning} toggle={() => setShowQueryParamWarning(false)}>
-          <strong>Warning:</strong> The URL query parameter (?url=...) is deprecated. Please use the hash fragment
-          (#url=...) instead to avoid sharing URLs with the server.
-        </Alert>
-      )}
+      <Alert
+        color="warning"
+        isOpen={showQueryParamWarning && !isWarningDismissed}
+        toggle={() => setIsWarningDismissed(true)}
+      >
+        <strong>Warning:</strong> The URL query parameter (?url=...) is deprecated. Please use the hash fragment
+        (#url=...) instead to avoid sharing URLs with the server.
+      </Alert>
       <SchemaEditor url={schemaUrl} spec={schemaSpec} {...config} />
     </>
   );

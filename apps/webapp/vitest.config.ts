@@ -9,6 +9,11 @@ export default mergeConfig(
       clearMocks: true,
       environment: 'happy-dom',
       include: ['src/**/*.spec.{ts,tsx}'],
+      server: {
+        deps: {
+          inline: ['design-react-kit'],
+        },
+      },
     },
   }),
 );
