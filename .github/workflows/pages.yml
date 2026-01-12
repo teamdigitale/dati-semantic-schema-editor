@@ -1,12 +1,11 @@
 name: Deploy to GitHub Pages
-
 on:
   pull_request:
     branches:
       - main
   push:
     tags:
-      - "*"
+      - "webapp@*"
     branches:
       - main
   workflow_dispatch:
@@ -31,7 +30,9 @@ jobs:
           if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
             EDITOR_VERSION="latest"
           elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" =~ ^refs/tags/ ]]; then
-            EDITOR_VERSION="${{ github.ref_name }}"
+            # Extract version from webapp@X.Y.Z tag (pattern already filtered by workflow trigger)
+            TAG_NAME="${{ github.ref_name }}"
+            EDITOR_VERSION="${TAG_NAME#webapp@}"
           else
             EDITOR_VERSION="${UNTRUSTED_GITHUB_HEAD_REF}"
           fi
