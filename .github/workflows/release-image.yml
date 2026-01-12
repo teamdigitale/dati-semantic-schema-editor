@@ -68,6 +68,21 @@ jobs:
         run: echo "branch=${GITHUB_REF##*/}" >> "${GITHUB_OUTPUT}"
         id: extract_branch
 
+      - name: Determine webapp version
+        id: webapp_version
+        shell: bash
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "version=latest" >> "${GITHUB_OUTPUT}"
+            echo "Webapp version: latest (main branch)"
+          elif [[ "${{ github.ref }}" =~ ^refs/tags/webapp@(.+)$ ]]; then
+            echo "version=${BASH_REMATCH[1]}" >> "${GITHUB_OUTPUT}"
+            echo "Webapp version: ${BASH_REMATCH[1]} (from tag)"
+          else
+            echo "version=" >> "${GITHUB_OUTPUT}"
+            echo "No webapp version set"
+          fi
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5.8.0
@@ -80,9 +95,10 @@ jobs:
             org.opencontainers.image.source.branch=${{ steps.extract_branch.outputs.branch }}
           tags: |
             type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=${{ steps.webapp_version.outputs.version }},enable=${{ steps.webapp_version.outputs.version != '' }}
 
       - name: Build and push Docker image "webapp"
+        if: steps.webapp_version.outputs.version != '' || github.event_name == 'pull_request'
         uses: docker/build-push-action@v6.18.0
         with:
           context: .
