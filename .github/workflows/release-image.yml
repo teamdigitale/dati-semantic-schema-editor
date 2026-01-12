@@ -118,7 +118,7 @@ jobs:
         uses: docker/build-push-action@v6.18.0
         with:
           context: .
-          push: true
+          push: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'push-container:webapp') }}
           target: webapp
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -142,7 +142,7 @@ jobs:
         uses: docker/build-push-action@v6.18.0
         with:
           context: .
-          push: true
+          push: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'push-container:api') }}
           target: api
           tags: ${{ steps.meta_api.outputs.tags }}
           labels: ${{ steps.meta_api.outputs.labels }}
