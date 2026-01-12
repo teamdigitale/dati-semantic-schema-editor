@@ -3,6 +3,8 @@ name: Release Container Image
 on:
   workflow_dispatch:
   push:
+    tags:
+      - "webapp@*"
     branches:
       - main
     paths-ignore:
@@ -78,7 +80,7 @@ jobs:
             org.opencontainers.image.source.branch=${{ steps.extract_branch.outputs.branch }}
           tags: |
             type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
-            type=raw,value=latest
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
       - name: Build and push Docker image "webapp"
         uses: docker/build-push-action@v6.18.0
@@ -101,7 +103,7 @@ jobs:
             org.opencontainers.image.source.branch=${{ steps.extract_branch.outputs.branch }}
           tags: |
             type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
-            type=raw,value=latest
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
       - name: Build and push Docker image "api"
         uses: docker/build-push-action@v6.18.0
