@@ -27,6 +27,9 @@ servers:
   - url: http://localhost:3000/api/v1
     description: Local development server
     x-sandbox: true
+  - url: https://schema-editor-api-ndc-dev.apps.cloudpub.testedev.istat.it/api/v1
+    description: Development server
+    x-sandbox: true
 security:
   # Anyone can use this API.
   - {}
@@ -58,6 +61,97 @@ paths:
         - health
   /semantic-score:
     post:
+      summary: Calculate semantic score from an OpenAPI document.
+      tags:
+        - semantic-score
+      description: |-
+        Process an OpenAPI 3.0 specification document containing
+        a schema and computes its semantic score
+        using the associated REST API Linked Data Keywords.
+      operationId: SemanticScoreController_updateSchemaSemanticScore_v1
+      parameters:
+        - in: header
+          name: Accept-Encoding
+          description: |-
+            To ensure proper data integrity,
+            only the identity encoding is supported.
+
+            If no Accept-Encoding header is provided,
+            identity encoding is assumed.
+          required: false
+          schema:
+            type: string
+            default: identity
+            enum:
+              - identity
+      requestBody:
+        required: true
+        description: |-
+          The OpenAPI specification document containing
+          a schema annotated with the REST API Linked Data Keywords.
+        content:
+          multipart/form-data:
+            # The file should be in the following formats.
+            encoding:
+              file:
+                contentType: application/yaml, application/json
+            schema:
+              $ref: "#/components/schemas/CalculateSemanticScoreRequestDTO"
+      responses: &semanticScoreResponses
+        "200":
+          description: |-
+            The Semantic Score has been correctly computed.
+          headers:
+            Digest:
+              $ref: "#/components/headers/Digest"
+            Agid-JWT-Signature:
+              $ref: "#/components/headers/Agid-JWT-Signature"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SemanticScore"
+        "406":
+          description: |-
+            The provided file is not a valid OpenAPI 3.0 specification document.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "413":
+          description: |-
+            The provided file is too large.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "415":
+          description: |-
+            The provided file has:
+            - an unsupported media type,
+              as we only accept application/json and application/yaml;
+            - an unsupported content encoding,
+              as we only accept identity encoding (i.e., no content-encoding
+              header in the request).
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "429":
+          description: |-
+            Too many requests sent to the server.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "default":
+          description: >-
+            Client or server error during semantic score calculation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /semantic-score-oas:
+    post:
       summary: Calculate semantic score for a YAML file
       tags:
         - semantic-score
@@ -80,6 +174,7 @@ paths:
             schema:
               $ref: "#/components/schemas/CalculateSemanticScoreRequestDTO"
       responses:
+        <<: *semanticScoreResponses
         "200":
           description: |-
             An OpenAPI specification document containing
@@ -94,44 +189,142 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/OASDocument"
-        "406":
-          description: |-
-            The provided file is not a valid OpenAPI 3.0 specification document.
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "413":
-          description: |-
-            The provided file is too large.
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "415":
-          description: |-
-            The provided file has an unsupported media type:
-            we only accept application/json and application/yaml.
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "429":
-          description: |-
-            Too many requests sent to the server.
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "default":
-          description: >-
-            Client or server error during semantic score calculation.
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
 components:
+  headers:
+    Digest:
+      description: |-
+        The Digest header contains the
+        digest of the request payload.
+
+        See [RFC 3230](https://datatracker.ietf.org/doc/html/rfc3230) for more details.
+      schema:
+        type: string
+        maxLength: 1024
+      example: SHA-256=AbCdEf1234567890+
+    Agid-JWT-Signature:
+      description: |-
+        The AGID-JWT-Signature header contains the JWT signature
+        of the request payload.
+      schema:
+        $ref: "#/components/schemas/AgidJWTSignature"
+      encoding:
+        contentType: application/jose
   schemas:
+    AgidJWTSignature:
+      description: |-
+        The JSON serialization of an AGID JWT signature
+        as described in https://www.agid.gov.it/sites/agid/files/2024-05/1._piattaforma_acquisizione_dati%20%281%29.pdf
+      type: object
+      additionalProperties: false
+      properties:
+        payload:
+          $ref: "#/components/schemas/AgidJWTPayload"
+        signatures:
+          type: array
+          description: The JWT signatures.
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              protected:
+                type: string
+                description: The protected header.
+              signature:
+                type: string
+                description: The signature.
+
+    AgidJWTHeader:
+      description: |-
+        The JSON serialization header of an AGID JWT signature
+      type: object
+      additionalProperties: false
+      required:
+        - alg
+        - kid
+      properties:
+        alg:
+          type: string
+          description: The algorithm used for the signature.
+        kid:
+          type: string
+          description: The key identifier.
+    AgidJWTPayload:
+      description: |-
+        The payload of an AGID JWT signature
+        as described in https://www.agid.gov.it/sites/agid/files/2024-05/1._piattaforma_acquisizione_dati%20%281%29.pdf
+      type: object
+      additionalProperties: false
+      required:
+        - iss
+        - aud
+        - iat
+        - exp
+        - signed_headers
+      properties:
+        iss:
+          type: string
+          description: The issuer of the JWT.
+        iat:
+          type: integer
+          format: int64
+          description: The issued at timestamp.
+        exp:
+          type: integer
+          format: int64
+          description: The expiration timestamp.
+        aud:
+          type: string
+          description: The audience of the JWT.
+        signed_headers:
+          example:
+          - digest: SHA-256=AbCdEf1234567890+
+          - content-type: application/json
+          type: array
+          description: |-
+            The list of HTTP headers that have been signed.
+          items:
+            anyOf:
+            - type: object
+              additionalProperties: false
+              properties:
+                digest:
+                  type: string
+                  description: The digest of the payload.
+            - type: object
+              additionalProperties: false
+              properties:
+                content-type:
+                  type: string
+                  description: The content type of the payload.
+    SemanticScore:
+      type: object
+      additionalProperties: false
+      properties:
+        oas_digest:
+          type: string
+          description: |-
+            The digest of the OpenAPI Specification document
+            used to compute the semantic score.
+          example: SHA-256=AbCdEf1234567890+
+        score:
+          type: number
+          format: float
+          description: The computed semantic score.
+          minimum: 0
+          maximum: 1
+        timestamp:
+          type: integer
+          format: int64
+          description: |-
+            The UNIX timestamp of when the semantic score was computed.
+      required:
+        - score
+        - timestamp
+        - oas_digest
+      example:
+        score: 0.85
+        timestamp: 1764770779
+        oas_digest: SHA-256=AbCdEf1234567890+
     OASDocument:
       type: string
       description: |-
