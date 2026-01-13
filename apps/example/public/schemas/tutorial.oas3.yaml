@@ -31,9 +31,9 @@ info:
   version: 202108.01.00
   x-summary: A schema collection with CPV ontology.
   license:
-    name: BSD3
-    url: https://opensource.org/licenses/BSD-3-Clause
-  termsOfService: https://opensource.org/licenses/BSD-3-Clause
+    name: Apache-2.0
+    url: https://opensource.org/licenses/Apache-2.0
+  termsOfService: https://opensource.org/licenses/Apache-2.0
   contact:
     name: Roberto Polli
     email: robipolli@gmail.com

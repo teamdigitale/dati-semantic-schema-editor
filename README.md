@@ -7,7 +7,7 @@ This repository uses [PNPM](https://pnpm.io) and [turborepo](https://turbo.build
 <div align="center">
 
 ![Build Status](https://github.com/teamdigitale/dati-semantic-schema-editor/actions/workflows/pages.yml/badge.svg)
-[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 </div>
 
@@ -180,4 +180,4 @@ Please, see [CONTRIBUTING.md](CONTRIBUTING.md) for more details on:
 
 ## License
 
-BSD 3-Clause License © [LICENSE](LICENSE)
+Apache License 2.0 © [LICENSE](LICENSE)
