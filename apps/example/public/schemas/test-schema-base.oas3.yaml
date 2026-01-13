@@ -75,9 +75,9 @@ info:
   version: 202409.01.00
   x-summary: Test basic schemas.
   license:
-    name: BSD3
-    url: https://opensource.org/licenses/BSD-3-Clause
-  termsOfService: https://opensource.org/licenses/BSD-3-Clause
+    name: Apache-2.0
+    url: https://opensource.org/licenses/Apache-2.0
+  termsOfService: https://opensource.org/licenses/Apache-2.0
   contact:
     name: Roberto Polli
     email: roberto.polli@par-tec.it

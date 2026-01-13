@@ -25,4 +25,4 @@ Please, see [CONTRIBUTING.md](CONTRIBUTING.md) for more details on:
 
 ## License
 
-BSD 3-Clause License © [LICENSE](LICENSE)
+Apache License 2.0 © [LICENSE](LICENSE)
