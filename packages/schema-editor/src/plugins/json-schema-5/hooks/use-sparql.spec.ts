@@ -10,7 +10,7 @@ describe('useSparqlQuery', () => {
 
   it('should fetch again if query changes', async () => {
     const fetchSpy = vi
-      .spyOn(global, 'fetch')
+      .spyOn(globalThis, 'fetch')
       .mockResolvedValueOnce(new Response(JSON.stringify({ foo: 'bar' })))
       .mockResolvedValueOnce(new Response(JSON.stringify({ foo: 'baz' })));
     const { result, rerender } = renderHook((query: string = 'testrequest') => useSparqlQuery(query));
@@ -21,7 +21,7 @@ describe('useSparqlQuery', () => {
   });
 
   it('should avoid refetch if query not changed', async () => {
-    const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify({ foo: 'bar' })));
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({ foo: 'bar' })));
     const { result, rerender } = renderHook(() => useSparqlQuery('testrequest'));
     await waitFor(() => expect(result.current.status).toBe('fulfilled'));
     rerender();
@@ -30,14 +30,14 @@ describe('useSparqlQuery', () => {
   });
 
   it('should trim whitespaces in sparqlUrl', async () => {
-    const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify({ foo: 'bar' })));
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({ foo: 'bar' })));
     const { result } = renderHook(() => useSparqlQuery(' testrequest '));
     await waitFor(() => expect(result.current.status).toBe('fulfilled'));
     expect(fetchSpy).toHaveBeenCalledWith('https://sparql.com?format=json&query=%20testrequest%20', expect.anything());
   });
 
   it('should skip if option is provided', async () => {
-    const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify({ foo: 'bar' })));
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({ foo: 'bar' })));
     renderHook(() => useSparqlQuery('testrequest', { skip: true }));
     expect(fetchSpy).not.toHaveBeenCalled();
   });
