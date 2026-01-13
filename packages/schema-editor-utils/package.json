@@ -38,7 +38,7 @@
     "eslint": "^9.37.0",
     "jsdom": "^27.0.0",
     "typescript": "^5.9.3",
-    "vite": "^5.4.21",
+    "vite": "^7.3.1",
     "vite-plugin-dts": "^4.5.4",
     "vitest": "^3.2.4"
   }
