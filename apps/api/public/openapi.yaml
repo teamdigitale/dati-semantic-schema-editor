@@ -19,15 +19,17 @@ info:
     url: https://opensource.org/licenses/BSD-3-Clause
   termsOfService: https://schema.gov.it/note-legali
 tags:
-  - name: health
+  - name: Health
     description: Know the health status of the service.
-  - name: semantic-score
+  - name: SemanticScore
     description: Compute the semantic score.
 servers:
   - url: http://localhost:3000/api/v1
     description: Local development server
     x-sandbox: true
-security: [] # Anyone can use this API.
+security:
+  # Anyone can use this API.
+  - {}
 paths:
   /status:
     get:
@@ -126,12 +128,12 @@ paths:
                 $ref: "#/components/schemas/Problem"
       summary: Health check endpoint
       tags:
-        - health
+        - Health
   /semantic-score:
     post:
       summary: Calculate semantic score for a YAML file
       tags:
-        - semantic-score
+        - SemanticScore
       description: |-
         Process an OpenAPI 3.0 specification document containing
         a schema and computes its semantic score

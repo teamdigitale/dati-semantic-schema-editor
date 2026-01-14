@@ -105,11 +105,12 @@ This API computes the semantic score of an OpenAPI specification document. It is
       .addServer('http://localhost:3000', 'Local development server')
       .addGlobalResponse(API_RESPONSE_429)
       .addGlobalResponse(API_RESPONSE_DEFAULT)
-      .addTag('health', 'Know the health status of the service.')
-      .addTag('semantic-score', 'Compute the semantic score.')
+      .addTag('Health', 'Know the health status of the service.')
+      .addTag('SemanticScore', 'Compute the semantic score.')
       .build();
 
     const document = SwaggerModule.createDocument(app, config, {
+      autoTagControllers: true,
       extraModels: [GlobalErrorDTO],
     });
     SwaggerModule.setup('docs', app, document, {

@@ -1,8 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { API_HEADER_RATE_LIMIT } from '../swagger';
 
-@ApiTags('health')
 @Controller({
   version: '',
   path: 'status',

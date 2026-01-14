@@ -19,7 +19,6 @@ import {
   ApiExtraModels,
   ApiOperation,
   ApiResponse,
-  ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
 import { calculateSchemaSemanticScore } from '@teamdigitale/schema-editor-utils';
@@ -35,7 +34,6 @@ import {
 } from '../swagger';
 import { CalculateSemanticScoreRequestDTO, OASDocumentDTO } from './dto';
 
-@ApiTags('semantic-score')
 @Controller('semantic-score')
 export class SemanticScoreController {
   private readonly logger: Logger = new Logger(SemanticScoreController.name);
