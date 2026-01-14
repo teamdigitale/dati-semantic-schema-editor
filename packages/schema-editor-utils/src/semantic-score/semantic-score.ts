@@ -119,7 +119,7 @@ export async function calculateSchemaSemanticScore(specJson: any, options: { spa
   if (!resolvedSpecJson['info']) {
     resolvedSpecJson['info'] = {};
   }
-  const schemaSemanticScore = schemaSemanticScoreSum / schemaSemanticScoreModels;
+  const schemaSemanticScore = Number((schemaSemanticScoreSum / schemaSemanticScoreModels).toFixed(2)); // Force two decimals, while preserving number type
   resolvedSpecJson['info']['x-semantic-score'] = schemaSemanticScore;
   resolvedSpecJson['info']['x-semantic-score-timestamp'] = Date.now();
 
