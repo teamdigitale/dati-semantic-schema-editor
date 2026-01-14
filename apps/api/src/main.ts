@@ -1,14 +1,15 @@
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, getSchemaPath, SwaggerModule } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as compression from 'compression';
 import helmet from 'helmet';
+import * as packageJson from '../package.json';
 import { AppModule } from './app.module';
 import { Config } from './features/configs';
 import { AllExceptionsFilter, GlobalErrorDTO } from './features/exceptions';
 import { LoggerService } from './features/logger';
-import * as packageJson from '../package.json';
+import { API_RESPONSE_429, API_RESPONSE_DEFAULT } from './features/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -82,6 +83,7 @@ async function bootstrap() {
     configService.get('nodeEnv', { infer: true }) !== 'production';
   if (swaggerEnabled) {
     const config = new DocumentBuilder()
+      .setOpenAPIVersion('3.0.3')
       .setTitle('Semantic Score Calculator')
       .setDescription(
         `## Compute the Semantic Score of an API
@@ -101,16 +103,8 @@ This API computes the semantic score of an OpenAPI specification document. It is
         'info',
       )
       .addServer('http://localhost:3000', 'Local development server')
-      .addGlobalResponse({
-        status: 'default',
-        description:
-          'Client or server error during semantic score calculation.',
-        content: {
-          'application/problem+json': {
-            schema: { $ref: getSchemaPath(GlobalErrorDTO) },
-          },
-        },
-      })
+      .addGlobalResponse(API_RESPONSE_429)
+      .addGlobalResponse(API_RESPONSE_DEFAULT)
       .addTag('health', 'Know the health status of the service.')
       .addTag('semantic-score', 'Compute the semantic score.')
       .build();
