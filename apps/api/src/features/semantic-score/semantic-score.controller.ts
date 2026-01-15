@@ -19,7 +19,6 @@ import {
   ApiExtraModels,
   ApiOperation,
   ApiResponse,
-  ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
 import { calculateSchemaSemanticScore } from '@teamdigitale/schema-editor-utils';
@@ -27,9 +26,14 @@ import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 import * as yaml from 'js-yaml';
 import { Config } from '../configs';
+import {
+  API_HEADER_RATE_LIMIT,
+  API_RESPONSE_406,
+  API_RESPONSE_413,
+  API_RESPONSE_415,
+} from '../swagger';
 import { CalculateSemanticScoreRequestDTO, OASDocumentDTO } from './dto';
 
-@ApiTags('semantic-score')
 @Controller('semantic-score')
 export class SemanticScoreController {
   private readonly logger: Logger = new Logger(SemanticScoreController.name);
@@ -77,7 +81,8 @@ a schema annotated with the REST API Linked Data Keywords.`,
   })
   @ApiResponse({
     status: 200,
-    description: `An OpenAPI specification document containing the #/info/x-semantic-score and #/info/x-semantic-score-timestamp properties. When a YAML file is received, comments and order is/is not preserved.`,
+    description: `An OpenAPI specification document containing the #/info/x-semantic-score and #/info/x-semantic-score-timestamp properties. When a YAML file is received, comments and order is not preserved.`,
+    headers: { ...API_HEADER_RATE_LIMIT },
     content: {
       'application/yaml': {
         schema: {
@@ -91,50 +96,9 @@ a schema annotated with the REST API Linked Data Keywords.`,
       },
     },
   })
-  @ApiResponse({
-    status: 406,
-    description: `The provided file is not a valid OpenAPI 3.0 specification document.`,
-    content: {
-      'application/problem+json': {
-        schema: {
-          $ref: '#/components/schemas/Problem',
-        },
-      },
-    },
-  })
-  @ApiResponse({
-    status: 413,
-    description: `The provided file is too large.`,
-    content: {
-      'application/problem+json': {
-        schema: {
-          $ref: '#/components/schemas/Problem',
-        },
-      },
-    },
-  })
-  @ApiResponse({
-    status: 415,
-    description: `The provided file has an unsupported media type: we only accept application/json and application/yaml.`,
-    content: {
-      'application/problem+json': {
-        schema: {
-          $ref: '#/components/schemas/Problem',
-        },
-      },
-    },
-  })
-  @ApiResponse({
-    status: 429,
-    description: `Too many requests sent to the server.`,
-    content: {
-      'application/problem+json': {
-        schema: {
-          $ref: '#/components/schemas/Problem',
-        },
-      },
-    },
-  })
+  @ApiResponse(API_RESPONSE_406)
+  @ApiResponse(API_RESPONSE_413)
+  @ApiResponse(API_RESPONSE_415)
   async updateSchemaSemanticScore(
     @UploadedFile() file: any,
   ): Promise<StreamableFile> {
