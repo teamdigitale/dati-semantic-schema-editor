@@ -4,6 +4,7 @@ import { SwaggerError } from '../models/error';
 
 /**
  * Validates the @-prefixed keywords in the jsonld context and their values.
+ * @param system - The system object.
  * @returns An array of Swagger Editor's errors.
  */
 export const validateJsonldReservedKeys = (system): SwaggerError[] => {

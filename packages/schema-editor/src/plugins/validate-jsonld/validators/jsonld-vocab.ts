@@ -2,6 +2,11 @@ import { Map, OrderedMap } from 'immutable';
 import { expand } from 'jsonld';
 import { SwaggerError } from '../models/error';
 
+/**
+ * Validates the jsonld context and its properties in the spec.
+ * @param system - The system object.
+ * @returns An array of Swagger Editor's errors.
+ */
 export const validateJsonldVocab = async (system): Promise<SwaggerError[]> => {
   // Get basePath from spec
   const specJson = system.specSelectors.specJson() as OrderedMap<string, any>;
