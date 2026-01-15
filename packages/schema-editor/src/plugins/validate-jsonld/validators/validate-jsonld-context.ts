@@ -2,13 +2,14 @@ import { resolveJsonldContext, resolvePropertyByJsonldContext } from '@teamdigit
 import { Map, OrderedMap } from 'immutable';
 import { resolveSpecPathRefs } from '../../jump-to-path/utils';
 import { SwaggerError } from '../models/error';
+import { JSONLD_VOCABULARY } from '../common/vocabulary';
 
 /**
  * Validates the jsonld context and its properties in the spec.
  * @param system - The system object.
  * @returns An array of Swagger Editor's errors.
  */
-export const validateJsonldVocab = async (system): Promise<SwaggerError[]> => {
+export const validateJsonldContext = async (system): Promise<SwaggerError[]> => {
   const specJson = system.specSelectors.specJson() as OrderedMap<string, any>;
 
   const source = system.jsonldValidatorSelectors.errSource();
@@ -31,20 +32,46 @@ export const validateJsonldVocab = async (system): Promise<SwaggerError[]> => {
     }
 
     // VALIDATION 1:
-    // Validate jsonld context @id values associated with string properties
-    function validateJsonldContextIdValuesDeeply(partialJsonldContext: Map<string, any>, resolvedPath: string[]) {
+    // Validate jsonld context keys and values
+    function validateJsonldContextDeeply(partialJsonldContext: Map<string, any>, resolvedPath: string[]) {
       const entries = Array.from(partialJsonldContext.entries());
 
       for (const [key, value] of entries) {
         const innerPath = [...resolvedPath, key];
+        const jsonldPropertyFullPath = resolveSpecPathRefs(system, [
+          ...SCHEMAS_PATH,
+          dataModelKey,
+          'x-jsonld-context',
+          ...innerPath,
+        ]);
+        const jsonldPropertyLine = system.specSelectors.getSpecLineFromPath(jsonldPropertyFullPath);
 
-        // Process nested values
-        if (Map.isMap(value)) {
-          validateJsonldContextIdValuesDeeply(value as Map<string, any>, innerPath);
+        // VALIDATION 1A: avoid invalid @base values
+        if (key === '@base' && !['#', '/', ':'].some((x) => value?.toString().endsWith(x))) {
+          errors.push({
+            type: 'spec',
+            source,
+            level: 'warning',
+            message: `The provided @base value is not valid. It should end with #, /, or :`,
+            path: jsonldPropertyFullPath,
+            line: jsonldPropertyLine,
+          });
         }
 
-        // If the value equals "@id" then check for object property type
-        else if (value === '@id') {
+        // VALIDATION 1B: avoid invalid jsonld keywords
+        if (key.startsWith('@') && !JSONLD_VOCABULARY.includes(key)) {
+          errors.push({
+            type: 'spec',
+            source,
+            level: 'error',
+            message: `Key ${key} is not a valid jsonld keyword. Allowed keywords are: ${JSONLD_VOCABULARY.join(', ')}`,
+            path: jsonldPropertyFullPath,
+            line: jsonldPropertyLine,
+          });
+        }
+
+        // VALIDATION 1C: avoid invalid @id values associated with non-string properties
+        if (value === '@id') {
           const propertyPath = resolveSpecPathRefs(system, [
             ...SCHEMAS_PATH,
             dataModelKey,
@@ -53,20 +80,24 @@ export const validateJsonldVocab = async (system): Promise<SwaggerError[]> => {
           ]);
           const property = specJson.getIn(propertyPath) as Map<string, any>;
           if (!property || property.get('type') !== 'string') {
-            const jsonldPropertyFullPath = [...SCHEMAS_PATH, dataModelKey, 'x-jsonld-context', ...innerPath];
             errors.push({
               type: 'spec',
               source,
               level: 'warning',
               message: `The @id annotation should be used with string properties.`,
               path: jsonldPropertyFullPath,
-              line: system.specSelectors.getSpecLineFromPath(jsonldPropertyFullPath),
+              line: jsonldPropertyLine,
             });
           }
         }
+
+        // Process nested values
+        if (Map.isMap(value)) {
+          validateJsonldContextDeeply(value as Map<string, any>, innerPath);
+        }
       }
     }
-    validateJsonldContextIdValuesDeeply(jsonldContext, []);
+    validateJsonldContextDeeply(jsonldContext, []);
 
     // VALIDATION 2:
     // Check all object properties are valid in the jsonld context
