@@ -38,6 +38,6 @@
     "eslint-plugin-react-refresh": "^0.4.6",
     "sass": "^1.77.4",
     "typescript": "^5.2.2",
-    "vite": "^5.4.21"
+    "vite": "^7.3.1"
   }
 }
