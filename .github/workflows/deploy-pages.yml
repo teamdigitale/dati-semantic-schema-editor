@@ -2,12 +2,12 @@ name: Deploy to GitHub Pages
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
   push:
     tags:
-      - "webapp@*" # Run only when tag is webapp@X.Y.Z
+      - "webapp@*" # Run only when tag is webapp@X.Y.Z (for multiple tags matching, the workflow is run multiple times)
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
@@ -29,7 +29,8 @@ jobs:
       - name: Define env variables
         # Pass untrusted input via intermediate environment variables. See https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
         env:
-          UNTRUSTED_GITHUB_HEAD_REF: ${{ github.head_ref }}
+          UNTRUSTED_GITHUB_HEAD_REF: ${{ github.head_ref }} # E.g. feature/my-feature - Only populated in pull request events (the source branch name); empty otherwise.
+          UNTRUSTED_GITHUB_REF_NAME: ${{ github.ref_name }} # E.g. my-app@1.0.0 - Always populated; contains the branch name, tag name, or ref name depending on the event type.
         run: |
           # Push on main branch
           if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
@@ -37,7 +38,7 @@ jobs:
 
           # Push on tag
           elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" =~ ^refs/tags/ ]]; then
-            NAME="${{ github.ref_name#webapp@ }}"
+            NAME="${UNTRUSTED_GITHUB_REF_NAME#*@}" # Strip the prefix from the tag name in order to get the tag version only
 
           # Other cases (pull requests, manual dispatch, etc.)
           else
