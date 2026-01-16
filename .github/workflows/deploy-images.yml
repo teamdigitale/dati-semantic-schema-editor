@@ -29,8 +29,9 @@ permissions: read-all
 env:
   CI: true
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME_PREFIX: ${{ github.repository }}
   DOCKER_BUILDKIT: "1"
+  FORCE_PUSH_LABEL_PREFIX: "push-container" # Label prefix to force push the image (e.g. push-container:webapp)
 
 jobs:
   security:
@@ -43,18 +44,23 @@ jobs:
           files: Dockerfile
           policy: .docker-security.rego
 
-  container-webapp:
+  build-containers:
     timeout-minutes: 15
     runs-on: ubuntu-latest
-    if: |
-      github.ref == 'refs/heads/main' ||
-      startsWith(github.ref, 'refs/tags/webapp@') ||
-      github.event_name == 'pull_request'
     permissions:
       contents: read
       packages: write
     needs:
       - security
+    strategy:
+      matrix:
+        include:
+          - target: webapp
+            image_name: ${{ env.IMAGE_NAME_PREFIX }}
+            tag_pattern: "^refs/tags/webapp@(.+)$"
+          - target: api
+            image_name: ${{ env.IMAGE_NAME_PREFIX }}-api
+            tag_pattern: "^refs/tags/api@(.+)$"
 
     steps:
       - uses: actions/checkout@v4
@@ -66,85 +72,46 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Check if should build
+        id: should_build
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]] || [[ "${{ github.event_name }}" == "pull_request" ]] || [[ "${{ github.ref }}" =~ ${{ matrix.tag_pattern }} ]]; then
+            echo "build=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "build=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Determine version
         id: version
+        if: steps.should_build.outputs.build == 'true'
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "value=latest" >> "$GITHUB_OUTPUT"
-          elif [[ "${{ github.ref }}" =~ ^refs/tags/webapp@(.+)$ ]]; then
+          elif [[ "${{ github.ref }}" =~ ${{ matrix.tag_pattern }} ]]; then
             echo "value=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Extract metadata
         id: meta
+        if: steps.should_build.outputs.build == 'true'
         uses: docker/metadata-action@v5.8.0
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ matrix.image_name }}
           labels: |
             maintainer=teamdigitale
-            org.opencontainers.image.title=dati-semantic-schema-editor
+            org.opencontainers.image.title=${{ matrix.image_name }}
           tags: |
             type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
             type=raw,value=${{ steps.version.outputs.value }},enable=${{ steps.version.outputs.value != '' }}
 
       - name: Build and push
+        if: steps.should_build.outputs.build == 'true'
         uses: docker/build-push-action@v6.18.0
         with:
           context: .
-          target: webapp
-          push: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'push-container:webapp') }}
+          target: ${{ matrix.target }}
+          push: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, ${{ env.FORCE_PUSH_LABEL_PREFIX }}:${{ matrix.target }}) }} # Push only if not a pull request or if the pull request has the ${{ env.FORCE_PUSH_LABEL_PREFIX }}:${{ matrix.target }} label
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-  container-api:
-    timeout-minutes: 15
-    runs-on: ubuntu-latest
-    if: |
-      github.ref == 'refs/heads/main' ||
-      startsWith(github.ref, 'refs/tags/api@') ||
-      github.event_name == 'pull_request'
-    permissions:
-      contents: read
-      packages: write
-    needs:
-      - security
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Log in to the Github Container registry
-        uses: docker/login-action@v3.6.0
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Determine version
-        id: version
-        run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "value=latest" >> "$GITHUB_OUTPUT"
-          elif [[ "${{ github.ref }}" =~ ^refs/tags/api@(.+)$ ]]; then
-            echo "value=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5.8.0
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-api
-          labels: |
-            maintainer=teamdigitale
-            org.opencontainers.image.title=dati-semantic-schema-editor-api
-          tags: |
-            type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
-            type=raw,value=${{ steps.version.outputs.value }},enable=${{ steps.version.outputs.value != '' }}
-
-      - name: Build and push
-        uses: docker/build-push-action@v6.18.0
-        with:
-          context: .
-          target: api
-          push: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'push-container:api') }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
