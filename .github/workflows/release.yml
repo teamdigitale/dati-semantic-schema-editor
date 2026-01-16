@@ -6,14 +6,14 @@ on:
       - main
       - next
 
-env:
-  CI: true
-
 permissions:
   pull-requests: write
   contents: write
   packages: write
   id-token: write
+
+env:
+  CI: true
 
 jobs:
   version:
