@@ -79,14 +79,26 @@ jobs:
       - name: Redirect to latest tag on root
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          echo `<!DOCTYPE html> <html lang="en"> <head> <meta http-equiv="refresh" content="0; url=latest" /> <title>Redirecting...</title> </head> <body> <p>If you are not redirected automatically, follow this <a href="latest">link to /latest</a>.</p> </body> </html>` > ./public/index.html
+          mkdir -p ./ghpages
+          cat > ./ghpages/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta http-equiv="refresh" content="0; url=${{ env.NAME }}" />
+              <title>Redirecting...</title>
+          </head>
+          <body>
+              <p>If you are not redirected automatically, follow this <a href="latest">link to /latest</a>.</p>
+          </body>
+          </html>
+          EOF
 
       - name: Deploy the redirect index.html to GitHub Pages
         if: startsWith(github.ref, 'refs/tags/')
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+          publish_dir: ./ghpages
           publish_branch: ${{ env.GH_PAGES_BRANCH }} # don't overwrite the existing gh-pages branch.
           destination_dir: /
 
