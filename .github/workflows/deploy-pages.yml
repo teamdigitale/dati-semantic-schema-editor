@@ -1,0 +1,103 @@
+name: Deploy to GitHub Pages
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+  push:
+    tags:
+      - "webapp@*" # Run only when tag is webapp@X.Y.Z
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  GH_PAGES_BRANCH: gh-pages-new
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Define env variables
+        # Pass untrusted input via intermediate environment variables. See https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
+        env:
+          UNTRUSTED_GITHUB_HEAD_REF: ${{ github.head_ref }}
+        run: |
+          # Push on main branch
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
+            NAME="latest"
+
+          # Push on tag
+          elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" =~ ^refs/tags/ ]]; then
+            NAME="${{ github.ref_name#webapp@ }}"
+
+          # Other cases (pull requests, manual dispatch, etc.)
+          else
+            NAME="${UNTRUSTED_GITHUB_HEAD_REF//\//%2F}" # Escape slashes for URL in branch name, for example the ones created by dependabot
+          fi
+
+          echo "NAME=${NAME}" >> "$GITHUB_ENV"
+          echo "BASE_URL=/${{ github.event.repository.name }}/${NAME}" >> "$GITHUB_ENV"
+          echo "DESTINATION_DIR=${NAME}" >> "$GITHUB_ENV"
+          echo "URL=https://${context.repo.owner}.github.io/${context.repo.repo}/${NAME}" >> "$GITHUB_ENV"
+
+      - name: Check values
+        run: |
+          echo "NAME: ${{ env.NAME }}"
+          echo "BASE_URL: ${{ env.BASE_URL }}"
+          echo "DESTINATION_DIR: ${{ env.DESTINATION_DIR }}"
+          echo "URL: ${{ env.URL }}"
+
+      - name: Install dependencies
+        uses: ./.github/actions/install
+
+      - name: Build project
+        env:
+          BASE_URL: ${{ env.BASE_URL }}
+        run: pnpm run -r build
+
+      - name: Deploy
+        run: pnpm deploy --filter=webapp --prod ./build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/dist
+          publish_branch: ${{ env.GH_PAGES_BRANCH }} # don't overwrite the existing gh-pages branch.
+          destination_dir: ${{ env.DESTINATION_DIR }}
+
+      - name: Redirect to latest tag on root
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          echo `<!DOCTYPE html> <html lang="en"> <head> <meta http-equiv="refresh" content="0; url=latest" /> <title>Redirecting...</title> </head> <body> <p>If you are not redirected automatically, follow this <a href="latest">link to /latest</a>.</p> </body> </html>` > ./public/index.html
+
+      - name: Deploy the redirect index.html to GitHub Pages
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: ${{ env.GH_PAGES_BRANCH }} # don't overwrite the existing gh-pages branch.
+          destination_dir: /
+
+      - name: Post GitHub Pages URL as comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: ${{ github.event.pull_request.number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `The changes have been deployed to GitHub Pages: ${{ env.URL }}`
+            });

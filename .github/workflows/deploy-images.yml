@@ -23,13 +23,14 @@ on:
       - "tests/**"
       - ".husky/**"
       - ".changeset/**"
+
+permissions: read-all
+
 env:
   CI: true
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
   DOCKER_BUILDKIT: "1"
-
-permissions: read-all
 
 jobs:
   security:

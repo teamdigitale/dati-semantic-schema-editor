@@ -1,8 +1,7 @@
-# Run linting action with some custom setup.
-
 name: Lint
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -10,16 +9,12 @@ on:
     branches:
       - main
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
 permissions: read-all
+
 jobs:
   lint:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -60,7 +55,7 @@ jobs:
           # JAVASCRIPT_ES_CONFIG_FILE: eslint.config.mjs
           VALIDATE_TYPESCRIPT_STANDARD: false
           # TYPESCRIPT_ES_CONFIG_FILE: eslint.config.mjs
-          VALIDATE_JSCPD: false  # Disable copy-paste detection.
+          VALIDATE_JSCPD: false # Disable copy-paste detection.
 
   pre-commit:
     # The type of runner that the job will run on
