@@ -136,7 +136,7 @@ jobs:
       - name: Cleanup Docker Images
         uses: actions/delete-package-versions@v5
         with:
-          package-name: ${{ env.IMAGE_NAME_PREFIX }}${{ matrix.image_suffix }}
+          package-name: "dati-semantic-schema-editor${{ matrix.image_suffix }}"
           package-type: "container"
           min-versions-to-keep: 10
           ignore-versions: "(latest|^[0-9]+\\.[0-9]+\\.[0-9]+$)"
