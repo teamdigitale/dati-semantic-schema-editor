@@ -24,7 +24,9 @@ on:
       - ".husky/**"
       - ".changeset/**"
 
-permissions: read-all
+permissions:
+  contents: read
+  packages: write
 
 env:
   CI: true
