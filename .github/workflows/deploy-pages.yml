@@ -48,7 +48,7 @@ jobs:
           echo "NAME=${NAME}" >> "$GITHUB_ENV"
           echo "BASE_URL=/${{ github.event.repository.name }}/${NAME}" >> "$GITHUB_ENV"
           echo "DESTINATION_DIR=${NAME}" >> "$GITHUB_ENV"
-          echo "URL=https://${context.repo.owner}.github.io/${context.repo.repo}/${NAME}" >> "$GITHUB_ENV"
+          echo "URL=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${NAME}" >> "$GITHUB_ENV"
 
       - name: Check values
         run: |
