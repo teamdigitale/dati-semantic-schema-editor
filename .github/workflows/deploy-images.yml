@@ -1,4 +1,4 @@
-name: Release Container Image
+name: Release Container Images
 
 on:
   workflow_dispatch:
@@ -114,5 +114,3 @@ jobs:
           push: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, matrix.force_push_label) }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
