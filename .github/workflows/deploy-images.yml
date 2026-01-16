@@ -31,7 +31,6 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME_PREFIX: ${{ github.repository }}
   DOCKER_BUILDKIT: "1"
-  FORCE_PUSH_LABEL_PREFIX: "push-container" # Label prefix to force push the image (e.g. push-container:webapp)
 
 jobs:
   security:
@@ -56,11 +55,13 @@ jobs:
       matrix:
         include:
           - target: webapp
-            image_name: ${{ env.IMAGE_NAME_PREFIX }}
+            image_suffix: ""
             tag_pattern: "^refs/tags/webapp@(.+)$"
+            force_push_label: push-container:webapp # Label prefix to force push the image in pull request
           - target: api
-            image_name: ${{ env.IMAGE_NAME_PREFIX }}-api
+            image_suffix: "-api"
             tag_pattern: "^refs/tags/api@(.+)$"
+            force_push_label: push-container:api # Label prefix to force push the image in pull request
 
     steps:
       - uses: actions/checkout@v4
@@ -96,10 +97,10 @@ jobs:
         if: steps.should_build.outputs.build == 'true'
         uses: docker/metadata-action@v5.8.0
         with:
-          images: ${{ env.REGISTRY }}/${{ matrix.image_name }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}${{ matrix.image_suffix }}
           labels: |
             maintainer=teamdigitale
-            org.opencontainers.image.title=${{ matrix.image_name }}
+            org.opencontainers.image.title=${{ env.IMAGE_NAME_PREFIX }}${{ matrix.image_suffix }}
           tags: |
             type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
             type=raw,value=${{ steps.version.outputs.value }},enable=${{ steps.version.outputs.value != '' }}
@@ -110,7 +111,7 @@ jobs:
         with:
           context: .
           target: ${{ matrix.target }}
-          push: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, ${{ env.FORCE_PUSH_LABEL_PREFIX }}:${{ matrix.target }}) }} # Push only if not a pull request or if the pull request has the ${{ env.FORCE_PUSH_LABEL_PREFIX }}:${{ matrix.target }} label
+          push: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, matrix.force_push_label) }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
