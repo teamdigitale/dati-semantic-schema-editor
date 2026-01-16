@@ -100,7 +100,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./ghpages
           publish_branch: ${{ env.GH_PAGES_BRANCH }} # don't overwrite the existing gh-pages branch.
-          destination_dir: /
+          destination_dir: ./
 
       - name: Post GitHub Pages URL as comment
         if: github.event_name == 'pull_request'
