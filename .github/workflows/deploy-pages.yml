@@ -76,33 +76,6 @@ jobs:
           publish_branch: ${{ env.GH_PAGES_BRANCH }} # don't overwrite the existing gh-pages branch.
           destination_dir: ${{ env.DESTINATION_DIR }}
 
-      - name: Redirect to latest tag on root
-        if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          mkdir -p ./ghpages
-          cat > ./ghpages/index.html << 'EOF'
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-              <meta http-equiv="refresh" content="0; url=${{ env.NAME }}" />
-              <title>Redirecting...</title>
-          </head>
-          <body>
-              <p>If you are not redirected automatically, follow this <a href="latest">link to /latest</a>.</p>
-          </body>
-          </html>
-          EOF
-
-      - name: Deploy the redirect index.html to GitHub Pages
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./ghpages
-          publish_branch: ${{ env.GH_PAGES_BRANCH }} # don't overwrite the existing gh-pages branch.
-          destination_dir: ./
-          keep_files: true
-
       - name: Post GitHub Pages URL as comment
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v6
@@ -115,3 +88,41 @@ jobs:
               repo: context.repo.repo,
               body: `The changes have been deployed to GitHub Pages: ${{ env.URL }}`
             });
+
+      - name: Redirect to latest tag on root
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          ACTUAL_TAG=${{ env.NAME }}
+          EXISTING_TAGS=$(git tag -l --sort=-refname | grep -E 'webapp@[0-9]+.[0-9]+.[0-9]+$')
+          LATEST_TAG=$(echo "$EXISTING_TAGS" | head -n1 | sed 's/webapp@//')
+          if [[ "$ACTUAL_TAG" != "$LATEST_TAG" ]]; then
+            echo "Current tag ($ACTUAL_TAG) is not the latest tag ($LATEST_TAG). Exiting."
+            exit 0
+          fi
+
+          mkdir -p ./ghpages
+          cat > ./ghpages/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta http-equiv="refresh" content="0; url=${{ env.NAME }}" />
+              <title>Redirecting...</title>
+          </head>
+          <body>
+              <p>If you are not redirected automatically, follow this link to the most recent tag <a href="${{ env.NAME }}">/${{ env.NAME }}</a></p>
+              <p>or jump to the development version <a href="latest">/latest</a>.</p>
+          </body>
+          </html>
+          EOF
+
+          echo "new_index_html=true" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy the redirect index.html to GitHub Pages
+        if: steps.new_index_html.outputs.new_index_html == 'true'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./ghpages
+          publish_branch: ${{ env.GH_PAGES_BRANCH }} # don't overwrite the existing gh-pages branch.
+          destination_dir: ./
+          keep_files: true
