@@ -113,7 +113,7 @@ components:
       properties:
         foo:
           type: integer
-          
+
     BirthPlace:
       type: object
       properties:
@@ -122,7 +122,7 @@ components:
           example: 100
         name:
           type: string
-    
+
     Person:
       type: object
       x-jsonld-type: https://w3id.org/italia/onto/CPV/Person
@@ -163,7 +163,7 @@ components:
       properties:
         foo:
           type: string
-          
+
     BirthPlace:
       type: object
       properties:
@@ -172,7 +172,7 @@ components:
           example: 'A001'
         name:
           type: string
-    
+
     Person:
       type: object
       x-jsonld-type: https://w3id.org/italia/onto/CPV/Person
