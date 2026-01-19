@@ -140,5 +140,5 @@ jobs:
         with:
           package-name: "dati-semantic-schema-editor${{ matrix.image_suffix }}"
           package-type: "container"
-          min-versions-to-keep: 10
+          min-versions-to-keep: 30
           ignore-versions: "(latest|^[0-9]+\\.[0-9]+\\.[0-9]+$)"
