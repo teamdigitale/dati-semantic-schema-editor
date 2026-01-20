@@ -25,7 +25,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
   /**
    * Generates user-friendly error details based on HTTP status code
    */
-  private getErrorDetail(status: HttpStatus, request: Request): string {
+  private getErrorDetailFromRequest(
+    status: HttpStatus,
+    request: Request,
+  ): string {
     const openApiSpecUrl = this.getOpenApiSpecUrl(request);
 
     switch (status) {
@@ -46,7 +49,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       case HttpStatus.SERVICE_UNAVAILABLE:
         return 'The service is temporarily unavailable. Please try again later.';
       default:
-        return `An unknown error occurred. Please check the API documentation at ${openApiSpecUrl} and/or try again later.`;
+        return `${HttpStatusCodes.getStatusText(status)}. Please check the API documentation at ${openApiSpecUrl} and/or try again later.`;
     }
   }
 
@@ -60,28 +63,28 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const errorMessage =
-      exception instanceof HttpException
-        ? exception.getResponse()
-        : 'Internal server error';
+    let errorMessage: string = '';
+    if (exception instanceof HttpException) {
+      const httpResponse = exception.getResponse();
+      if (typeof httpResponse === 'string') {
+        errorMessage = httpResponse;
+      } else if (
+        'message' in httpResponse &&
+        typeof httpResponse['message'] === 'string'
+      ) {
+        errorMessage = httpResponse['message'];
+      }
+    }
+    if (!errorMessage) {
+      errorMessage = this.getErrorDetailFromRequest(status, request);
+    }
 
     // If internal exceptions are detected, always use status-based message to avoid leaking internal details
     // Otherwise, use the provided message
-    const detail: string =
-      exception instanceof HttpException && typeof errorMessage === 'string'
-        ? errorMessage
-        : this.getErrorDetail(status, request);
-
-    // Generate RFC 7231 type URI for the status code
-    const statusCategory = Math.floor(status / 100);
-    const typeUri = `https://tools.ietf.org/html/rfc7231#section-6.${statusCategory}.${status % 100}`;
-
     const errorResponse: GlobalErrorDTO = {
       title: HttpStatusCodes.getStatusText(status),
       status,
-      type: typeUri,
-      detail,
-      instance: request.url,
+      detail: errorMessage,
     };
 
     // Set Content-Type header for Problem.JSON (RFC 7807)
