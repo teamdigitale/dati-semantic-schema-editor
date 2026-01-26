@@ -139,22 +139,27 @@ describe('useRDFClassTreeResolver', () => {
       {
         parent: 'https://w3id.org/italia/onto/l0/Entity',
         child: 'https://w3id.org/italia/onto/l0/Agent',
+        equivalent: undefined,
       },
       {
         parent: 'https://w3id.org/italia/onto/l0/Object',
         child: 'https://w3id.org/italia/onto/l0/Agent',
+        equivalent: undefined,
       },
       {
         parent: 'https://w3id.org/italia/onto/l0/Entity',
         child: 'https://w3id.org/italia/onto/l0/Object',
+        equivalent: undefined,
       },
       {
         parent: 'https://w3id.org/italia/onto/CPV/Person',
         child: 'https://w3id.org/italia/onto/CPV/Alive',
+        equivalent: undefined,
       },
       {
         parent: 'https://w3id.org/italia/onto/l0/Agent',
         child: 'https://w3id.org/italia/onto/CPV/Person',
+        equivalent: undefined,
       },
     ]);
   });
@@ -179,6 +184,33 @@ describe('useRDFClassTreeResolver', () => {
     const { result } = renderHook(() => useRDFClassTreeResolver('https://w3id.org/italia/onto/CPV/NonExistentClass'));
     await waitFor(() => expect(result.current.status).toBe('fulfilled'));
     expect(result.current.data).toEqual([]);
+  });
+
+  it('should resolve equivalent classes', async () => {
+    const mockResponse = {
+      results: {
+        bindings: [
+          {
+            parent: { type: 'uri', value: 'https://w3id.org/italia/onto/CPV/EquivalentClass' },
+            child: { type: 'uri', value: 'https://w3id.org/italia/onto/CPV/Person' },
+            equivalent: { type: 'uri', value: 'https://w3id.org/italia/onto/CPV/EquivalentClass' },
+          },
+        ],
+      },
+    };
+
+    vi.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
+
+    const { result } = renderHook(() => useRDFClassTreeResolver('https://w3id.org/italia/onto/CPV/Person'));
+
+    await waitFor(() => expect(result.current.status).toBe('fulfilled'));
+
+    expect(result.current.data).toHaveLength(1);
+    expect(result.current.data?.[0]).toEqual({
+      parent: 'https://w3id.org/italia/onto/CPV/EquivalentClass',
+      child: 'https://w3id.org/italia/onto/CPV/Person',
+      equivalent: 'https://w3id.org/italia/onto/CPV/EquivalentClass',
+    });
   });
 });
 
