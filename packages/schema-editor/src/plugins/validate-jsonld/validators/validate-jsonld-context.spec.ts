@@ -100,6 +100,76 @@ describe('validateJsonldContext', () => {
       });
     });
 
+    describe('URL context', () => {
+      it('should warn when x-jsonld-context is an https:// URL', async () => {
+        const specJson = fromJS({
+          components: {
+            schemas: {
+              Person: {
+                'x-jsonld-context': 'https://example.com/context.jsonld',
+                properties: {
+                  name: {
+                    type: 'string',
+                  },
+                },
+              },
+            },
+          },
+        });
+        const system = createMockSystem(specJson);
+        const errors = await validateJsonldContext(system);
+        expect(errors).toHaveLength(1);
+        expect(errors[0].level).toBe('warning');
+        expect(errors[0].message).toContain('limitations and security implications');
+        expect(errors[0].path).toEqual(['components', 'schemas', 'Person', 'x-jsonld-context']);
+      });
+
+      it('should warn when x-jsonld-context is an http:// URL', async () => {
+        const specJson = fromJS({
+          components: {
+            schemas: {
+              Person: {
+                'x-jsonld-context': 'http://example.com/context.jsonld',
+                properties: {
+                  name: {
+                    type: 'string',
+                  },
+                },
+              },
+            },
+          },
+        });
+        const system = createMockSystem(specJson);
+        const errors = await validateJsonldContext(system);
+        expect(errors).toHaveLength(1);
+        expect(errors[0].level).toBe('warning');
+        expect(errors[0].message).toContain('limitations and security implications');
+        expect(errors[0].path).toEqual(['components', 'schemas', 'Person', 'x-jsonld-context']);
+      });
+
+      it('should not warn when x-jsonld-context is an embedded context object', async () => {
+        const specJson = fromJS({
+          components: {
+            schemas: {
+              Person: {
+                'x-jsonld-context': {
+                  '@vocab': 'https://vocab.example.com/',
+                },
+                properties: {
+                  name: {
+                    type: 'string',
+                  },
+                },
+              },
+            },
+          },
+        });
+        const system = createMockSystem(specJson);
+        const errors = await validateJsonldContext(system);
+        expect(errors).toHaveLength(0);
+      });
+    });
+
     describe('validate @id property', () => {
       it('should warn when nested integer property is associated with @id', async () => {
         const specYaml = `openapi: 3.0.3
