@@ -25,6 +25,25 @@ export const validateJsonldContext = async (system): Promise<SwaggerError[]> => 
   // Process every element in #/components/schemas that has a jsonld context
   const filteredSchemas = dataModels.filter((x) => x.has('x-jsonld-context'));
   for (const [dataModelKey, dataModel] of filteredSchemas.entries()) {
+    // Check if x-jsonld-context is a URL (not an embedded context)
+    const xJsonldContext = dataModel.get('x-jsonld-context');
+    if (
+      typeof xJsonldContext === 'string' &&
+      (xJsonldContext.startsWith('http://') || xJsonldContext.startsWith('https://'))
+    ) {
+      const jsonldContextPath = resolveSpecPathRefs(system, [...SCHEMAS_PATH, dataModelKey, 'x-jsonld-context']);
+      const jsonldContextLine = system.specSelectors.getSpecLineFromPath(jsonldContextPath);
+      errors.push({
+        type: 'spec',
+        source,
+        level: 'warning',
+        message: `Context URL dereferencing is not supported. URL contexts have limitations and security implications. Use an embedded context instead.`,
+        path: jsonldContextPath,
+        line: jsonldContextLine,
+      });
+      continue;
+    }
+
     // Get the root jsonld context
     const jsonldContext = resolveJsonldContext(dataModel)?.get('@context');
     if (!jsonldContext) {
