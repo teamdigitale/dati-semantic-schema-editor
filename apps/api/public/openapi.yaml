@@ -15,8 +15,8 @@ info:
     url: https://teamdigitale.governo.it
     email: teamdigitale@governo.it
   license:
-    name: BSD3
-    url: https://opensource.org/licenses/BSD-3-Clause
+    name: Apache-2.0
+    url: https://opensource.org/licenses/Apache-2.0
   termsOfService: https://schema.gov.it/note-legali
 tags:
   - name: health

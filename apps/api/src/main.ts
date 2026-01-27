@@ -93,7 +93,7 @@ This API computes the semantic score of an OpenAPI specification document. It is
         'https://teamdigitale.governo.it',
         'teamdigitale@governo.it',
       )
-      .setLicense('BSD3', 'https://opensource.org/licenses/BSD-3-Clause')
+      .setLicense('Apache-2.0', 'https://opensource.org/licenses/Apache-2.0')
       .setTermsOfService('https://schema.gov.it/note-legali')
       .addExtension(
         'x-summary',
