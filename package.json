@@ -53,6 +53,9 @@
     ],
     "**/src/**/*.{json,js,ts,jsx,tsx}": [
       "prettier --write --ignore-unknown"
+    ],
+    "**/*": [
+      "pre-commit run --files"
     ]
   }
 }

@@ -139,27 +139,22 @@ describe('useRDFClassTreeResolver', () => {
       {
         parent: 'https://w3id.org/italia/onto/l0/Entity',
         child: 'https://w3id.org/italia/onto/l0/Agent',
-        equivalent: undefined,
       },
       {
         parent: 'https://w3id.org/italia/onto/l0/Object',
         child: 'https://w3id.org/italia/onto/l0/Agent',
-        equivalent: undefined,
       },
       {
         parent: 'https://w3id.org/italia/onto/l0/Entity',
         child: 'https://w3id.org/italia/onto/l0/Object',
-        equivalent: undefined,
       },
       {
         parent: 'https://w3id.org/italia/onto/CPV/Person',
         child: 'https://w3id.org/italia/onto/CPV/Alive',
-        equivalent: undefined,
       },
       {
         parent: 'https://w3id.org/italia/onto/l0/Agent',
         child: 'https://w3id.org/italia/onto/CPV/Person',
-        equivalent: undefined,
       },
     ]);
   });
