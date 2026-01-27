@@ -6,6 +6,7 @@ import { Dropdown, DropdownMenu, DropdownToggle, Icon, LinkList, LinkListItem } 
 import yaml from 'js-yaml';
 import { useConfiguration } from '../../configuration';
 import { compressAndBase64UrlSafe, copyToClipboard } from '../utils';
+import { LayoutTypes } from '../../layout';
 
 const copyAsB64zipToClipboard = (text: string, prefix: string = '') => {
   copyToClipboard(`${prefix}${compressAndBase64UrlSafe(text)}`);
@@ -29,90 +30,109 @@ export const createBundle = async (specJson: object, options: { sparqlUrl: strin
   return resolvedSpecJson;
 };
 
-export const ActionsMenu = ({ specSelectors, url, specActions }) => {
+export const ActionsMenu = ({ url, ...system }) => {
+  const { specSelectors, specActions, getConfigs } = system;
   const { oasCheckerUrl, schemaEditorUrl, sparqlUrl = '' } = useConfiguration();
 
-  const actions: Array<{
-    text: string;
-    icon: string;
-    onClick?: () => void;
-    href?: string;
-  } | null> = [
-    {
-      text: 'New from template',
-      icon: 'it-pencil',
-      onClick: () => {
-        const template = `${window.location.origin}/${window.location.pathname}/schemas/blank-template.oas3.yaml`;
-        specActions.updateUrl(template);
-        specActions.download(template);
-      },
-    },
-    {
-      text: 'Download editor content',
-      icon: 'it-download',
-      onClick: () => downloadContent(specSelectors.specStr(), 'application/yaml', 'spec.yaml'),
-    },
-    {
-      text: 'Download as JSON',
-      icon: 'it-download',
-      onClick: () =>
-        downloadContent(JSON.stringify(specSelectors.specJson(), null, 2), 'application/json', 'spec.json'),
-    },
-    {
-      text: 'Download bundle',
-      icon: 'it-download',
-      onClick: async () => {
-        const resolvedSpecJson = await createBundle(specSelectors.specJson().toJS(), { sparqlUrl });
-        downloadContent(yaml.dump(resolvedSpecJson), 'application/yaml', 'spec.yaml');
-      },
-    },
-    {
-      text: 'Copy as URL',
-      icon: 'it-copy',
-      onClick: () =>
-        copyAsB64zipToClipboard(specSelectors.specStr(), `${window.location.origin}${window.location.pathname}#oas:`),
-    },
-    oasCheckerUrl
-      ? {
-          text: 'Copy as OAS Checker URL',
-          icon: 'it-copy',
-          onClick: () => copyAsB64zipToClipboard(specSelectors.specStr(), `${oasCheckerUrl}#text=`),
-        }
-      : null,
-    schemaEditorUrl
-      ? {
-          text: 'Open in Schema Editor',
-          icon: 'it-external-link',
-          href: `${schemaEditorUrl}?url=${/^http/.test(url) ? url : `${window.location.origin}/${window.location.pathname}/${url}`}`,
-        }
-      : null,
+  const isEditorLayout = getConfigs().layout === LayoutTypes.EDITOR;
+
+  const actions = [
+    ...(isEditorLayout
+      ? [
+          {
+            id: 'NewFromTemplate',
+            text: 'New from template',
+            icon: 'it-pencil',
+            onClick: () => {
+              const template = `${window.location.origin}/${window.location.pathname}/schemas/blank-template.oas3.yaml`;
+              specActions.updateUrl(template);
+              specActions.download(template);
+            },
+          },
+          {
+            id: 'DownloadEditorContent',
+            text: 'Download editor content',
+            icon: 'it-download',
+            onClick: () => downloadContent(specSelectors.specStr(), 'application/yaml', 'spec.yaml'),
+          },
+          {
+            id: 'DownloadAsJson',
+            text: 'Download as JSON',
+            icon: 'it-download',
+            onClick: () =>
+              downloadContent(JSON.stringify(specSelectors.specJson(), null, 2), 'application/json', 'spec.json'),
+          },
+          {
+            id: 'DownloadBundle',
+            text: 'Download bundle',
+            icon: 'it-download',
+            onClick: async () => {
+              const resolvedSpecJson = await createBundle(specSelectors.specJson().toJS(), { sparqlUrl });
+              downloadContent(yaml.dump(resolvedSpecJson), 'application/yaml', 'spec.yaml');
+            },
+          },
+          {
+            id: 'CopyAsUrl',
+            text: 'Copy as URL',
+            icon: 'it-copy',
+            onClick: () =>
+              copyAsB64zipToClipboard(
+                specSelectors.specStr(),
+                `${window.location.origin}${window.location.pathname}#oas:`,
+              ),
+          },
+          ...(oasCheckerUrl
+            ? [
+                {
+                  id: 'CopyAsOasCheckerUrl',
+                  text: 'Copy as OAS Checker URL',
+                  icon: 'it-copy',
+                  onClick: () => copyAsB64zipToClipboard(specSelectors.specStr(), `${oasCheckerUrl}#text=`),
+                },
+              ]
+            : []),
+        ]
+      : [
+          ...(schemaEditorUrl
+            ? [
+                {
+                  id: 'OpenInSchemaEditor',
+                  text: 'Open in Schema Editor',
+                  icon: 'it-external-link',
+                  href: `${schemaEditorUrl}?url=${/^http/.test(url) ? url : `${window.location.origin}/${window.location.pathname}/${url}`}`,
+                },
+              ]
+            : []),
+        ]),
   ];
 
   return (
-    <Dropdown>
-      <DropdownToggle color="primary">Action menu</DropdownToggle>
+    actions.length > 0 && (
+      <Dropdown>
+        <DropdownToggle color="primary">Action menu</DropdownToggle>
 
-      <DropdownMenu>
-        <LinkList>
-          <>
-            {actions.map(
-              (action) =>
-                action && (
-                  <LinkListItem
-                    key={action.text}
-                    className="right-icon justify-content-between d-flex"
-                    inDropdown
-                    href={action?.href || '#'}
-                    onClick={action?.onClick}
-                  >
-                    <span>{action?.text}</span>
-                    <Icon icon={action?.icon} size="sm" className="right" />
-                  </LinkListItem>
-                ),
-            )}
-          </>
-        </LinkList>
-      </DropdownMenu>
-    </Dropdown>
+        <DropdownMenu>
+          <LinkList>
+            <>
+              {actions.map(
+                (action) =>
+                  action && (
+                    <LinkListItem
+                      key={action.id}
+                      className="right-icon justify-content-between d-flex"
+                      inDropdown
+                      href={action?.href || '#'}
+                      onClick={action?.onClick}
+                    >
+                      <span>{action?.text}</span>
+                      <Icon icon={action?.icon} size="sm" className="right" />
+                    </LinkListItem>
+                  ),
+              )}
+            </>
+          </LinkList>
+        </DropdownMenu>
+      </Dropdown>
+    )
   );
 };

@@ -2,9 +2,12 @@ import './overview-container.scss';
 
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'design-react-kit';
 import { useState } from 'react';
+import { useConfiguration } from '../../../configuration';
 import { SchemaNavigationProvider } from '../Navigation';
 
 const OverviewContainer = ({ errSelectors, specSelectors, getComponent }) => {
+  const { tabsList } = useConfiguration();
+
   const VersionPragmaFilter = getComponent('VersionPragmaFilter');
   const Errors = getComponent('Errors', true);
   const InfoContainer = getComponent('InfoContainer', true);
@@ -15,7 +18,17 @@ const OverviewContainer = ({ errSelectors, specSelectors, getComponent }) => {
   const isSwagger2 = specSelectors.isSwagger2();
   const isOAS3 = specSelectors.isOAS3();
 
-  const [activeTab, toggleTab] = useState('models');
+  const allTabs = [
+    { id: 'Models', title: 'Data Models', Component: Models },
+    { id: 'Information', title: 'Information', Component: InfoContainer },
+    { id: 'Graph', title: 'Graph', Component: TabGraph },
+    { id: 'Help', title: 'Help', Component: TabHelp },
+  ];
+
+  // Filter tabs based on tabsList config
+  const tabs = tabsList ? allTabs.filter((tab) => tabsList?.includes(tab.id)) : allTabs;
+
+  const [activeTab, toggleTab] = useState(tabs[0]?.id);
 
   const isSpecEmpty = !specSelectors.specStr();
   const loadingStatus = specSelectors.loadingStatus();
@@ -64,13 +77,6 @@ const OverviewContainer = ({ errSelectors, specSelectors, getComponent }) => {
     return <div className="loading-container">{loadingMessage}</div>;
   }
 
-  const tabs = [
-    { id: 'models', title: 'Data Models', Component: Models },
-    { id: 'information', title: 'Information', Component: InfoContainer },
-    { id: 'graph', title: 'Graph', Component: TabGraph },
-    { id: 'help', title: 'Help', Component: TabHelp },
-  ];
-
   return (
     <SchemaNavigationProvider>
       <div className="overview-container">
@@ -78,7 +84,7 @@ const OverviewContainer = ({ errSelectors, specSelectors, getComponent }) => {
           <Errors />
 
           <div>
-            {tabs.length > 0 && (
+            {tabs.length > 1 && (
               <Nav fill className="mb-4">
                 {tabs.map((x) => (
                   <NavItem key={x.id}>
