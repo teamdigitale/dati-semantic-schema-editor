@@ -104,7 +104,7 @@ export function useRDFClassTreeResolver(classUri: string | undefined): AsyncStat
         ?child (owl:equivalentClass | ^owl:equivalentClass) ?equivalent .
         FILTER(!isBlank(?equivalent))
       }
-    
+
       FILTER(
         !isBlank(?child) &&
         !isBlank(?parent) &&
