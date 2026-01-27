@@ -4,6 +4,14 @@ const innerLog = (...args) => {
   // console.log(...args); // Uncomment to enable logs
 };
 
+/**
+ * Resolves the jsonld context from the schema, by analyzing the nested contexts too.
+ * @param schema The schema to resolve the jsonld context from.
+ * @returns The resolved jsonld context in the form of `Immutable.Map`.
+ * @example
+ * const resolvedContext = resolveJsonldContext(schema);
+ * console.log(resolvedContext.toJS()); // { '@context': { '@vocab': 'https://example.com/' } }
+ */
 export const resolveJsonldContext = (schema: Map<any, any> | undefined) => {
   const traverseSchema = (schemaNode: Map<any, any> | undefined, contextNode: Map<any, any>) => {
     if (Map.isMap(schemaNode)) {

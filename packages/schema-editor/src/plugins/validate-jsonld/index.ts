@@ -1,5 +1,4 @@
-import { validateJsonldReservedKeys } from './validators/jsonld-reserved-keys';
-import { validateJsonldVocab } from './validators/jsonld-vocab';
+import { validateJsonldContext } from './validators/validate-jsonld-context';
 
 export const JSONLDValidatorPlugin = () => {
   return {
@@ -15,8 +14,7 @@ export const JSONLDValidatorPlugin = () => {
             system.errActions.clear({ source });
             system.errActions.newSpecErrBatch([
               // Insert here all validation functions
-              ...validateJsonldReservedKeys(system),
-              ...(await validateJsonldVocab(system)),
+              ...(await validateJsonldContext(system)),
             ]);
           },
         },
