@@ -4,7 +4,7 @@ import * as semanticScore from './semantic-score';
 const { calculateSchemaSemanticScore } = semanticScore;
 
 const fetchMock = vi.fn();
-global.fetch = fetchMock;
+globalThis.fetch = fetchMock;
 
 describe('semantic-score', () => {
   const sparqlUrl = 'https://virtuoso-test-external-service-ndc-test.apps.cloudpub.testedev.istat.it/sparql';

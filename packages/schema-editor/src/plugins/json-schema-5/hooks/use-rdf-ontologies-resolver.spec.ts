@@ -27,7 +27,7 @@ describe('useRDFPropertyResolver', () => {
       },
     };
 
-    vi.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
 
     const { result } = renderHook(() => useRDFPropertyResolver('https://w3id.org/italia/onto/CPV/givenName'));
 
@@ -44,7 +44,7 @@ describe('useRDFPropertyResolver', () => {
   });
 
   it('should skip query when fieldUri is undefined', async () => {
-    const fetchSpy = vi.spyOn(global, 'fetch');
+    const fetchSpy = vi.spyOn(globalThis, 'fetch');
 
     renderHook(() => useRDFPropertyResolver(undefined));
 
@@ -66,7 +66,7 @@ describe('useRDFPropertyResolver', () => {
       },
     };
 
-    vi.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
 
     const { result } = renderHook(() => useRDFPropertyResolver('https://w3id.org/italia/onto/CPV/hasEducationLevel'));
 
@@ -84,7 +84,7 @@ describe('useRDFPropertyResolver', () => {
       },
     };
 
-    vi.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
 
     const { result } = renderHook(() => useRDFPropertyResolver('https://w3id.org/italia/onto/CPV/hasEducationLevel'));
 
@@ -128,7 +128,7 @@ describe('useRDFClassTreeResolver', () => {
       },
     };
 
-    vi.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
 
     const { result } = renderHook(() => useRDFClassTreeResolver('https://w3id.org/italia/onto/CPV/Alive'));
 
@@ -160,7 +160,7 @@ describe('useRDFClassTreeResolver', () => {
   });
 
   it('should skip query when classUri is undefined', async () => {
-    const fetchSpy = vi.spyOn(global, 'fetch');
+    const fetchSpy = vi.spyOn(globalThis, 'fetch');
 
     renderHook(() => useRDFClassTreeResolver(undefined));
 
@@ -174,7 +174,7 @@ describe('useRDFClassTreeResolver', () => {
       },
     };
 
-    vi.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
 
     const { result } = renderHook(() => useRDFClassTreeResolver('https://w3id.org/italia/onto/CPV/NonExistentClass'));
     await waitFor(() => expect(result.current.status).toBe('fulfilled'));
@@ -201,7 +201,7 @@ describe('useRDFClassResolver', () => {
       },
     };
 
-    vi.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
 
     const { result } = renderHook(() => useRDFClassResolver('https://w3id.org/italia/onto/CPV/Person'));
 
@@ -216,7 +216,7 @@ describe('useRDFClassResolver', () => {
   });
 
   it('should skip query when classUri is not a valid URI', async () => {
-    const fetchSpy = vi.spyOn(global, 'fetch');
+    const fetchSpy = vi.spyOn(globalThis, 'fetch');
 
     renderHook(() => useRDFClassResolver('not-a-uri'));
 
@@ -236,7 +236,7 @@ describe('useRDFClassResolver', () => {
       },
     };
 
-    vi.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
 
     const { result } = renderHook(() => useRDFClassResolver('https://w3id.org/italia/onto/CPV/Person'));
 
@@ -275,7 +275,7 @@ describe('useRDFClassPropertiesResolver', () => {
       },
     };
 
-    vi.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
 
     const { result } = renderHook(() => useRDFClassPropertiesResolver('https://w3id.org/italia/onto/CPV/Person'));
 
@@ -288,7 +288,7 @@ describe('useRDFClassPropertiesResolver', () => {
   });
 
   it('should skip query when classUri is undefined', async () => {
-    const fetchSpy = vi.spyOn(global, 'fetch');
+    const fetchSpy = vi.spyOn(globalThis, 'fetch');
 
     renderHook(() => useRDFClassPropertiesResolver(undefined));
 
@@ -312,7 +312,7 @@ describe('useRDFClassPropertiesResolver', () => {
       },
     };
 
-    vi.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
 
     const { result } = renderHook(() => useRDFClassPropertiesResolver('https://w3id.org/italia/onto/CPV/Person'));
 
@@ -353,7 +353,7 @@ describe('useRDFClassVocabulariesResolver', () => {
       },
     };
 
-    vi.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
 
     const { result } = renderHook(() => useRDFClassVocabulariesResolver('https://w3id.org/italia/onto/CLV/Feature'));
 
@@ -367,7 +367,7 @@ describe('useRDFClassVocabulariesResolver', () => {
   });
 
   it('should skip query when classUri is undefined', async () => {
-    const fetchSpy = vi.spyOn(global, 'fetch');
+    const fetchSpy = vi.spyOn(globalThis, 'fetch');
 
     renderHook(() => useRDFClassVocabulariesResolver(undefined));
 
@@ -389,7 +389,7 @@ describe('useRDFClassVocabulariesResolver', () => {
       },
     };
 
-    vi.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
 
     const { result } = renderHook(() =>
       useRDFClassVocabulariesResolver('https://w3id.org/italia/onto/CPV/EducationLevel'),
@@ -415,7 +415,7 @@ describe('useRDFClassVocabulariesResolver', () => {
       },
     };
 
-    vi.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
 
     const { result } = renderHook(() => useRDFClassVocabulariesResolver('https://w3id.org/italia/onto/CLV/Feature'));
 

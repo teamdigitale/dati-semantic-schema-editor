@@ -5,11 +5,7 @@ import { calculateSchemaSemanticScore, normalizeOpenAPISpec } from '@teamdigital
 import { Dropdown, DropdownMenu, DropdownToggle, Icon, LinkList, LinkListItem } from 'design-react-kit';
 import yaml from 'js-yaml';
 import { useConfiguration } from '../../configuration';
-import { compressAndBase64UrlSafe, copyToClipboard } from '../utils';
-
-const copyAsB64zipToClipboard = (text: string, prefix: string = '') => {
-  copyToClipboard(`${prefix}${compressAndBase64UrlSafe(text)}`);
-};
+import { copyToClipboard, encodeOAS } from '../utils';
 
 const downloadContent = (content: any, mediaType: string, fileName: string) => {
   const blob = new Blob([content], { type: mediaType });
@@ -69,14 +65,19 @@ export const ActionsMenu = ({ specSelectors, url, specActions }) => {
     {
       text: 'Copy as URL',
       icon: 'it-copy',
-      onClick: () =>
-        copyAsB64zipToClipboard(specSelectors.specStr(), `${window.location.origin}${window.location.pathname}#oas:`),
+      onClick: () => {
+        const encodedOAS = encodeOAS(specSelectors.specStr());
+        copyToClipboard(`${window.location.origin}${window.location.pathname}#oas:${encodedOAS}`);
+      },
     },
     oasCheckerUrl
       ? {
           text: 'Copy as OAS Checker URL',
           icon: 'it-copy',
-          onClick: () => copyAsB64zipToClipboard(specSelectors.specStr(), `${oasCheckerUrl}#text=`),
+          onClick: () => {
+            const encodedOAS = encodeOAS(specSelectors.specStr());
+            copyToClipboard(`${oasCheckerUrl}#text=${encodedOAS}`);
+          },
         }
       : null,
     schemaEditorUrl
