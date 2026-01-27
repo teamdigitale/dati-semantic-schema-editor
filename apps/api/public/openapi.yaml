@@ -2,14 +2,14 @@ openapi: 3.0.3
 info:
   title: Semantic Score Calculator
   x-summary: API to compute the semantic score of an OpenAPI specification document.
-  description: |-
+  description: >-
     ## Compute the Semantic Score of an API
 
-    What does this API do?
-    Why is it useful?
-    Who should use it?
-    How can I use it?
-  version: "0.0.1"
+    This API computes the semantic score of an OpenAPI specification document.
+    It is useful to evaluate the semantic quality of an API. It can be used by
+    developers, API consumers or API providers to improve the semantic quality
+    of their APIs.
+  version: 0.0.2
   contact:
     name: Team Digitale
     url: https://teamdigitale.governo.it
@@ -19,9 +19,9 @@ info:
     url: https://opensource.org/licenses/BSD-3-Clause
   termsOfService: https://schema.gov.it/note-legali
 tags:
-  - name: health
+  - name: Health
     description: Know the health status of the service.
-  - name: semantic-score
+  - name: SemanticScore
     description: Compute the semantic score.
 servers:
   - url: http://localhost:3000/api/v1
@@ -36,9 +36,32 @@ paths:
       operationId: HealthController_getHealth
       description: >-
         The service status.
+      parameters: []
       responses:
         "200":
           description: Service is healthy
+          headers:
+            X-Ratelimit-Limit:
+              description: >-
+                The maximum number of requests that the user is allowed to make
+                per interval of time.
+              schema:
+                type: integer
+                example: 30
+            X-Ratelimit-Remaining:
+              description: >-
+                The number of requests remaining in the current rate limit
+                window.
+              schema:
+                type: integer
+                example: 10
+            X-Ratelimit-Reset:
+              description: >-
+                The time at which the current rate limit window resets in
+                seconds.
+              schema:
+                type: integer
+                example: 60
           content:
             application/problem+json:
               schema:
@@ -46,26 +69,77 @@ paths:
               example:
                 status: 200
                 title: OK
+        "429":
+          description: Too many requests sent to the server.
+          headers:
+            X-Ratelimit-Limit:
+              description: >-
+                The maximum number of requests that the user is allowed to make
+                per interval of time.
+              schema:
+                type: integer
+                example: 30
+            X-Ratelimit-Remaining:
+              description: >-
+                The number of requests remaining in the current rate limit
+                window.
+              schema:
+                type: integer
+                example: 10
+            X-Ratelimit-Reset:
+              description: >-
+                The time at which the current rate limit window resets in
+                seconds.
+              schema:
+                type: integer
+                example: 60
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         default:
           description: |-
             Client or server error during semantic score calculation.
+          headers:
+            X-Ratelimit-Limit:
+              description: >-
+                The maximum number of requests that the user is allowed to make
+                per interval of time.
+              schema:
+                type: integer
+                example: 30
+            X-Ratelimit-Remaining:
+              description: >-
+                The number of requests remaining in the current rate limit
+                window.
+              schema:
+                type: integer
+                example: 10
+            X-Ratelimit-Reset:
+              description: >-
+                The time at which the current rate limit window resets in
+                seconds.
+              schema:
+                type: integer
+                example: 60
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
       summary: Health check endpoint
       tags:
-        - health
+        - Health
   /semantic-score:
     post:
       summary: Calculate semantic score for a YAML file
       tags:
-        - semantic-score
+        - SemanticScore
       description: |-
         Process an OpenAPI 3.0 specification document containing
         a schema and computes its semantic score
         using the associated REST API Linked Data Keywords.
       operationId: SemanticScoreController_updateSchemaSemanticScore_v1
+      parameters: []
       requestBody:
         required: true
         description: |-
@@ -87,6 +161,28 @@ paths:
             properties.
 
             When a YAML file is received, comments and order is not preserved.
+          headers:
+            X-Ratelimit-Limit:
+              description: >-
+                The maximum number of requests that the user is allowed to make
+                per interval of time.
+              schema:
+                type: integer
+                example: 30
+            X-Ratelimit-Remaining:
+              description: >-
+                The number of requests remaining in the current rate limit
+                window.
+              schema:
+                type: integer
+                example: 10
+            X-Ratelimit-Reset:
+              description: >-
+                The time at which the current rate limit window resets in
+                seconds.
+              schema:
+                type: integer
+                example: 60
           content:
             application/yaml:
               schema:
@@ -97,6 +193,28 @@ paths:
         "406":
           description: |-
             The provided file is not a valid OpenAPI 3.0 specification document.
+          headers:
+            X-Ratelimit-Limit:
+              description: >-
+                The maximum number of requests that the user is allowed to make
+                per interval of time.
+              schema:
+                type: integer
+                example: 30
+            X-Ratelimit-Remaining:
+              description: >-
+                The number of requests remaining in the current rate limit
+                window.
+              schema:
+                type: integer
+                example: 10
+            X-Ratelimit-Reset:
+              description: >-
+                The time at which the current rate limit window resets in
+                seconds.
+              schema:
+                type: integer
+                example: 60
           content:
             application/problem+json:
               schema:
@@ -104,6 +222,28 @@ paths:
         "413":
           description: |-
             The provided file is too large.
+          headers:
+            X-Ratelimit-Limit:
+              description: >-
+                The maximum number of requests that the user is allowed to make
+                per interval of time.
+              schema:
+                type: integer
+                example: 30
+            X-Ratelimit-Remaining:
+              description: >-
+                The number of requests remaining in the current rate limit
+                window.
+              schema:
+                type: integer
+                example: 10
+            X-Ratelimit-Reset:
+              description: >-
+                The time at which the current rate limit window resets in
+                seconds.
+              schema:
+                type: integer
+                example: 60
           content:
             application/problem+json:
               schema:
@@ -112,6 +252,28 @@ paths:
           description: |-
             The provided file has an unsupported media type:
             we only accept application/json and application/yaml.
+          headers:
+            X-Ratelimit-Limit:
+              description: >-
+                The maximum number of requests that the user is allowed to make
+                per interval of time.
+              schema:
+                type: integer
+                example: 30
+            X-Ratelimit-Remaining:
+              description: >-
+                The number of requests remaining in the current rate limit
+                window.
+              schema:
+                type: integer
+                example: 10
+            X-Ratelimit-Reset:
+              description: >-
+                The time at which the current rate limit window resets in
+                seconds.
+              schema:
+                type: integer
+                example: 60
           content:
             application/problem+json:
               schema:
@@ -119,6 +281,28 @@ paths:
         "429":
           description: |-
             Too many requests sent to the server.
+          headers:
+            X-Ratelimit-Limit:
+              description: >-
+                The maximum number of requests that the user is allowed to make
+                per interval of time.
+              schema:
+                type: integer
+                example: 30
+            X-Ratelimit-Remaining:
+              description: >-
+                The number of requests remaining in the current rate limit
+                window.
+              schema:
+                type: integer
+                example: 10
+            X-Ratelimit-Reset:
+              description: >-
+                The time at which the current rate limit window resets in
+                seconds.
+              schema:
+                type: integer
+                example: 60
           content:
             application/problem+json:
               schema:
@@ -126,6 +310,28 @@ paths:
         "default":
           description: >-
             Client or server error during semantic score calculation.
+          headers:
+            X-Ratelimit-Limit:
+              description: >-
+                The maximum number of requests that the user is allowed to make
+                per interval of time.
+              schema:
+                type: integer
+                example: 30
+            X-Ratelimit-Remaining:
+              description: >-
+                The number of requests remaining in the current rate limit
+                window.
+              schema:
+                type: integer
+                example: 10
+            X-Ratelimit-Reset:
+              description: >-
+                The time at which the current rate limit window resets in
+                seconds.
+              schema:
+                type: integer
+                example: 60
           content:
             application/problem+json:
               schema:
