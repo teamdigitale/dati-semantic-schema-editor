@@ -11,7 +11,7 @@ export interface GraphEdge {
   id: string;
   source: string;
   target: string;
-  type: 'solid' | 'dashed';
+  type: 'solid' | 'dashed' | 'equivalent';
 }
 
 export type GraphElement = GraphNode | GraphEdge;
