@@ -1,0 +1,145 @@
+name: Deploy to GitHub Pages
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "test@*" # a test tag is used to try github pages workflow
+      - "webapp@*" # Run only when tag is webapp@X.Y.Z (for multiple tags matching, the workflow is run multiple times)
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  GH_PAGES_BRANCH: gh-pages-new
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Define env variables
+        # Pass untrusted input via intermediate environment variables. See https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
+        env:
+          UNTRUSTED_GITHUB_HEAD_REF: ${{ github.head_ref }} # E.g. feature/my-feature - Only populated in pull request events (the source branch name); empty otherwise.
+          UNTRUSTED_GITHUB_REF_NAME: ${{ github.ref_name }} # E.g. my-app@1.0.0 - Always populated; contains the branch name, tag name, or ref name depending on the event type.
+        run: |
+          # Push on main branch
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
+            NAME="latest"
+            DESTINATION_DIR="${NAME}"
+
+          # Push on tag
+          elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" =~ ^refs/tags/ ]]; then
+            NAME="${UNTRUSTED_GITHUB_REF_NAME#*@}" # Strip the prefix from the tag name in order to get the tag version only
+            # For test tags, include prefix in destination directory to avoid conflicts with webapp tags
+            if [[ "$UNTRUSTED_GITHUB_REF_NAME" =~ ^test@ ]]; then
+              DESTINATION_DIR="test/${NAME}"
+            else
+              DESTINATION_DIR="${NAME}"
+            fi
+
+          # Other cases (pull requests, manual dispatch, etc.)
+          else
+            NAME="${UNTRUSTED_GITHUB_HEAD_REF//\//%2F}" # Escape slashes for URL in branch name, for example the ones created by dependabot
+            DESTINATION_DIR="${NAME}"
+          fi
+
+          {
+            echo "NAME=${NAME}"
+            echo "BASE_URL=/${{ github.event.repository.name }}/${DESTINATION_DIR}"
+            echo "DESTINATION_DIR=${DESTINATION_DIR}"
+            echo "URL=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${DESTINATION_DIR}"
+          } >> "$GITHUB_ENV"
+
+      - name: Check values
+        run: |
+          echo "NAME: ${{ env.NAME }}"
+          echo "BASE_URL: ${{ env.BASE_URL }}"
+          echo "DESTINATION_DIR: ${{ env.DESTINATION_DIR }}"
+          echo "URL: ${{ env.URL }}"
+
+      - name: Install dependencies
+        uses: ./.github/actions/install
+
+      - name: Build project
+        env:
+          BASE_URL: ${{ env.BASE_URL }}
+        run: pnpm run -r build
+
+      - name: Deploy
+        run: pnpm deploy --filter=webapp --prod ./build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/dist
+          publish_branch: ${{ env.GH_PAGES_BRANCH }} # don't overwrite the existing gh-pages branch.
+          destination_dir: ${{ env.DESTINATION_DIR }}
+
+      - name: Post GitHub Pages URL as comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: ${{ github.event.pull_request.number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `The changes have been deployed to GitHub Pages: ${{ env.URL }}`
+            });
+
+      - name: Redirect to latest tag on root
+        id: redirect_to_latest_tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          ACTUAL_TAG=${{ env.NAME }}
+          EXISTING_TAGS=$(git tag -l --sort=-refname | grep -E '(webapp|test)@[0-9]+.[0-9]+.[0-9]+$')
+          LATEST_TAG=$(echo "$EXISTING_TAGS" | head -n1 | sed -E 's/(webapp|test)@//')
+          if [[ "$ACTUAL_TAG" != "$LATEST_TAG" ]]; then
+            echo "Current tag ($ACTUAL_TAG) is not the latest tag ($LATEST_TAG). Exiting."
+            exit 0
+          fi
+
+          FILENAME="index.html"
+          if [[ "${{ github.ref_name }}" =~ ^test@ ]]; then
+            FILENAME="index-test.html"
+          fi
+
+          mkdir -p ./ghpages
+          cat > ./ghpages/$FILENAME << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta http-equiv="refresh" content="0; url=${{ env.DESTINATION_DIR }}" />
+              <title>Redirecting...</title>
+          </head>
+          <body>
+              <p>If you are not redirected automatically, follow this link to the most recent tag <a href="${{ env.DESTINATION_DIR }}">${{ env.DESTINATION_DIR }}</a></p>
+              <p>or jump to the development version <a href="latest">/latest</a>.</p>
+          </body>
+          </html>
+          EOF
+
+          echo "new_index_html=true" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy the redirect index.html to GitHub Pages
+        if: steps.redirect_to_latest_tag.outputs.new_index_html == 'true'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./ghpages
+          publish_branch: ${{ env.GH_PAGES_BRANCH }} # don't overwrite the existing gh-pages branch.
+          destination_dir: ./
+          keep_files: true

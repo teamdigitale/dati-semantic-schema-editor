@@ -1,0 +1,144 @@
+name: Release Container Images
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "webapp@*"
+      - "api@*"
+    branches:
+      - main
+    paths-ignore:
+      - "*.md"
+      - "LICENSE"
+      - "tests/**"
+      - ".husky/**"
+      - ".changeset/**"
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - "*.md"
+      - "LICENSE"
+      - "tests/**"
+      - ".husky/**"
+      - ".changeset/**"
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  CI: true
+  REGISTRY: ghcr.io
+  IMAGE_NAME_PREFIX: ${{ github.repository }}
+  DOCKER_BUILDKIT: "1"
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: docker-security
+        uses: instrumenta/conftest-action@master
+        with:
+          files: Dockerfile
+          policy: .docker-security.rego
+
+  build-containers:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    needs:
+      - security
+    strategy:
+      matrix:
+        include:
+          - target: webapp
+            image_suffix: ""
+            tag_pattern: "^refs/tags/webapp@(.+)$"
+            force_push_label: push-container:webapp # Label prefix to force push the image in pull request
+          - target: api
+            image_suffix: "-api"
+            tag_pattern: "^refs/tags/api@(.+)$"
+            force_push_label: push-container:api # Label prefix to force push the image in pull request
+
+    name: Docker Build ${{ matrix.target }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to the Github Container registry
+        uses: docker/login-action@v3.6.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check if should build
+        id: should_build
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]] || [[ "${{ github.event_name }}" == "pull_request" ]] || [[ "${{ github.ref }}" =~ ${{ matrix.tag_pattern }} ]]; then
+            echo "build=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "build=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Determine version
+        id: version
+        if: steps.should_build.outputs.build == 'true'
+        env:
+          UNTRUSTED_GITHUB_REF_NAME: ${{ github.ref_name }} # E.g. my-app@1.0.0 - Always populated; contains the branch name, tag name, or ref name depending on the event type.
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            VERSION="latest"
+          elif [[ "${{ github.ref }}" =~ ${{ matrix.tag_pattern }} ]]; then
+            VERSION="${UNTRUSTED_GITHUB_REF_NAME#*@}" # Strip the prefix from the tag name in order to get the tag version only
+          fi
+          echo "value=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Extract metadata
+        id: meta
+        if: steps.should_build.outputs.build == 'true'
+        uses: docker/metadata-action@v5.8.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}${{ matrix.image_suffix }}
+          labels: |
+            maintainer=teamdigitale
+            org.opencontainers.image.title=${{ env.IMAGE_NAME_PREFIX }}${{ matrix.image_suffix }}
+          tags: |
+            type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
+            type=raw,value=${{ steps.version.outputs.value }},enable=${{ steps.version.outputs.value != '' }}
+
+      - name: Build and push
+        if: steps.should_build.outputs.build == 'true'
+        uses: docker/build-push-action@v6.18.0
+        with:
+          context: .
+          target: ${{ matrix.target }}
+          push: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, matrix.force_push_label) }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  cleanup:
+    runs-on: ubuntu-latest
+    needs:
+      - build-containers
+    strategy:
+      matrix:
+        include:
+          - target: webapp
+            image_suffix: ""
+          - target: api
+            image_suffix: "-api"
+    name: Cleanup Docker Images ${{ matrix.target }}
+    steps:
+      - name: Cleanup Docker Images
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: "dati-semantic-schema-editor${{ matrix.image_suffix }}"
+          package-type: "container"
+          min-versions-to-keep: 30
+          ignore-versions: "(latest|^[0-9]+\\.[0-9]+\\.[0-9]+$)"
