@@ -69,6 +69,11 @@ components:
       properties:
         edu:
           $ref: '#/components/schemas/EducationLevel'
+    AnotherNoContext:
+      type: object
+      properties:
+        edu:
+          $ref: '#/components/schemas/EducationLevel'
     EducationLevel:
       x-jsonld-type: https://w3id.org/italia/onto/CPV/EducationLevel
       x-jsonld-context:
@@ -94,9 +99,9 @@ components:
       } as Response);
       const { schemaSemanticScore, resolvedSpecJson } = await calculateSchemaSemanticScore(specJson, { sparqlUrl });
       expect(resolvedSpecJson).toBeTruthy();
-      expect(resolvedSpecJson['info']['x-semantic-score']).toEqual(0.5);
+      expect(resolvedSpecJson['info']['x-semantic-score']).toEqual(0.33);
       expect(resolvedSpecJson['info']['x-semantic-score-timestamp']).toBeDefined();
-      expect(schemaSemanticScore).toEqual(0.5);
+      expect(schemaSemanticScore).toEqual(0.33);
     });
   });
 });
