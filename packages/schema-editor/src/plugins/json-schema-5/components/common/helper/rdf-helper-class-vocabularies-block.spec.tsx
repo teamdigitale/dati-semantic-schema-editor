@@ -37,7 +37,19 @@ describe('<RDFHelperClassVocabulariesBlock />', () => {
         },
       ],
     });
+    vi.spyOn(hooks, 'useVocabulariesQuery').mockReturnValue({
+      data: {
+        '@context': {
+          language: {
+            '@id': 'http://purl.org/dc/terms/language',
+            '@type': '@id',
+          },
+        },
+      },
+      status: 'fulfilled',
+    });
     const result = render(<RDFHelperClassVocabulariesBlock classUri={'https://w3id.org/italia/onto/CLV/Feature'} />);
+    expect(await result.findAllByText('Explore')).toHaveLength(1);
     expect(result.container.querySelectorAll('table tbody tr').length).toEqual(4);
   });
 });
