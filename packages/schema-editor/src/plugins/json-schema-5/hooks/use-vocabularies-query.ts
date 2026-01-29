@@ -39,6 +39,7 @@ export function useVocabulariesQuery(): AsyncState<any> {
             ?scheme dct:rightsHolder ?publisher .
         }
     }
+    LIMIT 7
   `,
     {
       format: 'application/ld+json',

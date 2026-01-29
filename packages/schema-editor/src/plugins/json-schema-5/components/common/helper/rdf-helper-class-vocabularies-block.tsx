@@ -16,8 +16,8 @@ export const RDFHelperClassVocabulariesBlock = ({ classUri }: Props) => {
 
   const playgroundUrl = useMemo(() => {
     if (!jsonldData) return '';
-    const jsonldEncoded = encodeURIComponent(JSON.stringify(jsonldData, null, 2));
-    const frameEncoded = encodeURIComponent(JSON.stringify(JSONLD_PLAYGROUND_FRAME, null, 2));
+    const jsonldEncoded = encodeURIComponent(JSON.stringify(jsonldData, null, 2)); // replace with YAML.dump when json-ld.org playground supports it
+    const frameEncoded = encodeURIComponent(JSON.stringify(JSONLD_PLAYGROUND_FRAME, null, 2)); // replace with YAML.dump when json-ld.org playground supports it
     return `https://ioggstream.github.io/json-ld.org/playground/next/#startTab=tab-framed&json-ld=${jsonldEncoded}&frame=${frameEncoded}`;
   }, [jsonldData]);
 
