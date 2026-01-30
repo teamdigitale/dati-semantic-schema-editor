@@ -1,0 +1,47 @@
+#
+# This is a blank template for a schema collection.
+#
+openapi: 3.0.3
+info:
+  title: Schema Template
+  version: 202408.01.00
+  x-summary: A schema collection based on the CPV ontology.
+  license:
+    name: BSD3
+    url: https://opensource.org/licenses/BSD-3-Clause
+  termsOfService: https://opensource.org/licenses/BSD-3-Clause
+  contact:
+    name: Roberto Polli
+    email: roberto.polli@par-tec.it
+    url: https://www.par-tec.it
+  description: |-
+    ## Welcome!
+    This is a minimal schema template
+    annotated with x-jsonld-context and x-jsonld-type.
+components:
+  schemas:
+    Person:
+      x-jsonld-type: 'https://w3id.org/italia/onto/CPV/Person'
+      x-jsonld-context:
+        '@vocab': 'https://w3id.org/italia/onto/CPV/'
+      type: object
+      properties:
+        givenName:
+          type: string
+          description: The given name of the person.
+          example: John
+        familyName:
+          type: string
+          description: The family name of the person.
+          example: Doe
+      example:
+        givenName: John
+        familyName: Doe
+
+#
+# If this is a schema-only file, you can leave the following sections empty.
+# Do not remove them, as they are required by the OpenAPI 3.0 specification.
+#
+paths: {}
+servers: []
+tags: []
