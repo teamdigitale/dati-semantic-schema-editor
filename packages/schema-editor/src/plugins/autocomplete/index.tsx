@@ -161,6 +161,60 @@ const suggestionMap = {
       score: 50,
     },
   ],
+  '@propagate': [
+    {
+      caption: 'true',
+      snippet: 'true',
+      docHTML: 'Context propagation enabled',
+      score: 100,
+    },
+    {
+      caption: 'false',
+      snippet: 'false',
+      docHTML: 'Context propagation disabled',
+      score: 100,
+    },
+  ],
+  '@protected': [
+    {
+      caption: 'true',
+      snippet: 'true',
+      docHTML: 'Terms cannot be overridden',
+      score: 100,
+    },
+    {
+      caption: 'false',
+      snippet: 'false',
+      docHTML: 'Terms can be overridden',
+      score: 100,
+    },
+  ],
+  '@container': [
+    {
+      caption: '"@list"',
+      snippet: '"@list"',
+      docHTML: 'Indicates that the value is a list of values',
+      score: 100,
+    },
+    {
+      caption: '"@set"',
+      snippet: '"@set"',
+      docHTML: 'Indicates that the value is a set of values (unordered, unique)',
+      score: 100,
+    },
+    {
+      caption: '"@index"',
+      snippet: '"@index"',
+      docHTML: 'Indicates that the value is an index mapping keys to values',
+      score: 100,
+    },
+    {
+      caption: '"@language"',
+      snippet: '"@language"',
+      docHTML: 'Indicates that the value is a language map',
+      score: 100,
+    },
+  ],
   'x-jsonld-context': [
     // a list of json-ld keywords enclosed by quotes.
     {
@@ -171,23 +225,67 @@ const suggestionMap = {
     {
       caption: '"@base"',
       snippet: '"@base": ',
-      docHTML: 'A JSON-LD vocabulary',
+      docHTML: 'A JSON-LD base IRI. Should end with a "/" and must not end with a "#".',
     },
     {
       // @id, @type, @context
       caption: '"@id"',
       snippet: '"@id": ',
-      docHTML: 'A JSON-LD vocabulary',
+      docHTML: 'A JSON-LD node identifier',
     },
     {
       caption: '"@type"',
       snippet: '"@type": ',
-      docHTML: 'A JSON-LD vocabulary',
+      docHTML: 'A JSON-LD type',
     },
     {
       caption: '"@context"',
       snippet: '"@context": ',
-      docHTML: 'A JSON-LD vocabulary',
+      docHTML: 'A JSON-LD context',
+    },
+    {
+      caption: '"@language"',
+      snippet: '"@language": ',
+      docHTML: 'Default language for string values',
+    },
+    {
+      caption: '"@version"',
+      snippet: '"@version": ',
+      docHTML: 'JSON-LD version (1.0 or 1.1)',
+    },
+    {
+      caption: '"@protected"',
+      snippet: '"@protected": ',
+      docHTML: 'Prevent terms from being overridden (JSON-LD 1.1). Default is false.',
+    },
+    {
+      caption: '"@propagate"',
+      snippet: '"@propagate": ',
+      docHTML: 'Control context propagation (JSON-LD 1.1). Default is true.',
+    },
+    {
+      snippet: 'http://www.w3.org/2004/02/skos/core#',
+      docHTML: 'Simple Knowledge Organization System',
+      caption: 'skos',
+      score: 50,
+    },
+    {
+      snippet: 'http://purl.org/dc/terms/',
+      docHTML: 'Dublin Core Metadata Terms',
+      caption: 'dcterms',
+      score: 50,
+    },
+    {
+      snippet: 'http://www.w3.org/2000/01/rdf-schema#',
+      docHTML: 'RDF Schema',
+      caption: 'rdfs',
+      score: 50,
+    },
+    {
+      snippet: 'http://www.w3.org/2001/XMLSchema#',
+      docHTML: 'XML Schema Datatypes',
+      caption: 'xsd',
+      score: 50,
     },
   ],
   '@base': [
