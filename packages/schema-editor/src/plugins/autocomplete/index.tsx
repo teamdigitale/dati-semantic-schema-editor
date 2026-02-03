@@ -1,4 +1,7 @@
-const suggestionMap = {
+const suggestionMap: Record<
+  string,
+  { caption: string; snippet: string; score: number; meta?: string; docHTML?: string }[]
+> = {
   /// Completion for REST API Linked Data Keywords.
   'x-jsonld': [
     {
@@ -118,7 +121,6 @@ const suggestionMap = {
     // Learning
     {
       snippet: 'https://w3id.org/italia/onto/Learning/DegreeCourse',
-      description: 'Corso di Laurea',
       docHTML: 'Corso di Laurea',
       caption: 'Learning:DegreeCourse',
       meta: 'class',
@@ -221,47 +223,56 @@ const suggestionMap = {
       caption: '"@vocab"',
       snippet: '"@vocab": ',
       docHTML: 'A JSON-LD vocabulary',
+      score: 0,
     },
     {
       caption: '"@base"',
       snippet: '"@base": ',
       docHTML: 'A JSON-LD base IRI. Should end with a "/" and must not end with a "#".',
+      score: 0,
     },
     {
       // @id, @type, @context
       caption: '"@id"',
       snippet: '"@id": ',
       docHTML: 'A JSON-LD node identifier',
+      score: 0,
     },
     {
       caption: '"@type"',
       snippet: '"@type": ',
       docHTML: 'A JSON-LD type',
+      score: 0,
     },
     {
       caption: '"@context"',
       snippet: '"@context": ',
       docHTML: 'A JSON-LD context',
+      score: 0,
     },
     {
       caption: '"@language"',
       snippet: '"@language": ',
       docHTML: 'Default language for string values',
+      score: 0,
     },
     {
       caption: '"@version"',
       snippet: '"@version": ',
       docHTML: 'JSON-LD version (1.0 or 1.1)',
+      score: 0,
     },
     {
       caption: '"@protected"',
       snippet: '"@protected": ',
       docHTML: 'Prevent terms from being overridden (JSON-LD 1.1). Default is false.',
+      score: 0,
     },
     {
       caption: '"@propagate"',
       snippet: '"@propagate": ',
       docHTML: 'Control context propagation (JSON-LD 1.1). Default is true.',
+      score: 0,
     },
     {
       snippet: 'http://www.w3.org/2004/02/skos/core#',
