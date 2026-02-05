@@ -37,7 +37,7 @@ describe('<RDFHelperClassVocabulariesBlock />', () => {
         },
       ],
     });
-    vi.spyOn(hooks, 'useVocabulariesQuery').mockReturnValue({
+    vi.spyOn(hooks, 'useVocabularyQuery').mockReturnValue({
       data: {
         '@context': {
           language: {

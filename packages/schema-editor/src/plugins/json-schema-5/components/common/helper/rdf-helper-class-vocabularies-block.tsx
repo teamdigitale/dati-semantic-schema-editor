@@ -1,6 +1,6 @@
 import { Badge, Button, Icon, Spinner, Table } from 'design-react-kit';
 import { Fragment, useMemo } from 'react';
-import { useRDFClassVocabulariesResolver, useVocabulariesQuery } from '../../../hooks';
+import { useRDFClassVocabulariesResolver, useVocabularyQuery } from '../../../hooks';
 import { uri2shortUri } from '../../../utils';
 import { JSONLD_PLAYGROUND_FRAME } from './rdf-helper-const';
 
@@ -10,9 +10,8 @@ interface Props {
 
 export const RDFHelperClassVocabulariesBlock = ({ classUri }: Props) => {
   const { data, status } = useRDFClassVocabulariesResolver(classUri);
-  const { data: jsonldData } = useVocabulariesQuery();
-
   const vocabularies = data?.filter((x) => x?.controlledVocabulary) || [];
+  const { data: jsonldData } = useVocabularyQuery(vocabularies[0]?.controlledVocabulary);
 
   const playgroundUrl = useMemo(() => {
     if (!jsonldData) return '';

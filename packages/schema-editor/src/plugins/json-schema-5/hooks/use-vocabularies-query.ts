@@ -52,3 +52,50 @@ export function useVocabulariesQuery(): AsyncState<any> {
     error,
   };
 }
+
+export function useVocabularyQuery(vocabulary_uri: string): AsyncState<any> {
+  // Fetch vocabulary data in JSON-LD format
+  //   LIMIT is in triples, not in resources, so
+  //   you need to count resources * entries.
+  const { data, status, error } = useSparqlQuery<any>(
+    `
+    PREFIX ndc: <https://w3id.org/italia/onto/NDC/>
+    PREFIX dct: <http://purl.org/dc/terms/>
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+    PREFIX dcterms: <http://purl.org/dc/terms/>
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+    CONSTRUCT {
+        ?s
+          skos:notation ?notation ;
+          skos:prefLabel ?label ;
+          skos:broader ?broader ;
+          ?p ?o .
+    }
+    WHERE {
+        ?s
+          skos:inScheme <${vocabulary_uri}> ;
+          skos:prefLabel ?label ;
+          ?p ?o .
+      OPTIONAL {
+        ?s
+          skos:notation ?notation ;
+          skos:broader ?broader
+      .
+      }
+    }
+    LIMIT 100
+  `,
+    {
+      format: 'application/ld+json',
+    },
+  );
+
+  return {
+    data,
+    status,
+    error,
+  };
+}
