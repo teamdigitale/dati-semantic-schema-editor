@@ -156,11 +156,9 @@ paths:
       responses:
         "200":
           description: |-
-            An OpenAPI specification document containing
-            the #/info/x-semantic-score and #/info/x-semantic-score-timestamp
-            properties.
-
-            When a YAML file is received, comments and order is not preserved.
+            JSON object containing the semantic score, timestamp, SPARQL endpoint,
+            library version, and detailed calculation information including per-model
+            details and summary statistics.
           headers:
             X-Ratelimit-Limit:
               description: >-
@@ -184,12 +182,9 @@ paths:
                 type: integer
                 example: 60
           content:
-            application/yaml:
-              schema:
-                $ref: "#/components/schemas/OASDocument"
             application/json:
               schema:
-                $ref: "#/components/schemas/OASDocument"
+                $ref: "#/components/schemas/SemanticScoreResponse"
         "406":
           description: |-
             The provided file is not a valid OpenAPI 3.0 specification document.
@@ -406,3 +401,92 @@ components:
           type: string
           maxLength: 1024
       type: object
+    SemanticScoreResponse:
+      type: object
+      required:
+        - score
+        - timestamp
+        - sparql_endpoint
+        - summary
+      properties:
+        score:
+          type: number
+          description: Overall semantic score for the schema (0-1)
+          example: 0.75
+          minimum: 0
+          maximum: 1
+        timestamp:
+          type: integer
+          description: Unix timestamp of when the score was calculated
+          example: 1707234567890
+        sparql_endpoint:
+          type: string
+          description: SPARQL endpoint URL used for validation
+          example: https://example.com/sparql
+          format: uri
+        summary:
+          $ref: "#/components/schemas/Summary"
+    ModelCalculationDetails:
+      type: object
+      required:
+        - model_name
+        - properties_paths
+        - has_annotations
+        - raw_properties_count
+        - valid_properties_count
+        - valid_properties
+      properties:
+        model_name:
+          type: string
+          description: Name of the data model
+          example: Country
+        properties_paths:
+          type: array
+          description: Paths of the properties in the model
+          items:
+            type: string
+          example:
+            - properties.name
+        has_annotations:
+          type: boolean
+          description: Total number of properties in the model
+          example: 5
+          minimum: 0
+        score:
+          type: number
+          description: Semantic score for this model (0-1)
+          example: 0.75
+          minimum: 0
+          maximum: 1
+        raw_properties_count:
+          type: integer
+          description: Total number of properties in the model
+          example: 5
+          minimum: 0
+        valid_properties_count:
+          type: integer
+          description: Number of valid properties in the model
+          example: 5
+          minimum: 0
+    Summary:
+      type: object
+      required:
+        - raw_models_count
+        - positive_score_models_count
+        - models_calculation_details
+      properties:
+        raw_models_count:
+          type: integer
+          description: Total number of object-type models processed
+          example: 10
+          minimum: 0
+        positive_score_models_count:
+          type: integer
+          description: Total number of models that received a semantic score
+          example: 8
+          minimum: 0
+        models_calculation_details:
+          type: array
+          description: Per-model calculation details
+          items:
+            $ref: "#/components/schemas/ModelCalculationDetails"
