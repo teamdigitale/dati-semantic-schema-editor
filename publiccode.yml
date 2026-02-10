@@ -46,8 +46,8 @@ maintenance:
   type: contract
   contacts:
     - affiliation: ISTAT
-      email: polizzi@istat.it
-      name: Marco Polizzi
+      email: info@schema.gov.it
+      name: 
   contractors:
     - name: ISTAT
       until: '2026-12-31'
