@@ -13,6 +13,7 @@ export default defineConfig({
       entry: path.resolve(__dirname, './src/index.ts'),
       name: 'schema-editor',
       fileName: 'index',
+      cssFileName: 'style',
       formats: ['es', 'umd'],
     },
     rollupOptions: {
