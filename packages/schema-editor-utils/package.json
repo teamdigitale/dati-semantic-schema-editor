@@ -35,7 +35,7 @@
     "@types/jsonld": "^1.5.15",
     "@typescript-eslint/eslint-plugin": "^8.46.1",
     "@typescript-eslint/parser": "^8.46.1",
-    "eslint": "^9.37.0",
+    "eslint": "^9.26.0",
     "jsdom": "^27.0.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
