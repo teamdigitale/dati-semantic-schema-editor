@@ -159,13 +159,11 @@ a schema annotated with the REST API Linked Data Keywords.`,
 
     this.logger.log(`Schema semantic score calculated successfully`);
 
-    const a = new SemanticScoreResponseDTO({
+    return new SemanticScoreResponseDTO({
       score: schemaSemanticScore,
       timestamp,
       sparqlEndpoint: sparqlUrl,
       summary: summary,
     });
-    console.log(a);
-    return a;
   }
 }

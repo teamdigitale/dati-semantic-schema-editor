@@ -3,13 +3,9 @@ import {
   ModelCalculationDetails,
   Summary,
 } from '@teamdigitale/schema-editor-utils';
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 
 export class ModelCalculationDetailsDTO implements ModelCalculationDetails {
-  constructor(partial: Partial<ModelCalculationDetailsDTO>) {
-    Object.assign(this, partial);
-  }
-
   @Expose({ name: 'model_name' })
   @ApiProperty({
     name: 'model_name',
@@ -66,10 +62,6 @@ export class ModelCalculationDetailsDTO implements ModelCalculationDetails {
 }
 
 export class SummaryDTO implements Summary {
-  constructor(partial: Partial<SummaryDTO>) {
-    Object.assign(this, partial);
-  }
-
   @Expose({ name: 'raw_models_count' })
   @ApiProperty({
     name: 'raw_models_count',
@@ -92,6 +84,7 @@ export class SummaryDTO implements Summary {
   positiveScoreModelsCount: number;
 
   @Expose({ name: 'models_calculation_details' })
+  @Type(() => ModelCalculationDetailsDTO)
   @ApiProperty({
     name: 'models_calculation_details',
     description: 'Per-model calculation details',
@@ -137,6 +130,7 @@ export class SemanticScoreResponseDTO {
   sparqlEndpoint: string;
 
   @Expose({ name: 'summary' })
+  @Type(() => SummaryDTO)
   @ApiProperty({
     name: 'summary',
     description:
