@@ -156,9 +156,8 @@ paths:
       responses:
         "200":
           description: |-
-            JSON object containing the semantic score, timestamp, SPARQL endpoint,
-            library version, and detailed calculation information including per-model
-            details and summary statistics.
+            The provided OpenAPI specification document has been successfully processed.
+            The response will output informations about the global semantic score and the models processed.
           headers:
             X-Ratelimit-Limit:
               description: >-
@@ -430,44 +429,40 @@ components:
       type: object
       required:
         - model_name
-        - properties_paths
+        - score
         - has_annotations
-        - raw_properties_count
-        - valid_properties_count
-        - valid_properties
+        - valid_properties_paths
+        - invalid_properties_paths
       properties:
         model_name:
           type: string
           description: Name of the data model
           example: Country
-        properties_paths:
-          type: array
-          description: Paths of the properties in the model
-          items:
-            type: string
-          example:
-            - properties.name
-        has_annotations:
-          type: boolean
-          description: Total number of properties in the model
-          example: 5
-          minimum: 0
         score:
           type: number
           description: Semantic score for this model (0-1)
           example: 0.75
           minimum: 0
           maximum: 1
-        raw_properties_count:
-          type: integer
-          description: Total number of properties in the model
-          example: 5
-          minimum: 0
-        valid_properties_count:
-          type: integer
-          description: Number of valid properties in the model
-          example: 5
-          minimum: 0
+        has_annotations:
+          type: boolean
+          description: Whether the model is annotated with x-jsonld-context or not.
+          example: true
+        valid_properties_paths:
+          type: array
+          description: List of URIs or reserved keywords that are correctly resolved to a semantic property.
+          items:
+            type: string
+          example:
+            - "@id"
+            - "https://w3id.org/italia/onto/RPO/isCurrentlyPredominantlyCitizen"
+        invalid_properties_paths:
+          type: array
+          description: List of URIs or reserved keywords that cannot be resolved to a semantic property.
+          items:
+            type: string
+          example:
+            - "https://w3id.org/italia/onto/RPO/notExistingProperty"
     Summary:
       type: object
       required:
@@ -482,7 +477,7 @@ components:
           minimum: 0
         positive_score_models_count:
           type: integer
-          description: Total number of models that received a semantic score
+          description: Total number of object-type models that have a semantic score greater than 0.
           example: 8
           minimum: 0
         models_calculation_details:

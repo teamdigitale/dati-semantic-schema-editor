@@ -36,7 +36,8 @@ export function useSemanticScore(
     error: sparqlError,
   } = useSparqlQuery(buildSemanticScoreSparqlQuery(resolvedProperties.unknown), { skip: skipQuery });
 
-  const sparqlResultCount = !skipQuery ? parseInt(sparqlData?.results?.bindings?.[0]?.count?.value || 0) : 0;
+  const sparqlResults = sparqlData?.results?.bindings?.map((x) => x.fieldUri.value) || [];
+  const sparqlResultCount = !skipQuery ? sparqlResults.length : 0;
   const semanticPropertiesCount = resolvedProperties.valid.length + sparqlResultCount;
 
   // Set properties to check when jsonldContext or properties change

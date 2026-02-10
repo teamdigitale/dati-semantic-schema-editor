@@ -26,7 +26,7 @@ describe('SemanticScoreController', () => {
     await app.init();
   });
 
-  it('should process YAML file successfully', async () => {
+  it('should process YAML file successfully and return JSON response', async () => {
     const response = await request(app.getHttpServer())
       .post('/semantic-score')
       .set('Content-Type', 'multipart/form-data')
@@ -34,10 +34,26 @@ describe('SemanticScoreController', () => {
         contentType: 'application/octet-stream',
       });
     expect(response.statusCode).toEqual(200);
-    expect(response.headers['content-type']).toEqual('application/yaml');
-    expect(response.headers['content-disposition']).toEqual(
-      'attachment; filename="spec.yaml"',
+    expect(response.headers['content-type']).toContain('application/json');
+    expect(response.body).toBeDefined();
+    expect(response.body).toHaveProperty('score');
+    expect(response.body).toHaveProperty('timestamp');
+    expect(response.body).toHaveProperty('sparql_endpoint');
+    expect(response.body).toHaveProperty('summary');
+    expect(response.body.summary).toHaveProperty('raw_models_count');
+    expect(response.body.summary).toHaveProperty('positive_score_models_count');
+    expect(response.body.summary).toHaveProperty('models_calculation_details');
+    expect(
+      Array.isArray(response.body.summary.models_calculation_details),
+    ).toBe(true);
+    expect(typeof response.body.score).toBe('number');
+    expect(response.body.score).toBeGreaterThanOrEqual(0);
+    expect(response.body.score).toBeLessThanOrEqual(1);
+    expect(typeof response.body.timestamp).toBe('number');
+    expect(typeof response.body.sparql_endpoint).toBe('string');
+    expect(typeof response.body.summary.raw_models_count).toBe('number');
+    expect(typeof response.body.summary.positive_score_models_count).toBe(
+      'number',
     );
-    expect(response.text).toContain('x-semantic-score');
   });
 });

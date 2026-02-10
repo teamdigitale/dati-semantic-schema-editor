@@ -79,8 +79,13 @@ describe('useSemanticScore', () => {
         results: {
           bindings: [
             {
-              count: {
-                value: '2',
+              fieldUri: {
+                value: 'https://w3id.org/italia/onto/CPV/familyName',
+              },
+            },
+            {
+              fieldUri: {
+                value: 'https://w3id.org/italia/onto/CPV/givenName',
               },
             },
           ],
@@ -154,6 +159,11 @@ describe('useSchemaSemanticScore', () => {
     vi.spyOn(utils, 'calculateSchemaSemanticScore').mockResolvedValue({
       schemaSemanticScore: 0.8,
       resolvedSpecJson: {},
+      summary: {
+        rawModelsCount: 1,
+        positiveScoreModelsCount: 1,
+        modelsCalculationDetails: [],
+      },
     });
     const { result, rerender } = renderHook((props) => useSchemaSemanticScore(props ?? { foo: 'bar' }));
     await result.current.recalculate();
@@ -166,6 +176,11 @@ describe('useSchemaSemanticScore', () => {
     vi.spyOn(utils, 'calculateSchemaSemanticScore').mockResolvedValue({
       schemaSemanticScore: 0.8,
       resolvedSpecJson: {},
+      summary: {
+        rawModelsCount: 1,
+        positiveScoreModelsCount: 1,
+        modelsCalculationDetails: [],
+      },
     });
     const { result } = renderHook(() => useSchemaSemanticScore({ foo: 'bar' }));
     await result.current.recalculate();
