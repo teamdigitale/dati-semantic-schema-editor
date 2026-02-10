@@ -49,7 +49,9 @@ export class SemanticScoreController {
           ].includes(file.mimetype)
         ) {
           callback(
-            new UnsupportedMediaTypeException('Invalid file type'),
+            new UnsupportedMediaTypeException(
+              'Invalid file type. Accepted types are application/yaml and application/json.',
+            ),
             false,
           );
         } else if (file.size > 1000000) {
@@ -165,7 +167,9 @@ a schema annotated with the REST API Linked Data Keywords.`,
         throw new UnsupportedMediaTypeException('Invalid JSON content');
       }
     } else {
-      throw new UnsupportedMediaTypeException('Invalid file type');
+      throw new UnsupportedMediaTypeException(
+        'Invalid file type. Accepted types are application/yaml and application/json.',
+      );
     }
 
     // Validate OAS document
