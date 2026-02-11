@@ -1,13 +1,22 @@
-export interface ModelCalculationDetails {
-  modelName: string;
-  score: number;
-  hasAnnotations: boolean;
-  validPropertiesPaths: string[];
-  invalidPropertiesPaths: string[];
+export interface PropertySummary {
+  name: string;
+  uri: string | null;
+  valid: boolean;
 }
 
-export interface Summary {
-  rawModelsCount: number;
-  positiveScoreModelsCount: number;
-  modelsCalculationDetails: ModelCalculationDetails[];
+export interface ModelSummary {
+  name: string;
+  score: number;
+  hasAnnotations: boolean;
+  rawPropertiesCount: number;
+  validPropertiesCount: number;
+  invalidPropertiesCount: number;
+  properties: PropertySummary[];
+}
+
+export interface SemanticScoreSummary {
+  score: number;
+  timestamp: number;
+  sparqlEndpoint: string;
+  models: ModelSummary[];
 }

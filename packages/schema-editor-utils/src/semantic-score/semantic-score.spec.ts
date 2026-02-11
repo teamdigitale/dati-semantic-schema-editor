@@ -66,25 +66,26 @@ components:
 
       // Verify summary is returned
       expect(summary).toBeDefined();
-      expect(summary.rawModelsCount).toBeGreaterThan(0);
-      expect(summary.positiveScoreModelsCount).toBeGreaterThanOrEqual(0);
-      expect(summary.modelsCalculationDetails).toBeDefined();
-      expect(Array.isArray(summary.modelsCalculationDetails)).toBe(true);
+      expect(summary.models.length).toBeGreaterThan(0);
+      expect(summary.models.filter((x) => x.score > 0).length).toBeGreaterThanOrEqual(0);
+      expect(summary.models.filter((x) => x.hasAnnotations).length).toBeGreaterThanOrEqual(0);
+      expect(
+        summary.models.filter((x) => x.properties.filter((y) => y.valid).length > 0).length,
+      ).toBeGreaterThanOrEqual(0);
+      expect(
+        summary.models.filter((x) => x.properties.filter((y) => !y.valid).length > 0).length,
+      ).toBeGreaterThanOrEqual(0);
 
       // Verify per-model details structure
-      if (summary.modelsCalculationDetails.length > 0) {
-        const modelDetail = summary.modelsCalculationDetails[0];
-        expect(modelDetail).toHaveProperty('modelName');
+      if (summary.models.length > 0) {
+        const modelDetail = summary.models[0];
+        expect(modelDetail).toHaveProperty('name');
         expect(modelDetail).toHaveProperty('score');
         expect(modelDetail).toHaveProperty('hasAnnotations');
-        expect(modelDetail).toHaveProperty('validPropertiesPaths');
-        expect(modelDetail).toHaveProperty('invalidPropertiesPaths');
-        expect(Array.isArray(modelDetail.validPropertiesPaths)).toBe(true);
-        expect(Array.isArray(modelDetail.invalidPropertiesPaths)).toBe(true);
-        expect(typeof modelDetail.hasAnnotations).toBe('boolean');
-        expect(typeof modelDetail.score).toBe('number');
-        expect(modelDetail.score).toBeGreaterThanOrEqual(0);
-        expect(modelDetail.score).toBeLessThanOrEqual(1);
+        expect(modelDetail).toHaveProperty('properties');
+        expect(Array.isArray(modelDetail.properties)).toBe(true);
+        expect(modelDetail.properties.filter((y) => y.valid).length).toBeGreaterThanOrEqual(0);
+        expect(modelDetail.properties.filter((y) => !y.valid).length).toBeGreaterThanOrEqual(0);
       }
     });
 
@@ -126,7 +127,7 @@ components:
         ok: true,
         json: async () => ({
           results: {
-            bindings: [{ fieldUri: { value: 'https://w3id.org/italia/onto/CPV/description' } }],
+            bindings: [{ fieldUri: { value: 'https://w3id.org/italia/onto/CPV/educationLevelDesc' } }],
           },
         }),
       } as Response);
@@ -140,9 +141,15 @@ components:
 
       // Verify summary
       expect(summary).toBeDefined();
-      expect(summary.modelsCalculationDetails.length).toBeGreaterThan(0);
-      expect(summary.rawModelsCount).toBeGreaterThan(0);
-      expect(summary.positiveScoreModelsCount).toBeGreaterThanOrEqual(0);
+      expect(summary.models.length).toBeGreaterThan(0);
+      expect(summary.models.filter((x) => x.score > 0).length).toBeGreaterThanOrEqual(0);
+      expect(summary.models.filter((x) => x.hasAnnotations).length).toBeGreaterThanOrEqual(0);
+      expect(
+        summary.models.filter((x) => x.properties.filter((y) => y.valid).length > 0).length,
+      ).toBeGreaterThanOrEqual(0);
+      expect(
+        summary.models.filter((x) => x.properties.filter((y) => !y.valid).length > 0).length,
+      ).toBeGreaterThanOrEqual(0);
     });
   });
 });

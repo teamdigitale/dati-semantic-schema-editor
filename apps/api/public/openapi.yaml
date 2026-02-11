@@ -152,7 +152,7 @@ paths:
               file:
                 contentType: application/yaml, application/json
             schema:
-              $ref: "#/components/schemas/CalculateSemanticScoreRequestDTO"
+              $ref: "#/components/schemas/CalculateSemanticScoreRequest"
       responses:
         "200":
           description: |-
@@ -343,7 +343,7 @@ components:
       externalDocs:
         url: https://raw.githubusercontent.com/OAI/spec.openapis.org/refs/heads/main/oas/3.0/schema/2024-10-18
         description: The OpenAPI 3.0 JSON Schema
-    CalculateSemanticScoreRequestDTO:
+    CalculateSemanticScoreRequest:
       type: object
       additionalProperties: false
       properties:
@@ -406,7 +406,7 @@ components:
         - score
         - timestamp
         - sparql_endpoint
-        - summary
+        - models
       properties:
         score:
           type: number
@@ -423,65 +423,73 @@ components:
           description: SPARQL endpoint URL used for validation
           example: https://example.com/sparql
           format: uri
-        summary:
-          $ref: "#/components/schemas/Summary"
-    ModelCalculationDetails:
+        models:
+          type: array
+          description: Per-model details with their semantic score
+          items:
+            $ref: "#/components/schemas/ModelSummary"
+    ModelSummary:
       type: object
       required:
-        - model_name
+        - name
         - score
         - has_annotations
-        - valid_properties_paths
-        - invalid_properties_paths
+        - raw_properties_count
+        - valid_properties_count
+        - invalid_properties_count
+        - properties
       properties:
-        model_name:
+        name:
           type: string
           description: Name of the data model
           example: Country
         score:
           type: number
           description: Semantic score for this model (0-1)
-          example: 0.75
+          example: 0.8
           minimum: 0
           maximum: 1
         has_annotations:
           type: boolean
           description: Whether the model is annotated with x-jsonld-context or not.
           example: true
-        valid_properties_paths:
-          type: array
-          description: List of URIs or reserved keywords that are correctly resolved to a semantic property.
-          items:
-            type: string
-          example:
-            - "@id"
-            - "https://w3id.org/italia/onto/RPO/isCurrentlyPredominantlyCitizen"
-        invalid_properties_paths:
-          type: array
-          description: List of URIs or reserved keywords that cannot be resolved to a semantic property.
-          items:
-            type: string
-          example:
-            - "https://w3id.org/italia/onto/RPO/notExistingProperty"
-    Summary:
-      type: object
-      required:
-        - raw_models_count
-        - positive_score_models_count
-        - models_calculation_details
-      properties:
-        raw_models_count:
+        raw_properties_count:
           type: integer
-          description: Total number of object-type models processed
+          description: Number of properties in the model
           example: 10
           minimum: 0
-        positive_score_models_count:
+        valid_properties_count:
           type: integer
-          description: Total number of object-type models that have a semantic score greater than 0.
+          description: Number of valid properties in the model
           example: 8
           minimum: 0
-        models_calculation_details:
+        invalid_properties_count:
+          type: integer
+          description: Number of invalid properties in the model
+          example: 2
+          minimum: 0
+        properties:
           type: array
-          description: Per-model calculation details
+          description: List of properties with their validation status
           items:
-            $ref: "#/components/schemas/ModelCalculationDetails"
+            $ref: "#/components/schemas/PropertySummary"
+    PropertySummary:
+      type: object
+      required:
+        - name
+        - valid
+      properties:
+        name:
+          type: string
+          description: Name of the property
+          example: country
+        uri:
+          type: string
+          description: URI of the property
+          example: https://w3id.org/italia/onto/CLV/country
+          format: uri
+          nullable: true
+        valid:
+          type: boolean
+          description: Whether the property is valid
+          example: true

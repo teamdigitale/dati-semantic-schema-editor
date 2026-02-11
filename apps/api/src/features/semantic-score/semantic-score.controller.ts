@@ -1,4 +1,5 @@
 import {
+  ClassSerializerInterceptor,
   Controller,
   HttpCode,
   Inject,
@@ -86,13 +87,15 @@ a schema annotated with the REST API Linked Data Keywords.`,
   })
   @ApiResponse({
     status: 200,
-    description: `JSON object containing the semantic score, timestamp, SPARQL endpoint, and detailed calculation information.`,
+    description: `The provided OpenAPI specification document has been successfully processed.
+    The response will output informations about the global semantic score and the models processed.`,
     type: SemanticScoreResponseDTO,
     headers: { ...API_HEADER_RATE_LIMIT },
   })
   @ApiResponse(API_RESPONSE_406)
   @ApiResponse(API_RESPONSE_413)
   @ApiResponse(API_RESPONSE_415)
+  @UseInterceptors(ClassSerializerInterceptor)
   @SerializeOptions({ type: SemanticScoreResponseDTO })
   async updateSchemaSemanticScore(
     @UploadedFile() file: any,
@@ -154,16 +157,8 @@ a schema annotated with the REST API Linked Data Keywords.`,
       `Ontoscore calculated successfully. Calculated value: ${schemaSemanticScore.toFixed(2)}`,
     );
 
-    // Construct response object
-    const timestamp = Date.now();
-
     this.logger.log(`Schema semantic score calculated successfully`);
 
-    return new SemanticScoreResponseDTO({
-      score: schemaSemanticScore,
-      timestamp,
-      sparqlEndpoint: sparqlUrl,
-      summary: summary,
-    });
+    return new SemanticScoreResponseDTO(summary);
   }
 }

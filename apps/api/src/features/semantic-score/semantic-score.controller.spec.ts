@@ -37,23 +37,28 @@ describe('SemanticScoreController', () => {
     expect(response.headers['content-type']).toContain('application/json');
     expect(response.body).toBeDefined();
     expect(response.body).toHaveProperty('score');
-    expect(response.body).toHaveProperty('timestamp');
-    expect(response.body).toHaveProperty('sparql_endpoint');
-    expect(response.body).toHaveProperty('summary');
-    expect(response.body.summary).toHaveProperty('raw_models_count');
-    expect(response.body.summary).toHaveProperty('positive_score_models_count');
-    expect(response.body.summary).toHaveProperty('models_calculation_details');
-    expect(
-      Array.isArray(response.body.summary.models_calculation_details),
-    ).toBe(true);
     expect(typeof response.body.score).toBe('number');
     expect(response.body.score).toBeGreaterThanOrEqual(0);
     expect(response.body.score).toBeLessThanOrEqual(1);
+    expect(response.body).toHaveProperty('timestamp');
     expect(typeof response.body.timestamp).toBe('number');
+    expect(response.body.timestamp).toBeGreaterThanOrEqual(0);
+    expect(response.body).toHaveProperty('sparql_endpoint');
     expect(typeof response.body.sparql_endpoint).toBe('string');
-    expect(typeof response.body.summary.raw_models_count).toBe('number');
-    expect(typeof response.body.summary.positive_score_models_count).toBe(
-      'number',
+    expect(response.body.sparql_endpoint).toBe(
+      'https://virtuoso-test-external-service-ndc-test.apps.cloudpub.testedev.istat.it/sparql',
     );
+    expect(response.body).toHaveProperty('models');
+    expect(Array.isArray(response.body.models)).toBe(true);
+    expect(response.body.models.length).toBeGreaterThan(0);
+    expect(response.body.models[0]).toHaveProperty('name');
+    expect(response.body.models[0]).toHaveProperty('score');
+    expect(response.body.models[0]).toHaveProperty('has_annotations');
+    expect(response.body.models[0]).toHaveProperty('raw_properties_count');
+    expect(response.body.models[0]).toHaveProperty('valid_properties_count');
+    expect(response.body.models[0]).toHaveProperty('invalid_properties_count');
+    expect(response.body.models[0]).toHaveProperty('properties');
+    expect(Array.isArray(response.body.models[0].properties)).toBe(true);
+    expect(response.body.models[0].properties.length).toBeGreaterThanOrEqual(0);
   });
 });
