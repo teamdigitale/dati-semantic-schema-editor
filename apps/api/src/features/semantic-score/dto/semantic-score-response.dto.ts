@@ -5,7 +5,7 @@ import {
   SemanticScoreSummary,
 } from '@teamdigitale/schema-editor-utils';
 import { Expose, Type } from 'class-transformer';
-import { ExposeConditionally } from 'src/features/swagger';
+import { ExposeConditionally } from '../../swagger';
 
 @ApiSchema({ name: 'PropertySummary' })
 export class PropertySummaryDTO implements PropertySummary {
