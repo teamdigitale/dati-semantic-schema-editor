@@ -5,6 +5,7 @@ import {
   SemanticScoreSummary,
 } from '@teamdigitale/schema-editor-utils';
 import { Expose, Type } from 'class-transformer';
+import { ExposeConditionally } from 'src/features/swagger';
 
 @ApiSchema({ name: 'PropertySummary' })
 export class PropertySummaryDTO implements PropertySummary {
@@ -26,6 +27,7 @@ export class PropertySummaryDTO implements PropertySummary {
     examples: ['@id', 'https://w3id.org/italia/onto/CLV/country', null],
     required: false,
     format: 'uri',
+    nullable: true,
   })
   uri: string | null;
 
@@ -142,13 +144,18 @@ export class SemanticScoreResponseDTO implements SemanticScoreSummary {
   })
   timestamp: number;
 
-  @Expose({ name: 'sparql_endpoint' })
+  @ExposeConditionally({
+    enabled: process.env.NODE_ENV !== 'production',
+    name: 'sparql_endpoint',
+  })
   @ApiProperty({
     name: 'sparql_endpoint',
-    description: 'SPARQL endpoint URL used for validation',
+    description:
+      'SPARQL endpoint URL used for validation. This field is used only for debugging purposes and could not be always available',
     example: 'https://example.com/sparql',
-    required: true,
     format: 'uri',
+    deprecated: true,
+    required: false,
   })
   sparqlEndpoint: string;
 
