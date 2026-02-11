@@ -425,6 +425,7 @@ components:
           deprecated: true
         models:
           type: array
+          maxItems: 1000
           description: Per-model details with their semantic score
           items:
             $ref: "#/components/schemas/ModelSummary"
@@ -441,7 +442,8 @@ components:
       properties:
         name:
           type: string
-          description: Name of the data model
+          description: >-
+            Name of the data model relative to the OpenAPI specification document #/components/schemas path.
           example: Country
         score:
           type: number
@@ -470,6 +472,7 @@ components:
           minimum: 0
         properties:
           type: array
+          maxItems: 1000
           description: List of properties with their validation status
           items:
             $ref: "#/components/schemas/PropertySummary"

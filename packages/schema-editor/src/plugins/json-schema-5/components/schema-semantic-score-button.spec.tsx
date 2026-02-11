@@ -27,9 +27,11 @@ describe('SchemaSemanticScoreButton', () => {
   });
 
   it('should calculate schema semantic score on click', async () => {
-    const calculateSchemaSemanticScoreSpy = vi
-      .spyOn(utils, 'calculateSchemaSemanticScore')
-      .mockResolvedValueOnce({ resolvedSpecJson: {}, schemaSemanticScore: 0.5 });
+    const calculateSchemaSemanticScoreSpy = vi.spyOn(utils, 'calculateSchemaSemanticScore').mockResolvedValueOnce({
+      resolvedSpecJson: {},
+      schemaSemanticScore: 0.5,
+      summary: { score: 0.5, timestamp: Date.now(), sparqlEndpoint: 'https://sparql.com', models: [] },
+    });
     const mockSpecSelectors = getMockSpecSelectors();
     render(<SchemaSemanticScoreButton specSelectors={mockSpecSelectors} />);
     const button = screen.getByRole('button');

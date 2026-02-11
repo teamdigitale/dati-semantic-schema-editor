@@ -46,7 +46,8 @@ export class ModelSummaryDTO implements ModelSummary {
   @Expose({ name: 'name' })
   @ApiProperty({
     name: 'name',
-    description: 'Name of the data model',
+    description:
+      'Name of the data model relative to the OpenAPI specification document #/components/schemas path.',
     example: 'Country',
     required: true,
   })
