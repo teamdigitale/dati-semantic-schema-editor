@@ -1,9 +1,18 @@
 import { fromJS, Map } from 'immutable';
+import { InClientCache } from '../cache';
 import { resolveJsonldContext, resolvePropertyByJsonldContext } from '../jsonld';
 import { resolveOpenAPISpec } from '../openapi';
 import { ModelSummary, PropertySummary, SemanticScoreSummary } from './models/calculation-details';
 
-export async function determinePropertiesToValidate(
+const cache = new InClientCache<Promise<string[]>>({
+  ttl: 5 * 60 * 1000, // 5 minutes
+});
+
+function getCacheKey(properties: string[], sparqlUrl: string): string {
+  return `${sparqlUrl}:${properties.sort().join(',')}`;
+}
+
+async function determinePropertiesToValidate(
   jsonldContext: Map<any, any>,
   propertiesPaths: string[][],
 ): Promise<PropertySummary[]> {
@@ -32,14 +41,34 @@ export async function fetchValidSemanticScoreProperties(
   properties: string[],
   options: { sparqlUrl: string },
 ): Promise<string[]> {
-  const sparqlQuery = buildSemanticScoreSparqlQuery(properties);
-  const endpoint = `${options.sparqlUrl?.trim()}?format=json&query=${encodeURIComponent(sparqlQuery)}`;
-  const response = await fetch(endpoint, { cache: 'force-cache' });
-  if (!response.ok) {
-    return [];
+  const cacheKey = getCacheKey(properties, options.sparqlUrl);
+
+  // Try to get cached promise (this also cleans up expired entries)
+  const cachedPromise = cache.get(cacheKey);
+  if (cachedPromise) {
+    return cachedPromise;
   }
-  const sparqlData = await response.json();
-  return sparqlData?.results?.bindings?.map((x) => x.fieldUri.value) || [];
+
+  // Create new promise for the fetch
+  const fetchPromise = (async (): Promise<string[]> => {
+    const sparqlQuery = buildSemanticScoreSparqlQuery(properties);
+    const endpoint = `${options.sparqlUrl?.trim()}?format=json&query=${encodeURIComponent(sparqlQuery)}`;
+    const response = await fetch(endpoint);
+    if (!response.ok) {
+      return [];
+    }
+    const sparqlData: any = await response.json();
+    return sparqlData?.results?.bindings?.map((x) => x.fieldUri.value) || [];
+  })();
+
+  // Store promise in cache
+  cache.set(cacheKey, fetchPromise);
+
+  // Remove from cache if promise fails, without waiting for ttl expiration
+  return fetchPromise.catch((e) => {
+    cache.delete(cacheKey);
+    throw e;
+  });
 }
 
 export async function calculateModelSemanticScore(
