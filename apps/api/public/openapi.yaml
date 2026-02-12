@@ -167,27 +167,12 @@ paths:
             The provided OpenAPI specification document has been successfully processed.
             The response will output informations about the global semantic score and the models processed.
           headers:
-            X-Ratelimit-Limit:
-              description: >-
-                The maximum number of requests that the user is allowed to make
-                per interval of time.
-              schema:
-                type: integer
-                example: 30
-            X-Ratelimit-Remaining:
-              description: >-
-                The number of requests remaining in the current rate limit
-                window.
-              schema:
-                type: integer
-                example: 10
-            X-Ratelimit-Reset:
-              description: >-
-                The time at which the current rate limit window resets in
-                seconds.
-              schema:
-                type: integer
-                example: 60
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
           content:
             application/json:
               schema:
@@ -196,27 +181,12 @@ paths:
           description: |-
             The provided file is not a valid OpenAPI 3.0 specification document.
           headers:
-            X-Ratelimit-Limit:
-              description: >-
-                The maximum number of requests that the user is allowed to make
-                per interval of time.
-              schema:
-                type: integer
-                example: 30
-            X-Ratelimit-Remaining:
-              description: >-
-                The number of requests remaining in the current rate limit
-                window.
-              schema:
-                type: integer
-                example: 10
-            X-Ratelimit-Reset:
-              description: >-
-                The time at which the current rate limit window resets in
-                seconds.
-              schema:
-                type: integer
-                example: 60
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
           content:
             application/problem+json:
               schema:
@@ -225,27 +195,12 @@ paths:
           description: |-
             The provided file is too large.
           headers:
-            X-Ratelimit-Limit:
-              description: >-
-                The maximum number of requests that the user is allowed to make
-                per interval of time.
-              schema:
-                type: integer
-                example: 30
-            X-Ratelimit-Remaining:
-              description: >-
-                The number of requests remaining in the current rate limit
-                window.
-              schema:
-                type: integer
-                example: 10
-            X-Ratelimit-Reset:
-              description: >-
-                The time at which the current rate limit window resets in
-                seconds.
-              schema:
-                type: integer
-                example: 60
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
           content:
             application/problem+json:
               schema:
@@ -255,27 +210,12 @@ paths:
             The provided file has an unsupported media type:
             we only accept application/json and application/yaml.
           headers:
-            X-Ratelimit-Limit:
-              description: >-
-                The maximum number of requests that the user is allowed to make
-                per interval of time.
-              schema:
-                type: integer
-                example: 30
-            X-Ratelimit-Remaining:
-              description: >-
-                The number of requests remaining in the current rate limit
-                window.
-              schema:
-                type: integer
-                example: 10
-            X-Ratelimit-Reset:
-              description: >-
-                The time at which the current rate limit window resets in
-                seconds.
-              schema:
-                type: integer
-                example: 60
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
           content:
             application/problem+json:
               schema:
@@ -284,57 +224,34 @@ paths:
           description: |-
             Too many requests sent to the server.
           headers:
-            X-Ratelimit-Limit:
-              description: >-
-                The maximum number of requests that the user is allowed to make
-                per interval of time.
-              schema:
-                type: integer
-                example: 30
-            X-Ratelimit-Remaining:
-              description: >-
-                The number of requests remaining in the current rate limit
-                window.
-              schema:
-                type: integer
-                example: 10
-            X-Ratelimit-Reset:
-              description: >-
-                The time at which the current rate limit window resets in
-                seconds.
-              schema:
-                type: integer
-                example: 60
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
         "default":
-          description: >-
+          description: |-
             Client or server error during semantic score calculation.
           headers:
-            X-Ratelimit-Limit:
-              description: >-
-                The maximum number of requests that the user is allowed to make
-                per interval of time.
-              schema:
-                type: integer
-                example: 30
-            X-Ratelimit-Remaining:
-              description: >-
-                The number of requests remaining in the current rate limit
-                window.
-              schema:
-                type: integer
-                example: 10
-            X-Ratelimit-Reset:
-              description: >-
-                The time at which the current rate limit window resets in
-                seconds.
-              schema:
-                type: integer
-                example: 60
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
           content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"          content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
