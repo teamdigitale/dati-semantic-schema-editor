@@ -5,7 +5,9 @@ export class InClientCache<T = unknown> implements ICacheService<T> {
   private readonly cleanupInterval: ReturnType<typeof setInterval> | undefined;
 
   constructor(private readonly options: { ttl: number }) {
-    this.cleanupInterval = setInterval(() => this.cleanupExpired(), options.ttl);
+    if (options.ttl) {
+      this.cleanupInterval = setInterval(() => this.cleanupExpired(), options.ttl);
+    }
   }
 
   public destroy(): void {

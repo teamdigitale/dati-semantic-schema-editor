@@ -1,15 +1,17 @@
 import { fromJS, Map } from 'immutable';
-import { InClientCache } from '../cache';
+import { ICacheService } from '../cache';
+import { NoopCache } from '../cache/noop-cache';
 import { resolveJsonldContext, resolvePropertyByJsonldContext } from '../jsonld';
 import { resolveOpenAPISpec } from '../openapi';
 import { ModelSummary, PropertySummary, SemanticScoreSummary } from './models/calculation-details';
 
-const cache = new InClientCache<Promise<string[]>>({
-  ttl: 5 * 60 * 1000, // 5 minutes
-});
+let cache: ICacheService<Promise<string[]>> = new NoopCache<Promise<string[]>>();
 
-function getCacheKey(properties: string[], sparqlUrl: string): string {
-  return `${sparqlUrl}:${properties.sort().join(',')}`;
+export function setCacheService(cacheService: ICacheService<Promise<string[]>>): void {
+  if (cache) {
+    cache.destroy();
+  }
+  cache = cacheService;
 }
 
 async function determinePropertiesToValidate(
@@ -41,7 +43,8 @@ export async function fetchValidSemanticScoreProperties(
   properties: string[],
   options: { sparqlUrl: string },
 ): Promise<string[]> {
-  const cacheKey = getCacheKey(properties, options.sparqlUrl);
+  const sparqlQuery = buildSemanticScoreSparqlQuery(properties);
+  const cacheKey = sparqlQuery;
 
   // Try to get cached promise (this also cleans up expired entries)
   const cachedPromise = cache.get(cacheKey);
@@ -51,7 +54,6 @@ export async function fetchValidSemanticScoreProperties(
 
   // Create new promise for the fetch
   const fetchPromise = (async (): Promise<string[]> => {
-    const sparqlQuery = buildSemanticScoreSparqlQuery(properties);
     const endpoint = `${options.sparqlUrl?.trim()}?format=json&query=${encodeURIComponent(sparqlQuery)}`;
     const response = await fetch(endpoint);
     if (!response.ok) {

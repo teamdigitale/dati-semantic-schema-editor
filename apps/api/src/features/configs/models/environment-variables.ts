@@ -13,4 +13,8 @@ export class EnvironmentVariables {
 
   @IsString()
   SPARQL_URL: string;
+
+  @IsNumber()
+  @IsOptional()
+  SPARQL_CACHE_TTL: number;
 }

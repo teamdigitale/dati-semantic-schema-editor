@@ -12,7 +12,6 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
@@ -21,11 +20,9 @@ import {
   ApiOperation,
   ApiResponse,
 } from '@nestjs/swagger';
-import { calculateSchemaSemanticScore } from '@teamdigitale/schema-editor-utils';
 import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 import * as yaml from 'js-yaml';
-import { Config } from '../configs';
 import {
   API_HEADER_RATE_LIMIT,
   API_RESPONSE_406,
@@ -37,11 +34,14 @@ import {
   OASDocumentDTO,
   SemanticScoreResponseDTO,
 } from './dto';
+import { SemanticScoreService } from './semantic-score.service';
 
 @Controller('semantic-score')
 export class SemanticScoreController {
   private readonly logger: Logger = new Logger(SemanticScoreController.name);
-  @Inject(ConfigService) private configService: ConfigService<Config, true>;
+
+  @Inject(SemanticScoreService)
+  private readonly semanticScoreService!: SemanticScoreService;
 
   @ApiExtraModels(OASDocumentDTO)
   @Post('')
@@ -148,11 +148,8 @@ a schema annotated with the REST API Linked Data Keywords.`,
 
     // Calculate ontoscore and normalize spec
     this.logger.debug(`Calculating ontoscore`);
-    const sparqlUrl = this.configService.get('sparqlUrl', { infer: true });
-    const { schemaSemanticScore, summary } = await calculateSchemaSemanticScore(
-      specJson,
-      { sparqlUrl },
-    );
+    const { schemaSemanticScore, summary } =
+      await this.semanticScoreService.calculateSchemaSemanticScore(specJson);
     this.logger.debug(
       `Ontoscore calculated successfully. Calculated value: ${schemaSemanticScore.toFixed(2)}`,
     );

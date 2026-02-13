@@ -6,6 +6,14 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { LoggerModule } from '../logger';
 import { SemanticScoreController } from './semantic-score.controller';
+import { SemanticScoreService } from './semantic-score.service';
+import { Config } from '../configs';
+
+const CONFIGURATION_MOCK: Partial<Record<keyof Config, unknown>> = {
+  sparqlCacheTTL: 300000,
+  sparqlUrl:
+    'https://virtuoso-test-external-service-ndc-test.apps.cloudpub.testedev.istat.it/sparql',
+};
 
 describe('SemanticScoreController', () => {
   let app: INestApplication<App>;
@@ -14,12 +22,10 @@ describe('SemanticScoreController', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule.forRoot({}), LoggerModule.forRoot({})],
       controllers: [SemanticScoreController],
+      providers: [SemanticScoreService],
     })
       .overrideProvider(ConfigService)
-      .useValue({
-        get: () =>
-          'https://virtuoso-test-external-service-ndc-test.apps.cloudpub.testedev.istat.it/sparql',
-      })
+      .useValue({ get: (x: string) => CONFIGURATION_MOCK[x as keyof Config] })
       .compile();
 
     app = moduleFixture.createNestApplication();
