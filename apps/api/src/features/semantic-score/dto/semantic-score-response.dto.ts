@@ -21,10 +21,9 @@ export class PropertySummaryDTO implements PropertySummary {
   @Expose({ name: 'uri' })
   @ApiProperty({
     name: 'uri',
-    description:
-      'URI of the property or reserved keyword. If the property is not mapped, the URI is null.',
+    description: 'URI of the property',
     type: 'string',
-    examples: ['@id', 'https://w3id.org/italia/onto/CLV/country', null],
+    example: 'https://w3id.org/italia/onto/CLV/country',
     required: false,
     format: 'uri',
     nullable: true,
@@ -57,10 +56,12 @@ export class ModelSummaryDTO implements ModelSummary {
   @ApiProperty({
     name: 'score',
     description: 'Semantic score for this model (0-1)',
-    example: 0.8,
+    example: 0.75,
     required: true,
     minimum: 0,
     maximum: 1,
+    format: 'float',
+    type: 'number',
   })
   score: number;
 
@@ -78,6 +79,7 @@ export class ModelSummaryDTO implements ModelSummary {
     name: 'raw_properties_count',
     description: 'Number of properties in the model',
     type: 'integer',
+    format: 'int32',
     minimum: 0,
     example: 10,
     required: true,
@@ -89,6 +91,7 @@ export class ModelSummaryDTO implements ModelSummary {
     name: 'valid_properties_count',
     description: 'Number of valid properties in the model',
     type: 'integer',
+    format: 'int32',
     minimum: 0,
     example: 8,
     required: true,
@@ -100,6 +103,7 @@ export class ModelSummaryDTO implements ModelSummary {
     name: 'invalid_properties_count',
     description: 'Number of invalid properties in the model',
     type: 'integer',
+    format: 'int32',
     minimum: 0,
     example: 2,
     required: true,
@@ -113,6 +117,7 @@ export class ModelSummaryDTO implements ModelSummary {
     description: 'List of properties with their validation status',
     type: [PropertySummaryDTO],
     required: true,
+    maxItems: 1000,
   })
   properties: PropertySummaryDTO[];
 }
@@ -131,6 +136,8 @@ export class SemanticScoreResponseDTO implements SemanticScoreSummary {
     required: true,
     minimum: 0,
     maximum: 1,
+    format: 'float',
+    type: 'number',
   })
   score: number;
 
@@ -138,6 +145,7 @@ export class SemanticScoreResponseDTO implements SemanticScoreSummary {
   @ApiProperty({
     name: 'timestamp',
     type: 'integer',
+    format: 'int64',
     minimum: 0,
     description: 'Unix timestamp of when the score was calculated',
     example: 1707234567890,
@@ -167,6 +175,8 @@ export class SemanticScoreResponseDTO implements SemanticScoreSummary {
     description: 'Per-model details with their semantic score',
     type: [ModelSummaryDTO],
     required: true,
+    maxItems: 1000,
+    minItems: 0,
   })
   models: ModelSummaryDTO[];
 }

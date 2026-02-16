@@ -19,6 +19,7 @@ import {
   ApiExtraModels,
   ApiOperation,
   ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
@@ -36,6 +37,7 @@ import {
 } from './dto';
 import { SemanticScoreService } from './semantic-score.service';
 
+@ApiTags('SemanticScore')
 @Controller('semantic-score')
 export class SemanticScoreController {
   private readonly logger: Logger = new Logger(SemanticScoreController.name);
@@ -74,10 +76,13 @@ export class SemanticScoreController {
     }),
   )
   @ApiOperation({
-    summary: 'Calculate semantic score for a YAML file',
+    summary: 'Calculate semantic score for an OAS 3.0 document.',
     description: `Process an OpenAPI 3.0 specification document containing
-a schema and computes its semantic score
-using the associated REST API Linked Data Keywords.`,
+a schema and computes its Semantic Score
+using the associated REST API Linked Data Keywords.
+
+The response contains the Semantic Score, that is a
+numeric value between 0 and 1.`,
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -88,7 +93,7 @@ a schema annotated with the REST API Linked Data Keywords.`,
   @ApiResponse({
     status: 200,
     description: `The provided OpenAPI specification document has been successfully processed.
-    The response will output informations about the global semantic score and the models processed.`,
+The response will output informations about the global semantic score and the models processed.`,
     type: SemanticScoreResponseDTO,
     headers: { ...API_HEADER_RATE_LIMIT },
   })

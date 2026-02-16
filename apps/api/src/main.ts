@@ -93,8 +93,45 @@ async function bootstrap() {
       .setOpenAPIVersion('3.0.3')
       .setTitle('Semantic Score Calculator')
       .setDescription(
-        `## Compute the Semantic Score of an API
-This API computes the semantic score of an OpenAPI specification document. It is useful to evaluate the semantic quality of an API. It can be used by developers, API consumers or API providers to improve the semantic quality of their APIs.`,
+        `## 🇬🇧 Compute the Semantic Score of an API
+
+This API computes the semantic score of an OpenAPI specification document
+looking at the mapping between RDF properties and JSON Schema properties
+defined via the \`x-jsonld-context\` OpenAPI 3.0 keyword.
+
+The Semantic Score is a value between 0 and 1, providing
+a synthetic indicator of the compliance of a data model
+to a given set of semantic assets published via schema.gov.it
+
+It can be used by developers, API consumers or API providers
+to get insights on the data models used in their APIs
+and improve its semantic quality.
+
+For further information on mapping JSON Schema properties
+to RDF properties, see [REST API Linked Data Keywords](https://datatracker.ietf.org/doc/draft-polli-restapi-ld-keywords/).
+
+This API is associated with the Schema Editor provided by schema.gov.it
+at <https://teamdigitale.github.io/dati-semantic-schema-editor/latest/>
+
+## 🇮🇹 Calcola il Semantic Score di una API
+
+Questa API calcola il punteggio semantico di un documento OpenAPI 3.0
+guardando il mapping tra proprietà RDF e proprietà JSON Schema
+definite tramite la keyword \`x-jsonld-context\` OpenAPI 3.0.
+
+Il Semantic Score è un valore decimale incluso tra 0 e 1,
+calcolato come rapporto tra il numero di proprietà semantiche risolte
+sui contenuti del Catalogo e quelle totali presenti nel file di definizione degli schemi dati.
+
+Può essere utilizzato da sviluppatori, consumatori e provider di API
+per ottenere informazioni sulle modalità di utilizzo dei modelli di dati
+e migliorare la qualità semantica delle API.
+
+Per ulteriori informazioni sul mapping tra proprietà JSON Schema e proprietà RDF,
+vedere [REST API Linked Data Keywords](https://datatracker.ietf.org/doc/draft-polli-restapi-ld-keywords/).
+
+Questa API è associata all'Editor di Schemi Dati fornito da schema.gov.it
+all'indirizzo <https://teamdigitale.github.io/dati-semantic-schema-editor/latest/>`,
       )
       .setVersion(packageJson.version)
       .setContact(
@@ -109,7 +146,11 @@ This API computes the semantic score of an OpenAPI specification document. It is
         'API to compute the semantic score of an OpenAPI specification document.',
         'info',
       )
-      .addServer('http://localhost:3000', 'Local development server')
+      .addServer('http://localhost:3000/api/v1', 'Local development server')
+      .addServer(
+        'https://schema-editor-api-ndc-dev.apps.cloudpub.testedev.istat.it/',
+        'Public development server',
+      )
       .addGlobalResponse(API_RESPONSE_429)
       .addGlobalResponse(API_RESPONSE_DEFAULT)
       .addTag('Health', 'Know the health status of the service.')
