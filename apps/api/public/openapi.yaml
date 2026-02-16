@@ -24,8 +24,24 @@ info:
     at <https://teamdigitale.github.io/dati-semantic-schema-editor/latest/>
 
     ## 🇮🇹 Calcola il Semantic Score di una API
-    
-    TBD    
+
+    Questa API calcola il punteggio semantico di un documento OpenAPI 3.0
+    guardando il mapping tra proprietà RDF e proprietà JSON Schema
+    definite tramite la keyword `x-jsonld-context` OpenAPI 3.0. 
+
+    Il Semantic Score è un valore decimale incluso tra 0 e 1,
+    calcolato come rapporto tra il numero di proprietà semantiche risolte
+    sui contenuti del Catalogo e quelle totali presenti nel file di definizione degli schemi dati.
+
+    Può essere utilizzato da sviluppatori, consumatori e provider di API
+    per ottenere informazioni sulle modalità di utilizzo dei modelli di dati
+    e migliorare la qualità semantica delle API.
+
+    Per ulteriori informazioni sul mapping tra proprietà JSON Schema e proprietà RDF,
+    vedere [REST API Linked Data Keywords](https://datatracker.ietf.org/doc/draft-polli-restapi-ld-keywords/).
+
+    Questa API è associata all'Editor di Schemi Dati fornito da schema.gov.it
+    all'indirizzo <https://teamdigitale.github.io/dati-semantic-schema-editor/latest/>
 
   version: 0.0.2
   contact:
@@ -72,11 +88,11 @@ paths:
           description: Service is healthy
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
+              $ref: "#/components/headers/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
+              $ref: "#/components/headers/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
+              $ref: "#/components/headers/X-RateLimit-Reset"
           content:
             application/problem+json:
               schema:
@@ -88,13 +104,13 @@ paths:
           description: Too many requests sent to the server.
           headers:
             Retry-After:
-              $ref: '#/components/headers/Retry-After'
+              $ref: "#/components/headers/Retry-After"
             X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
+              $ref: "#/components/headers/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
+              $ref: "#/components/headers/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
+              $ref: "#/components/headers/X-RateLimit-Reset"
           content:
             application/problem+json:
               schema:
@@ -106,13 +122,13 @@ paths:
             provided via headers.
           headers:
             Retry-After:
-              $ref: '#/components/headers/Retry-After'
+              $ref: "#/components/headers/Retry-After"
             X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
+              $ref: "#/components/headers/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
+              $ref: "#/components/headers/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
+              $ref: "#/components/headers/X-RateLimit-Reset"
           content:
             application/problem+json:
               schema:
@@ -123,13 +139,13 @@ paths:
             the service status.
           headers:
             Retry-After:
-              $ref: '#/components/headers/Retry-After'
+              $ref: "#/components/headers/Retry-After"
             X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
+              $ref: "#/components/headers/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
+              $ref: "#/components/headers/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
+              $ref: "#/components/headers/X-RateLimit-Reset"
           content:
             application/problem+json:
               schema:
@@ -168,11 +184,11 @@ paths:
             The response will output informations about the global semantic score and the models processed.
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
+              $ref: "#/components/headers/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
+              $ref: "#/components/headers/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
+              $ref: "#/components/headers/X-RateLimit-Reset"
           content:
             application/json:
               schema:
@@ -182,11 +198,11 @@ paths:
             The provided file is not a valid OpenAPI 3.0 specification document.
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
+              $ref: "#/components/headers/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
+              $ref: "#/components/headers/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
+              $ref: "#/components/headers/X-RateLimit-Reset"
           content:
             application/problem+json:
               schema:
@@ -196,11 +212,11 @@ paths:
             The provided file is too large.
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
+              $ref: "#/components/headers/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
+              $ref: "#/components/headers/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
+              $ref: "#/components/headers/X-RateLimit-Reset"
           content:
             application/problem+json:
               schema:
@@ -211,11 +227,11 @@ paths:
             we only accept application/json and application/yaml.
           headers:
             X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
+              $ref: "#/components/headers/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
+              $ref: "#/components/headers/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
+              $ref: "#/components/headers/X-RateLimit-Reset"
           content:
             application/problem+json:
               schema:
@@ -225,13 +241,13 @@ paths:
             Too many requests sent to the server.
           headers:
             Retry-After:
-              $ref: '#/components/headers/Retry-After'
+              $ref: "#/components/headers/Retry-After"
             X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
+              $ref: "#/components/headers/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
+              $ref: "#/components/headers/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
+              $ref: "#/components/headers/X-RateLimit-Reset"
           content:
             application/problem+json:
               schema:
@@ -241,13 +257,13 @@ paths:
             Client or server error during semantic score calculation.
           headers:
             Retry-After:
-              $ref: '#/components/headers/Retry-After'
+              $ref: "#/components/headers/Retry-After"
             X-RateLimit-Limit:
-              $ref: '#/components/headers/X-RateLimit-Limit'
+              $ref: "#/components/headers/X-RateLimit-Limit"
             X-RateLimit-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Remaining'
+              $ref: "#/components/headers/X-RateLimit-Remaining"
             X-RateLimit-Reset:
-              $ref: '#/components/headers/X-RateLimit-Reset'
+              $ref: "#/components/headers/X-RateLimit-Reset"
           content:
             application/problem+json:
               schema:
@@ -305,7 +321,7 @@ components:
         format: int32
         maximum: 186400
         minimum: 0
-        type: integer      
+        type: integer
   schemas:
     OASDocument:
       type: string
