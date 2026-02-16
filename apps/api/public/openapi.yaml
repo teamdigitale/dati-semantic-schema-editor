@@ -7,7 +7,7 @@ info:
 
     This API computes the semantic score of an OpenAPI specification document
     looking at the mapping between RDF properties and JSON Schema properties
-    defined via the `x-jsonld-context` OpenAPI 3.0 keyword. 
+    defined via the `x-jsonld-context` OpenAPI 3.0 keyword.
 
     The Semantic Score is a value between 0 and 1, providing
     a synthetic indicator of the compliance of a data model
@@ -27,7 +27,7 @@ info:
 
     Questa API calcola il punteggio semantico di un documento OpenAPI 3.0
     guardando il mapping tra proprietà RDF e proprietà JSON Schema
-    definite tramite la keyword `x-jsonld-context` OpenAPI 3.0. 
+    definite tramite la keyword `x-jsonld-context` OpenAPI 3.0.
 
     Il Semantic Score è un valore decimale incluso tra 0 e 1,
     calcolato come rapporto tra il numero di proprietà semantiche risolte
