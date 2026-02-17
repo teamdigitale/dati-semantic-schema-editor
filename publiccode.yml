@@ -47,6 +47,7 @@ maintenance:
   contacts:
     - affiliation: ISTAT
       email: info@schema.gov.it
+      name: TODO
   contractors:
     - name: ISTAT
       until: '2026-12-31'
