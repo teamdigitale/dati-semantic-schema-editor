@@ -36,10 +36,8 @@ import { SemanticScoreModule } from './features/semantic-score';
     }),
     HealthModule,
     ServeStaticModule.forRoot({
+      renderPath: 'openapi.yaml',
       rootPath: join(__dirname, '..', 'public'),
-      serveStaticOptions: {
-        fallthrough: false,
-      },
     }),
     SemanticScoreModule,
   ],
