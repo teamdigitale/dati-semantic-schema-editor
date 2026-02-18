@@ -2,7 +2,7 @@ import { Badge, Button, Icon, Spinner, Table } from 'design-react-kit';
 import { Fragment, useMemo } from 'react';
 import { useRDFClassVocabulariesResolver, useVocabularyQuery } from '../../../hooks';
 import { uri2shortUri } from '../../../utils';
-import { JSONLD_PLAYGROUND_FRAME } from './rdf-helper-const';
+import { JSONLD_PLAYGROUND_FRAME, JSONLD_PLAYGROUND_URI } from './rdf-helper-const';
 
 interface Props {
   classUri: string;
@@ -17,7 +17,7 @@ export const RDFHelperClassVocabulariesBlock = ({ classUri }: Props) => {
     if (!jsonldData) return '';
     const jsonldEncoded = encodeURIComponent(JSON.stringify(jsonldData, null, 2)); // replace with YAML.dump when json-ld.org playground supports it
     const frameEncoded = encodeURIComponent(JSON.stringify(JSONLD_PLAYGROUND_FRAME, null, 2)); // replace with YAML.dump when json-ld.org playground supports it
-    return `https://ioggstream.github.io/json-ld.org/playground/next/#startTab=tab-framed&json-ld=${jsonldEncoded}&frame=${frameEncoded}`;
+    return `${JSONLD_PLAYGROUND_URI}#startTab=tab-framed&json-ld=${jsonldEncoded}&frame=${frameEncoded}`;
   }, [jsonldData]);
 
   return (
