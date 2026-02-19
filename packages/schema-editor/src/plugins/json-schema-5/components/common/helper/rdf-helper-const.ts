@@ -3,21 +3,19 @@ export const JSONLD_PLAYGROUND_FRAME = {
   '@context': {
     skos: 'http://www.w3.org/2004/02/skos/core#',
     NDC: 'https://w3id.org/italia/onto/NDC/',
-    url: '@id',
-    description: {
-      '@id': 'http://purl.org/dc/terms/description',
+    uri: '@id',
+    id: 'skos:notation',
+    definition: {
+      '@id': 'skos:definition',
       '@language': 'it',
     },
-    prefLabel: {
+    label_it: {
       '@id': 'skos:prefLabel',
       '@language': 'it',
     },
-    keyConcept: {
-      '@id': 'NDC:keyConcept',
-    },
   },
   '@explicit': true,
-  description: {},
-  prefLabel: {},
-  keyConcept: {},
+  label_it: {},
+  uri: {},
+  id: {},
 };
