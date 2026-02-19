@@ -121,7 +121,7 @@ export const ObjectModel = ({
           )}
         </HeadingBlockLeft>
         <HeadingBlockRight>
-          <SemanticScoreBlock jsonldContext={jsonldContext} propertiesPaths={propertiesPaths} />
+          <SemanticScoreBlock dataModelKey={propertyName} dataModelValue={schema} jsonldContext={jsonldContext} />
           <JumpToPath specPath={specPath} />
         </HeadingBlockRight>
       </HeadingBlock>

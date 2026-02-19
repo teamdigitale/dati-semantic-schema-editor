@@ -1,90 +1,123 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { fromJS } from 'immutable';
+import { fromJS, Map } from 'immutable';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useSchemaSemanticScore, useSemanticScore, useSemanticScoreColor } from './use-semantic-score';
-import * as useSparqlQueryImport from './use-sparql';
 import * as configuration from '../../configuration';
 import * as utils from '@teamdigitale/schema-editor-utils';
 
 describe('useSemanticScore', () => {
-  it('should return 0 without jsonldcontext', async () => {
-    vi.spyOn(useSparqlQueryImport, 'useSparqlQuery').mockReturnValue({
-      status: 'idle',
-      error: undefined,
-      data: {},
-    });
-    const { result } = renderHook(() => useSemanticScore(undefined, [['givenName']]));
-    expect(result.current).toEqual({
-      status: 'idle',
-      error: undefined,
-      data: {
-        rawPropertiesCount: 1,
-        semanticPropertiesCount: 0,
-        score: 0,
-      },
-    });
+  beforeEach(() => {
+    vi.spyOn(configuration, 'useConfiguration').mockReturnValue({ sparqlUrl: 'https://sparql.com' });
   });
 
-  it('should return 0 without properties', async () => {
-    vi.spyOn(useSparqlQueryImport, 'useSparqlQuery').mockReturnValue({
-      status: 'idle',
-      error: undefined,
-      data: {},
+  it('should return undefined without dataModelKey', async () => {
+    vi.spyOn(utils, 'calculateModelSemanticScore').mockResolvedValue({
+      name: 'TestModel',
+      score: 0,
+      hasAnnotations: false,
+      rawPropertiesCount: 0,
+      validPropertiesCount: 0,
+      invalidPropertiesCount: 0,
+      properties: [],
+    });
+    const dataModelValue = fromJS({
+      type: 'object',
+      properties: {
+        givenName: { type: 'string' },
+      },
     });
     const jsonldContext = fromJS({
       '@vocab': 'https://w3id.org/italia/onto/CPV/',
       givenName: 'givenName',
     });
-    const { result } = renderHook(() => useSemanticScore(jsonldContext, undefined));
-    expect(result.current).toEqual({
-      status: 'idle',
-      error: undefined,
-      data: {
-        rawPropertiesCount: 0,
-        semanticPropertiesCount: 0,
-        score: 0,
-      },
-    });
+    const { result } = renderHook(() => useSemanticScore('', dataModelValue, jsonldContext));
+    await waitFor(() => expect(result.current.status).toBe('fulfilled'));
+    expect(result.current.data).toBeUndefined();
   });
 
-  it('should return 1 with one property @id', async () => {
-    const useSparqlQuerySpy = vi.spyOn(useSparqlQueryImport, 'useSparqlQuery').mockReturnValue({
-      status: 'idle',
-      error: undefined,
-      data: {},
+  it('should return undefined without dataModelValue', async () => {
+    vi.spyOn(utils, 'calculateModelSemanticScore').mockResolvedValue({
+      name: 'TestModel',
+      score: 0,
+      hasAnnotations: false,
+      rawPropertiesCount: 0,
+      validPropertiesCount: 0,
+      invalidPropertiesCount: 0,
+      properties: [],
+    });
+    const jsonldContext = fromJS({
+      '@vocab': 'https://w3id.org/italia/onto/CPV/',
+      givenName: 'givenName',
+    });
+    const { result } = renderHook(() => useSemanticScore('TestModel', undefined as any, jsonldContext));
+    await waitFor(() => expect(result.current.status).toBe('fulfilled'));
+    expect(result.current.data).toBeUndefined();
+  });
+
+  it('should return score with valid model', async () => {
+    vi.spyOn(utils, 'calculateModelSemanticScore').mockResolvedValue({
+      name: 'TestModel',
+      score: 1,
+      hasAnnotations: true,
+      rawPropertiesCount: 1,
+      validPropertiesCount: 1,
+      invalidPropertiesCount: 0,
+      properties: [{ name: 'id', uri: '@id', valid: true }],
+    });
+    const dataModelValue = fromJS({
+      type: 'object',
+      'x-jsonld-context': {
+        '@context': {
+          '@base': 'https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/',
+          id: '@id',
+        },
+      },
+      properties: {
+        id: { type: 'string' },
+      },
     });
     const jsonldContext = fromJS({
       '@base': 'https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/',
       id: '@id',
     });
-    const { result } = renderHook(() => useSemanticScore(jsonldContext, [['id']]));
-    await waitFor(() => expect(useSparqlQuerySpy).toHaveBeenCalledTimes(2));
-    expect(result.current).toEqual({
-      status: 'idle',
-      error: undefined,
-      data: {
-        rawPropertiesCount: 1,
-        semanticPropertiesCount: 1,
-        score: 1,
-      },
+    const { result } = renderHook(() => useSemanticScore('TestModel', dataModelValue, jsonldContext));
+    await waitFor(() => expect(result.current.status).toBe('fulfilled'));
+    expect(result.current.data).toEqual({
+      name: 'TestModel',
+      score: 1,
+      hasAnnotations: true,
+      rawPropertiesCount: 1,
+      validPropertiesCount: 1,
+      invalidPropertiesCount: 0,
+      properties: [{ name: 'id', uri: '@id', valid: true }],
     });
-    expect(useSparqlQuerySpy).toHaveBeenLastCalledWith(expect.anything(), { skip: true }); // The query is skipped
   });
 
-  it('should set 2 properties to check', async () => {
-    const useSparqlQuerySpy = vi.spyOn(useSparqlQueryImport, 'useSparqlQuery').mockReturnValue({
-      status: 'idle',
-      error: undefined,
-      data: {
-        results: {
-          bindings: [
-            {
-              count: {
-                value: '2',
-              },
-            },
-          ],
+  it('should return score with multiple properties', async () => {
+    vi.spyOn(utils, 'calculateModelSemanticScore').mockResolvedValue({
+      name: 'TestModel',
+      score: 1,
+      hasAnnotations: true,
+      rawPropertiesCount: 2,
+      validPropertiesCount: 2,
+      invalidPropertiesCount: 0,
+      properties: [
+        { name: 'familyName', uri: 'https://w3id.org/italia/onto/CPV/familyName', valid: true },
+        { name: 'givenName', uri: 'https://w3id.org/italia/onto/CPV/givenName', valid: true },
+      ],
+    });
+    const dataModelValue = fromJS({
+      type: 'object',
+      'x-jsonld-context': {
+        '@context': {
+          '@vocab': 'https://w3id.org/italia/onto/CPV/',
+          familyName: 'familyName',
+          givenName: 'givenName',
         },
+      },
+      properties: {
+        familyName: { type: 'string' },
+        givenName: { type: 'string' },
       },
     });
     const jsonldContext = fromJS({
@@ -92,25 +125,20 @@ describe('useSemanticScore', () => {
       familyName: 'familyName',
       givenName: 'givenName',
     });
-    const { result } = renderHook(() => useSemanticScore(jsonldContext, [['familyName'], ['givenName']]));
-    await waitFor(() => expect(useSparqlQuerySpy).toHaveBeenCalledTimes(2));
-    expect(result.current).toEqual({
-      status: 'idle',
-      error: undefined,
-      data: {
-        rawPropertiesCount: 2,
-        semanticPropertiesCount: 2,
-        score: 1,
-      },
+    const { result } = renderHook(() => useSemanticScore('TestModel', dataModelValue, jsonldContext));
+    await waitFor(() => expect(result.current.status).toBe('fulfilled'));
+    expect(result.current.data).toEqual({
+      name: 'TestModel',
+      score: 1,
+      hasAnnotations: true,
+      rawPropertiesCount: 2,
+      validPropertiesCount: 2,
+      invalidPropertiesCount: 0,
+      properties: [
+        { name: 'familyName', uri: 'https://w3id.org/italia/onto/CPV/familyName', valid: true },
+        { name: 'givenName', uri: 'https://w3id.org/italia/onto/CPV/givenName', valid: true },
+      ],
     });
-    expect(useSparqlQuerySpy).toHaveBeenLastCalledWith(
-      expect.stringContaining(
-        'https://w3id.org/italia/onto/CPV/familyName> <https://w3id.org/italia/onto/CPV/givenName>',
-      ),
-      {
-        skip: false,
-      },
-    );
   });
 });
 
@@ -154,6 +182,22 @@ describe('useSchemaSemanticScore', () => {
     vi.spyOn(utils, 'calculateSchemaSemanticScore').mockResolvedValue({
       schemaSemanticScore: 0.8,
       resolvedSpecJson: {},
+      summary: {
+        score: 0.8,
+        timestamp: Date.now(),
+        sparqlEndpoint: 'https://sparql.com',
+        models: [
+          {
+            name: 'TestModel',
+            score: 0.8,
+            hasAnnotations: true,
+            rawPropertiesCount: 0,
+            validPropertiesCount: 0,
+            invalidPropertiesCount: 0,
+            properties: [],
+          },
+        ],
+      },
     });
     const { result, rerender } = renderHook((props) => useSchemaSemanticScore(props ?? { foo: 'bar' }));
     await result.current.recalculate();
@@ -166,6 +210,22 @@ describe('useSchemaSemanticScore', () => {
     vi.spyOn(utils, 'calculateSchemaSemanticScore').mockResolvedValue({
       schemaSemanticScore: 0.8,
       resolvedSpecJson: {},
+      summary: {
+        score: 0.8,
+        timestamp: Date.now(),
+        sparqlEndpoint: 'https://sparql.com',
+        models: [
+          {
+            name: 'TestModel',
+            score: 0.8,
+            hasAnnotations: true,
+            rawPropertiesCount: 0,
+            validPropertiesCount: 0,
+            invalidPropertiesCount: 0,
+            properties: [],
+          },
+        ],
+      },
     });
     const { result } = renderHook(() => useSchemaSemanticScore({ foo: 'bar' }));
     await result.current.recalculate();

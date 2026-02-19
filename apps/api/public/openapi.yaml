@@ -2,13 +2,47 @@ openapi: 3.0.3
 info:
   title: Semantic Score Calculator
   x-summary: API to compute the semantic score of an OpenAPI specification document.
-  description: >-
-    ## Compute the Semantic Score of an API
+  description: |-
+    ## 🇬🇧 Compute the Semantic Score of an API
 
-    This API computes the semantic score of an OpenAPI specification document.
-    It is useful to evaluate the semantic quality of an API. It can be used by
-    developers, API consumers or API providers to improve the semantic quality
-    of their APIs.
+    This API computes the semantic score of an OpenAPI specification document
+    looking at the mapping between RDF properties and JSON Schema properties
+    defined via the `x-jsonld-context` OpenAPI 3.0 keyword.
+
+    The Semantic Score is a value between 0 and 1, providing
+    a synthetic indicator of the compliance of a data model
+    to a given set of semantic assets published via schema.gov.it
+
+    It can be used by developers, API consumers or API providers
+    to get insights on the data models used in their APIs
+    and improve its semantic quality.
+
+    For further information on mapping JSON Schema properties
+    to RDF properties, see [REST API Linked Data Keywords](https://datatracker.ietf.org/doc/draft-polli-restapi-ld-keywords/).
+
+    This API is associated with the Schema Editor provided by schema.gov.it
+    at <https://teamdigitale.github.io/dati-semantic-schema-editor/latest/>
+
+    ## 🇮🇹 Calcola il Semantic Score di una API
+
+    Questa API calcola il punteggio semantico di un documento OpenAPI 3.0
+    guardando il mapping tra proprietà RDF e proprietà JSON Schema
+    definite tramite la keyword `x-jsonld-context` OpenAPI 3.0.
+
+    Il Semantic Score è un valore decimale incluso tra 0 e 1,
+    calcolato come rapporto tra il numero di proprietà semantiche risolte
+    sui contenuti del Catalogo e quelle totali presenti nel file di definizione degli schemi dati.
+
+    Può essere utilizzato da sviluppatori, consumatori e provider di API
+    per ottenere informazioni sulle modalità di utilizzo dei modelli di dati
+    e migliorare la qualità semantica delle API.
+
+    Per ulteriori informazioni sul mapping tra proprietà JSON Schema e proprietà RDF,
+    vedere [REST API Linked Data Keywords](https://datatracker.ietf.org/doc/draft-polli-restapi-ld-keywords/).
+
+    Questa API è associata all'Editor di Schemi Dati fornito da schema.gov.it
+    all'indirizzo <https://teamdigitale.github.io/dati-semantic-schema-editor/latest/>
+
   version: 0.0.2
   contact:
     name: Team Digitale
@@ -27,41 +61,38 @@ servers:
   - url: http://localhost:3000/api/v1
     description: Local development server
     x-sandbox: true
+  - url: https://schema-editor-api-ndc-dev.apps.cloudpub.testedev.istat.it/
+    description: Public development server
+    x-sandbox: true
 security:
   # Anyone can use this API.
   - {}
 paths:
   /status:
     get:
+      summary: Retrieve the status of the service.
+      tags:
+        - Health
       operationId: HealthController_getHealth
-      description: >-
-        The service status.
+      description: |-
+        Returns whether the service is functioning properly or not.
+
+        Consumers should use this endpoint to test the service,
+        instead of issuing specific requests to the other endponts.
+
+        If the service is unavailable, the response may provide information
+        about the unavailability period.
       parameters: []
       responses:
         "200":
           description: Service is healthy
           headers:
-            X-Ratelimit-Limit:
-              description: >-
-                The maximum number of requests that the user is allowed to make
-                per interval of time.
-              schema:
-                type: integer
-                example: 30
-            X-Ratelimit-Remaining:
-              description: >-
-                The number of requests remaining in the current rate limit
-                window.
-              schema:
-                type: integer
-                example: 10
-            X-Ratelimit-Reset:
-              description: >-
-                The time at which the current rate limit window resets in
-                seconds.
-              schema:
-                type: integer
-                example: 60
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/X-RateLimit-Limit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/X-RateLimit-Remaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/X-RateLimit-Reset"
           content:
             application/problem+json:
               schema:
@@ -72,72 +103,65 @@ paths:
         "429":
           description: Too many requests sent to the server.
           headers:
-            X-Ratelimit-Limit:
-              description: >-
-                The maximum number of requests that the user is allowed to make
-                per interval of time.
+            Retry-After:
+              $ref: "#/components/headers/Retry-After"
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/X-RateLimit-Limit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/X-RateLimit-Remaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/X-RateLimit-Reset"
+          content:
+            application/problem+json:
               schema:
-                type: integer
-                example: 30
-            X-Ratelimit-Remaining:
-              description: >-
-                The number of requests remaining in the current rate limit
-                window.
-              schema:
-                type: integer
-                example: 10
-            X-Ratelimit-Reset:
-              description: >-
-                The time at which the current rate limit window resets in
-                seconds.
-              schema:
-                type: integer
-                example: 60
+                $ref: "#/components/schemas/Problem"
+        "503":
+          description: |-
+            The service is not available:
+            further availability information may be
+            provided via headers.
+          headers:
+            Retry-After:
+              $ref: "#/components/headers/Retry-After"
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/X-RateLimit-Limit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/X-RateLimit-Remaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/X-RateLimit-Reset"
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
         default:
           description: |-
-            Client or server error during semantic score calculation.
+            A client or server error happened while processing
+            the service status.
           headers:
-            X-Ratelimit-Limit:
-              description: >-
-                The maximum number of requests that the user is allowed to make
-                per interval of time.
-              schema:
-                type: integer
-                example: 30
-            X-Ratelimit-Remaining:
-              description: >-
-                The number of requests remaining in the current rate limit
-                window.
-              schema:
-                type: integer
-                example: 10
-            X-Ratelimit-Reset:
-              description: >-
-                The time at which the current rate limit window resets in
-                seconds.
-              schema:
-                type: integer
-                example: 60
+            Retry-After:
+              $ref: "#/components/headers/Retry-After"
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/X-RateLimit-Limit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/X-RateLimit-Remaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/X-RateLimit-Reset"
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-      summary: Health check endpoint
-      tags:
-        - Health
   /semantic-score:
     post:
-      summary: Calculate semantic score for a YAML file
+      summary: Calculate semantic score for an OAS 3.0 document.
       tags:
         - SemanticScore
       description: |-
         Process an OpenAPI 3.0 specification document containing
-        a schema and computes its semantic score
+        a schema and computes its Semantic Score
         using the associated REST API Linked Data Keywords.
+
+        The response contains the Semantic Score, that is a
+        numeric value between 0 and 1.
       operationId: SemanticScoreController_updateSchemaSemanticScore_v1
       parameters: []
       requestBody:
@@ -150,71 +174,35 @@ paths:
             # The file should be in the following formats.
             encoding:
               file:
-                contentType: application/yaml, application/json
+                contentType: application/openapi+yaml, application/openapi+json
             schema:
-              $ref: "#/components/schemas/CalculateSemanticScoreRequestDTO"
+              $ref: "#/components/schemas/CalculateSemanticScoreRequest"
       responses:
         "200":
           description: |-
-            An OpenAPI specification document containing
-            the #/info/x-semantic-score and #/info/x-semantic-score-timestamp
-            properties.
-
-            When a YAML file is received, comments and order is not preserved.
+            The provided OpenAPI specification document has been successfully processed.
+            The response will output informations about the global semantic score and the models processed.
           headers:
-            X-Ratelimit-Limit:
-              description: >-
-                The maximum number of requests that the user is allowed to make
-                per interval of time.
-              schema:
-                type: integer
-                example: 30
-            X-Ratelimit-Remaining:
-              description: >-
-                The number of requests remaining in the current rate limit
-                window.
-              schema:
-                type: integer
-                example: 10
-            X-Ratelimit-Reset:
-              description: >-
-                The time at which the current rate limit window resets in
-                seconds.
-              schema:
-                type: integer
-                example: 60
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/X-RateLimit-Limit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/X-RateLimit-Remaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/X-RateLimit-Reset"
           content:
-            application/yaml:
-              schema:
-                $ref: "#/components/schemas/OASDocument"
             application/json:
               schema:
-                $ref: "#/components/schemas/OASDocument"
+                $ref: "#/components/schemas/SemanticScoreResponse"
         "406":
           description: |-
             The provided file is not a valid OpenAPI 3.0 specification document.
           headers:
-            X-Ratelimit-Limit:
-              description: >-
-                The maximum number of requests that the user is allowed to make
-                per interval of time.
-              schema:
-                type: integer
-                example: 30
-            X-Ratelimit-Remaining:
-              description: >-
-                The number of requests remaining in the current rate limit
-                window.
-              schema:
-                type: integer
-                example: 10
-            X-Ratelimit-Reset:
-              description: >-
-                The time at which the current rate limit window resets in
-                seconds.
-              schema:
-                type: integer
-                example: 60
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/X-RateLimit-Limit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/X-RateLimit-Remaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/X-RateLimit-Reset"
           content:
             application/problem+json:
               schema:
@@ -223,27 +211,12 @@ paths:
           description: |-
             The provided file is too large.
           headers:
-            X-Ratelimit-Limit:
-              description: >-
-                The maximum number of requests that the user is allowed to make
-                per interval of time.
-              schema:
-                type: integer
-                example: 30
-            X-Ratelimit-Remaining:
-              description: >-
-                The number of requests remaining in the current rate limit
-                window.
-              schema:
-                type: integer
-                example: 10
-            X-Ratelimit-Reset:
-              description: >-
-                The time at which the current rate limit window resets in
-                seconds.
-              schema:
-                type: integer
-                example: 60
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/X-RateLimit-Limit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/X-RateLimit-Remaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/X-RateLimit-Reset"
           content:
             application/problem+json:
               schema:
@@ -253,27 +226,12 @@ paths:
             The provided file has an unsupported media type:
             we only accept application/json and application/yaml.
           headers:
-            X-Ratelimit-Limit:
-              description: >-
-                The maximum number of requests that the user is allowed to make
-                per interval of time.
-              schema:
-                type: integer
-                example: 30
-            X-Ratelimit-Remaining:
-              description: >-
-                The number of requests remaining in the current rate limit
-                window.
-              schema:
-                type: integer
-                example: 10
-            X-Ratelimit-Reset:
-              description: >-
-                The time at which the current rate limit window resets in
-                seconds.
-              schema:
-                type: integer
-                example: 60
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/X-RateLimit-Limit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/X-RateLimit-Remaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/X-RateLimit-Reset"
           content:
             application/problem+json:
               schema:
@@ -282,61 +240,88 @@ paths:
           description: |-
             Too many requests sent to the server.
           headers:
-            X-Ratelimit-Limit:
-              description: >-
-                The maximum number of requests that the user is allowed to make
-                per interval of time.
-              schema:
-                type: integer
-                example: 30
-            X-Ratelimit-Remaining:
-              description: >-
-                The number of requests remaining in the current rate limit
-                window.
-              schema:
-                type: integer
-                example: 10
-            X-Ratelimit-Reset:
-              description: >-
-                The time at which the current rate limit window resets in
-                seconds.
-              schema:
-                type: integer
-                example: 60
+            Retry-After:
+              $ref: "#/components/headers/Retry-After"
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/X-RateLimit-Limit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/X-RateLimit-Remaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/X-RateLimit-Reset"
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
         "default":
-          description: >-
+          description: |-
             Client or server error during semantic score calculation.
           headers:
-            X-Ratelimit-Limit:
-              description: >-
-                The maximum number of requests that the user is allowed to make
-                per interval of time.
-              schema:
-                type: integer
-                example: 30
-            X-Ratelimit-Remaining:
-              description: >-
-                The number of requests remaining in the current rate limit
-                window.
-              schema:
-                type: integer
-                example: 10
-            X-Ratelimit-Reset:
-              description: >-
-                The time at which the current rate limit window resets in
-                seconds.
-              schema:
-                type: integer
-                example: 60
+            Retry-After:
+              $ref: "#/components/headers/Retry-After"
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/X-RateLimit-Limit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/X-RateLimit-Remaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/X-RateLimit-Reset"
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
 components:
+  headers:
+    Cache-Control:
+      description: |-
+        Cache usage SHOULD be extensively detailed in the `description` property
+        to avoid data leaks or the usage of stale data.
+        This rule should ensure in some way that the api provider
+        documented extensively the cache usage to avoid data leaks
+        or usage of stale data.
+        For now this ruleset tests:
+        * the presence of following keywords
+          in the `description`: `max-age`, `private`, `no-store`, `no-cache`.
+        * that one and only one between Expires and Cache-Control is used.
+        `Cache-Control` and `Expires` should not be used in conjuction,
+        because `Cache-Control` overrides `Expires` when `max-age` is set.
+        Instead if neither `Cache-Control` or `Expires` are set, clients MAY use euristic cache
+        like described in RFC7234.
+      schema:
+        example: no-store
+        externalDocs:
+          url: https://datatracker.ietf.org/doc/html/rfc7234
+        pattern: >-
+          $[a-zA-Z0-9=;" -]{0,255}
+        type: string
+    Retry-After:
+      description: |-
+        Retry contacting the endpoint *at least* after seconds.
+        See https://tools.ietf.org/html/rfc7231#section-7.1.3
+      schema:
+        format: int32
+        maximum: 186400
+        minimum: 0
+        type: integer
+    X-RateLimit-Limit:
+      description: The number of allowed requests in the current period
+      schema:
+        format: int32
+        maximum: 1000000
+        minimum: 0
+        type: integer
+    X-RateLimit-Remaining:
+      description: The number of remaining requests in the current period
+      schema:
+        format: int32
+        maximum: 1000000
+        minimum: 0
+        type: integer
+    X-RateLimit-Reset:
+      description: The number of seconds left in the current period
+      schema:
+        format: int32
+        maximum: 186400
+        minimum: 0
+        type: integer
   schemas:
     OASDocument:
       type: string
@@ -349,7 +334,7 @@ components:
       externalDocs:
         url: https://raw.githubusercontent.com/OAI/spec.openapis.org/refs/heads/main/oas/3.0/schema/2024-10-18
         description: The OpenAPI 3.0 JSON Schema
-    CalculateSemanticScoreRequestDTO:
+    CalculateSemanticScoreRequest:
       type: object
       additionalProperties: false
       properties:
@@ -406,3 +391,106 @@ components:
           type: string
           maxLength: 1024
       type: object
+    SemanticScoreResponse:
+      type: object
+      required:
+        - score
+        - timestamp
+        - models
+      properties:
+        score:
+          type: number
+          description: Overall semantic score for the schema (0-1)
+          example: 0.75
+          minimum: 0
+          maximum: 1
+          format: float
+        timestamp:
+          type: integer
+          description: Unix timestamp of when the score was calculated
+          example: 1707234567890
+          format: int64
+        sparql_endpoint:
+          type: string
+          description: SPARQL endpoint URL used for validation. This field is used only for debugging purposes and could not be always available.
+          example: https://example.com/sparql
+          format: uri
+          deprecated: true
+        models:
+          type: array
+          maxItems: 1000
+          minItems: 0
+          description: Per-model details with their semantic score
+          items:
+            $ref: "#/components/schemas/ModelSummary"
+    ModelSummary:
+      type: object
+      required:
+        - name
+        - score
+        - has_annotations
+        - raw_properties_count
+        - valid_properties_count
+        - invalid_properties_count
+        - properties
+      properties:
+        name:
+          type: string
+          description: >-
+            Name of the data model relative to the OpenAPI specification document #/components/schemas path.
+          example: Country
+        score:
+          type: number
+          description: Semantic score for this model (0-1)
+          example: 0.75
+          minimum: 0
+          maximum: 1
+          format: float
+        has_annotations:
+          type: boolean
+          description: Whether the model is annotated with x-jsonld-context or not.
+          example: true
+        raw_properties_count:
+          type: integer
+          description: Number of properties in the model
+          example: 10
+          minimum: 0
+          format: int32
+        valid_properties_count:
+          type: integer
+          description: Number of valid properties in the model
+          example: 8
+          minimum: 0
+          format: int32
+        invalid_properties_count:
+          type: integer
+          description: Number of invalid properties in the model
+          example: 2
+          minimum: 0
+          format: int32
+        properties:
+          type: array
+          maxItems: 1000
+          description: List of properties with their validation status
+          items:
+            $ref: "#/components/schemas/PropertySummary"
+    PropertySummary:
+      type: object
+      required:
+        - name
+        - valid
+      properties:
+        name:
+          type: string
+          description: Name of the property
+          example: country
+        uri:
+          type: string
+          description: URI of the property
+          example: https://w3id.org/italia/onto/CLV/country
+          format: uri
+          nullable: true
+        valid:
+          type: boolean
+          description: Whether the property is valid
+          example: true

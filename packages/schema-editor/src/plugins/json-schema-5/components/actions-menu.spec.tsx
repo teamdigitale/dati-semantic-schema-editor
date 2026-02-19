@@ -19,6 +19,7 @@ describe('ActionsMenu', () => {
     vi.spyOn(utils, 'calculateSchemaSemanticScore').mockResolvedValue({
       resolvedSpecJson: { info: { 'x-semantic-score': 1 } },
       schemaSemanticScore: 0.5,
+      summary: { score: 0.5, timestamp: Date.now(), sparqlEndpoint: 'https://sparql.com', models: [] },
     });
   });
 

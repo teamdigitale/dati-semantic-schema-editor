@@ -50,13 +50,43 @@ components:
       const specJson = yaml.load(specYaml) as any;
       fetchMock.mockResolvedValue({
         ok: true,
-        json: async () => ({ results: { bindings: [{ count: { value: '1' } }] } }),
+        json: async () => ({
+          results: {
+            bindings: [{ fieldUri: { value: 'https://w3id.org/italia/onto/CLV/hasCountry' } }],
+          },
+        }),
       } as Response);
-      const { schemaSemanticScore, resolvedSpecJson } = await calculateSchemaSemanticScore(specJson, { sparqlUrl });
+      const { schemaSemanticScore, resolvedSpecJson, summary } = await calculateSchemaSemanticScore(specJson, {
+        sparqlUrl,
+      });
       expect(resolvedSpecJson).toBeTruthy();
       expect(schemaSemanticScore).toBeDefined();
       expect(resolvedSpecJson['info']['x-semantic-score']).toEqual(schemaSemanticScore);
       expect(resolvedSpecJson['info']['x-semantic-score-timestamp']).toBeDefined();
+
+      // Verify summary is returned
+      expect(summary).toBeDefined();
+      expect(summary.models.length).toBeGreaterThan(0);
+      expect(summary.models.filter((x) => x.score > 0).length).toBeGreaterThanOrEqual(0);
+      expect(summary.models.filter((x) => x.hasAnnotations).length).toBeGreaterThanOrEqual(0);
+      expect(
+        summary.models.filter((x) => x.properties.filter((y) => y.valid).length > 0).length,
+      ).toBeGreaterThanOrEqual(0);
+      expect(
+        summary.models.filter((x) => x.properties.filter((y) => !y.valid).length > 0).length,
+      ).toBeGreaterThanOrEqual(0);
+
+      // Verify per-model details structure
+      if (summary.models.length > 0) {
+        const modelDetail = summary.models[0];
+        expect(modelDetail).toHaveProperty('name');
+        expect(modelDetail).toHaveProperty('score');
+        expect(modelDetail).toHaveProperty('hasAnnotations');
+        expect(modelDetail).toHaveProperty('properties');
+        expect(Array.isArray(modelDetail.properties)).toBe(true);
+        expect(modelDetail.properties.filter((y) => y.valid).length).toBeGreaterThanOrEqual(0);
+        expect(modelDetail.properties.filter((y) => !y.valid).length).toBeGreaterThanOrEqual(0);
+      }
     });
 
     it('should not block semantic score calculation if x-jsonld-context is not present', async () => {
@@ -95,13 +125,31 @@ components:
       const specJson = yaml.load(specYaml) as Record<string, unknown>;
       fetchMock.mockResolvedValue({
         ok: true,
-        json: async () => ({ results: { bindings: [{ count: { value: '1' } }] } }),
+        json: async () => ({
+          results: {
+            bindings: [{ fieldUri: { value: 'https://w3id.org/italia/onto/CPV/educationLevelDesc' } }],
+          },
+        }),
       } as Response);
-      const { schemaSemanticScore, resolvedSpecJson } = await calculateSchemaSemanticScore(specJson, { sparqlUrl });
+      const { schemaSemanticScore, resolvedSpecJson, summary } = await calculateSchemaSemanticScore(specJson, {
+        sparqlUrl,
+      });
       expect(resolvedSpecJson).toBeTruthy();
       expect(resolvedSpecJson['info']['x-semantic-score']).toEqual(0.33);
       expect(resolvedSpecJson['info']['x-semantic-score-timestamp']).toBeDefined();
       expect(schemaSemanticScore).toEqual(0.33);
+
+      // Verify summary
+      expect(summary).toBeDefined();
+      expect(summary.models.length).toBeGreaterThan(0);
+      expect(summary.models.filter((x) => x.score > 0).length).toBeGreaterThanOrEqual(0);
+      expect(summary.models.filter((x) => x.hasAnnotations).length).toBeGreaterThanOrEqual(0);
+      expect(
+        summary.models.filter((x) => x.properties.filter((y) => y.valid).length > 0).length,
+      ).toBeGreaterThanOrEqual(0);
+      expect(
+        summary.models.filter((x) => x.properties.filter((y) => !y.valid).length > 0).length,
+      ).toBeGreaterThanOrEqual(0);
     });
   });
 });

@@ -3,27 +3,47 @@ import { GlobalErrorDTO } from '../exceptions';
 
 // HEADERS
 export const API_HEADER_RATE_LIMIT: ApiResponseOptions['headers'] = {
-  'X-Ratelimit-Limit': {
-    description:
-      'The maximum number of requests that the user is allowed to make per interval of time.',
+  'X-RateLimit-Limit': {
+    description: 'The number of allowed requests in the current period',
     schema: {
       type: 'integer',
+      format: 'int32',
+      minimum: 0,
+      maximum: 1000000,
       example: 30,
     },
   },
-  'X-Ratelimit-Remaining': {
-    description:
-      'The number of requests remaining in the current rate limit window.',
+  'X-RateLimit-Remaining': {
+    description: 'The number of remaining requests in the current period',
     schema: {
       type: 'integer',
+      format: 'int32',
+      minimum: 0,
+      maximum: 1000000,
       example: 10,
     },
   },
-  'X-Ratelimit-Reset': {
-    description:
-      'The time at which the current rate limit window resets in seconds.',
+  'X-RateLimit-Reset': {
+    description: 'The number of seconds left in the current period',
     schema: {
       type: 'integer',
+      format: 'int32',
+      minimum: 0,
+      maximum: 186400,
+      example: 60,
+    },
+  },
+};
+
+export const API_HEADER_RETRY_AFTER: ApiResponseOptions['headers'] = {
+  'Retry-After': {
+    description:
+      'Retry contacting the endpoint *at least* after seconds. See https://tools.ietf.org/html/rfc7231#section-7.1.3',
+    schema: {
+      type: 'integer',
+      format: 'int32',
+      minimum: 0,
+      maximum: 186400,
       example: 60,
     },
   },
@@ -32,8 +52,12 @@ export const API_HEADER_RATE_LIMIT: ApiResponseOptions['headers'] = {
 // RESPONSES
 export const API_RESPONSE_DEFAULT: ApiResponseOptions = {
   status: 'default',
-  description: 'Client or server error during semantic score calculation.',
-  headers: { ...API_HEADER_RATE_LIMIT },
+  description:
+    'A client or server error happened while processing the service status.',
+  headers: {
+    ...API_HEADER_RETRY_AFTER,
+    ...API_HEADER_RATE_LIMIT,
+  },
   content: {
     'application/problem+json': {
       schema: {
@@ -85,7 +109,43 @@ export const API_RESPONSE_415: ApiResponseOptions = {
 export const API_RESPONSE_429: ApiResponseOptions = {
   status: 429,
   description: 'Too many requests sent to the server.',
-  headers: { ...API_HEADER_RATE_LIMIT },
+  headers: {
+    ...API_HEADER_RETRY_AFTER,
+    ...API_HEADER_RATE_LIMIT,
+  },
+  content: {
+    'application/problem+json': {
+      schema: {
+        $ref: getSchemaPath(GlobalErrorDTO),
+      },
+    },
+  },
+};
+
+export const API_RESPONSE_503: ApiResponseOptions = {
+  status: 503,
+  description:
+    'The service is not available: further availability information may be provided via headers.',
+  headers: {
+    ...API_HEADER_RETRY_AFTER,
+    ...API_HEADER_RATE_LIMIT,
+  },
+  content: {
+    'application/problem+json': {
+      schema: {
+        $ref: getSchemaPath(GlobalErrorDTO),
+      },
+    },
+  },
+};
+
+export const API_RESPONSE_DEFAULT_SEMANTIC_SCORE: ApiResponseOptions = {
+  status: 'default',
+  description: 'Client or server error during semantic score calculation.',
+  headers: {
+    ...API_HEADER_RETRY_AFTER,
+    ...API_HEADER_RATE_LIMIT,
+  },
   content: {
     'application/problem+json': {
       schema: {

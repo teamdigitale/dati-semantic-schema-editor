@@ -1,4 +1,5 @@
 import {
+  ClassSerializerInterceptor,
   Controller,
   HttpCode,
   Inject,
@@ -6,12 +7,11 @@ import {
   NotAcceptableException,
   PayloadTooLargeException,
   Post,
-  StreamableFile,
+  SerializeOptions,
   UnsupportedMediaTypeException,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBody,
@@ -19,25 +19,31 @@ import {
   ApiExtraModels,
   ApiOperation,
   ApiResponse,
-  getSchemaPath,
+  ApiTags,
 } from '@nestjs/swagger';
-import { calculateSchemaSemanticScore } from '@teamdigitale/schema-editor-utils';
 import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 import * as yaml from 'js-yaml';
-import { Config } from '../configs';
 import {
   API_HEADER_RATE_LIMIT,
   API_RESPONSE_406,
   API_RESPONSE_413,
   API_RESPONSE_415,
 } from '../swagger';
-import { CalculateSemanticScoreRequestDTO, OASDocumentDTO } from './dto';
+import {
+  CalculateSemanticScoreRequestDTO,
+  OASDocumentDTO,
+  SemanticScoreResponseDTO,
+} from './dto';
+import { SemanticScoreService } from './semantic-score.service';
 
+@ApiTags('SemanticScore')
 @Controller('semantic-score')
 export class SemanticScoreController {
   private readonly logger: Logger = new Logger(SemanticScoreController.name);
-  @Inject(ConfigService) private configService: ConfigService<Config, true>;
+
+  @Inject(SemanticScoreService)
+  private readonly semanticScoreService!: SemanticScoreService;
 
   @ApiExtraModels(OASDocumentDTO)
   @Post('')
@@ -70,10 +76,13 @@ export class SemanticScoreController {
     }),
   )
   @ApiOperation({
-    summary: 'Calculate semantic score for a YAML file',
+    summary: 'Calculate semantic score for an OAS 3.0 document.',
     description: `Process an OpenAPI 3.0 specification document containing
-a schema and computes its semantic score
-using the associated REST API Linked Data Keywords.`,
+a schema and computes its Semantic Score
+using the associated REST API Linked Data Keywords.
+
+The response contains the Semantic Score, that is a
+numeric value between 0 and 1.`,
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -83,27 +92,19 @@ a schema annotated with the REST API Linked Data Keywords.`,
   })
   @ApiResponse({
     status: 200,
-    description: `An OpenAPI specification document containing the #/info/x-semantic-score and #/info/x-semantic-score-timestamp properties. When a YAML file is received, comments and order is not preserved.`,
+    description: `The provided OpenAPI specification document has been successfully processed.
+The response will output informations about the global semantic score and the models processed.`,
+    type: SemanticScoreResponseDTO,
     headers: { ...API_HEADER_RATE_LIMIT },
-    content: {
-      'application/yaml': {
-        schema: {
-          $ref: getSchemaPath(OASDocumentDTO),
-        },
-      },
-      'application/json': {
-        schema: {
-          $ref: getSchemaPath(OASDocumentDTO),
-        },
-      },
-    },
   })
   @ApiResponse(API_RESPONSE_406)
   @ApiResponse(API_RESPONSE_413)
   @ApiResponse(API_RESPONSE_415)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @SerializeOptions({ type: SemanticScoreResponseDTO })
   async updateSchemaSemanticScore(
     @UploadedFile() file: any,
-  ): Promise<StreamableFile> {
+  ): Promise<SemanticScoreResponseDTO> {
     this.logger.log(`Calculating schema semantic score for file`);
     this.logger.debug(`File: ${file.originalname}`);
     this.logger.debug(`File size: ${file.size} bytes`);
@@ -152,24 +153,14 @@ a schema annotated with the REST API Linked Data Keywords.`,
 
     // Calculate ontoscore and normalize spec
     this.logger.debug(`Calculating ontoscore`);
-    const { resolvedSpecJson, schemaSemanticScore } =
-      await calculateSchemaSemanticScore(specJson, {
-        sparqlUrl: this.configService.get('sparqlUrl', { infer: true }),
-      });
+    const { schemaSemanticScore, summary } =
+      await this.semanticScoreService.calculateSchemaSemanticScore(specJson);
     this.logger.debug(
       `Ontoscore calculated successfully. Calculated value: ${schemaSemanticScore.toFixed(2)}`,
     );
 
-    // Return yaml content with ontoscore
-    this.logger.debug(`Dumping YAML content with ontoscore`);
-    const updatedFile = yaml.dump(resolvedSpecJson);
-    this.logger.debug(`YAML content with ontoscore dumped successfully`);
-
     this.logger.log(`Schema semantic score calculated successfully`);
 
-    return new StreamableFile(Buffer.from(updatedFile), {
-      type: 'application/yaml',
-      disposition: 'attachment; filename="spec.yaml"',
-    });
+    return new SemanticScoreResponseDTO(summary);
   }
 }
