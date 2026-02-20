@@ -12,8 +12,11 @@ export const JSONLDContextPlugin = (system) => ({
             const partialPath = path.slice(0, i);
             const spec: OrderedMap<any, any> = system.specSelectors.specResolvedSubtree(partialPath);
             if (spec?.has('x-jsonld-context')) {
-              xJsonldContext = spec;
-              break;
+              const ctx = spec.get('x-jsonld-context');
+              if (typeof ctx !== 'string') {
+                xJsonldContext = spec;
+                break;
+              }
             }
           }
           // If no x-jsonld-context is found, skip the resolver
