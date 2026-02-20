@@ -2,11 +2,11 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as configuration from '../../configuration';
 import {
-  useRDFPropertyResolver,
-  useRDFClassTreeResolver,
-  useRDFClassResolver,
   useRDFClassPropertiesResolver,
+  useRDFClassResolver,
+  useRDFClassTreeResolver,
   useRDFClassVocabulariesResolver,
+  useRDFPropertyResolver,
 } from './use-rdf-ontologies-resolver';
 
 describe('useRDFPropertyResolver', () => {
@@ -194,7 +194,7 @@ describe('useRDFClassTreeResolver', () => {
       },
     };
 
-    vi.spyOn(global, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
 
     const { result } = renderHook(() => useRDFClassTreeResolver('https://w3id.org/italia/onto/CPV/Person'));
 
