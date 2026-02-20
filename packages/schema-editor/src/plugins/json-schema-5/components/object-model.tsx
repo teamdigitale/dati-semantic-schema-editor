@@ -12,12 +12,12 @@ import { RDFHelperButtonWithModal } from './common/helper';
 import { JsonLdContextAccordion } from './common/jsonld-context-accordion';
 import { ModelTitle } from './common/model-title';
 import { NavigateBack } from './common/navigate-back';
-import { SemanticScoreBlock } from './common/semantic-score-block';
 import { PropertiesBlock } from './common/properties-block';
 import { RDFContentAccordion } from './common/rdf-content-accordion';
 import { RDFOntologicalClassBlock } from './common/rdf-ontological-class-block';
 import { RDFOntologicalClassPropertyBlock } from './common/rdf-ontological-class-property-block';
 import { SemanticDescriptionBlock } from './common/semantic-description-block';
+import { SemanticScoreBlock } from './common/semantic-score-block';
 import { TypeFormatVocabularyBlock } from './common/type-format-vocabulary-block';
 import type { ModelCollapse as ModelCollapseComponent } from './model-collapse';
 
@@ -83,8 +83,6 @@ export const ObjectModel = ({
     jsonldType,
     jsonldContextPathArray,
   );
-
-  const propertiesPaths = Array.from(properties?.keys() || []).map((x) => [...jsonldContextPathArray, x]);
 
   // View models
   const Model = getComponent('Model');

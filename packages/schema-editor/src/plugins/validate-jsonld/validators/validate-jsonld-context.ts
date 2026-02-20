@@ -49,6 +49,7 @@ export const validateJsonldContext = async (system): Promise<SwaggerError[]> => 
     if (!jsonldContext) {
       continue;
     }
+    const stringifiedJsonldContext = JSON.stringify(jsonldContext);
 
     // VALIDATION 1:
     // Validate jsonld context keys and values
@@ -108,6 +109,20 @@ export const validateJsonldContext = async (system): Promise<SwaggerError[]> => 
               line: jsonldPropertyLine,
             });
           }
+        }
+
+        // VALIDATION 1D: avoid invalid prefixes (i.e. "CPV": "https://w3id.org/italia/onto/CPV" <-- without final / or # or :)
+        // Pay attention: don't block properties full URIs like "https://w3id.org/italia/onto/CPV/description"
+        // prefixes must be referenced by other properties (i.e. "description": "CPV:description").
+        if (/^https?:\/\/.*[^#/:]$/.test(value) && stringifiedJsonldContext.includes(`${key}:`)) {
+          errors.push({
+            type: 'spec',
+            source,
+            level: 'error',
+            message: `The prefix ${key} is not valid. It should end with a final / or # or :`,
+            path: jsonldPropertyFullPath,
+            line: jsonldPropertyLine,
+          });
         }
 
         // Process nested values
