@@ -39,6 +39,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          persist-credentials: false
       - name: docker-security
         uses: instrumenta/conftest-action@master
         with:
@@ -69,6 +71,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Log in to the Github Container registry
         uses: docker/login-action@v3.6.0
