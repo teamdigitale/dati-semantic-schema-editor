@@ -1,13 +1,8 @@
 name: Lint
 
 on:
+  workflow_call:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
 
 # Github token permissions.
 permissions: {}

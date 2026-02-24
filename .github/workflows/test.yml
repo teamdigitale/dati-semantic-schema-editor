@@ -12,7 +12,10 @@ on:
 permissions: {}
 
 jobs:
+  lint:
+    uses: ./.github/workflows/lint.yml
   unit-tests:
+    needs: lint
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
