@@ -1,0 +1,30 @@
+name: Validate github.ref inputs
+description: |
+  Validates that github.ref and github.ref_name match expected formats,
+  preventing code injection via malformed ref values.
+
+inputs:
+  ref:
+    description: "The github.ref value to validate (e.g. refs/heads/main)"
+    required: true
+  ref-name:
+    description: "The github.ref_name value to validate (e.g. main or my-app@1.0.0)"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Validate github.ref and github.ref_name
+      shell: bash
+      env:
+        REF: ${{ inputs.ref }}
+        REF_NAME: ${{ inputs.ref-name }}
+      run: |
+        if [[ ! "$REF" =~ ^refs/(heads|tags|pull)/[a-zA-Z0-9._/@-]+$ ]]; then
+          echo "Invalid github.ref format: $REF"
+          exit 1
+        fi
+        if [[ ! "$REF_NAME" =~ ^[a-zA-Z0-9._/@-]+$ ]]; then
+          echo "Invalid github.ref_name format: $REF_NAME"
+          exit 1
+        fi

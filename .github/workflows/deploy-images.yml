@@ -81,11 +81,10 @@ jobs:
           persist-credentials: false
 
       - name: Validate input
-        run: |
-          if [[ ! "$REF" =~ ^[a-zA-Z0-9/_@.-]+$ ]]; then
-            echo "Invalid REF format: $REF"
-            exit 1
-          fi
+        uses: ./.github/actions/validate-github-ref
+        with:
+          ref: ${{ github.ref }}
+          ref-name: ${{ github.ref_name }}
 
       - name: Log in to the Github Container registry
         uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef  # v3.6.0
