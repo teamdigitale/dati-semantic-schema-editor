@@ -74,7 +74,7 @@ jobs:
           #   want to test out before enabiling.
           #
           VALIDATE_TRIVY: false
-          VALIDATE_GITHUB_ACTIONS_ZIZMOR: false
+          # VALIDATE_GITHUB_ACTIONS_ZIZMOR: false
 
   pre-commit:
     # The type of runner that the job will run on
