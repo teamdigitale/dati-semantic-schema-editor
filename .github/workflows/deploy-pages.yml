@@ -113,7 +113,7 @@ jobs:
           fi
 
           FILENAME="index.html"
-          if [[ "${{ github.ref_name }}" =~ ^test@ ]]; then
+          if [[ "$UNTRUSTED_GITHUB_REF_NAME" =~ ^test@ ]]; then
             FILENAME="index-test.html"
           fi
 
