@@ -9,14 +9,22 @@ on:
     branches:
       - main
 
-permissions: read-all
+permissions: {}
 
 jobs:
+  lint:
+    uses: ./.github/workflows/lint.yml
   unit-tests:
+    needs: lint
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          fetch-depth: 0
+          # Don't persist credentials to prevent credentials to be leaked on artifacts.
+          persist-credentials: false
 
       - name: Install dependencies
         uses: ./.github/actions/install
@@ -24,71 +32,6 @@ jobs:
       - name: Run tests
         run: pnpm test
 
-  zap-api-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        uses: ./.github/actions/install
-
-      - name: Build API
-        run: pnpm build --filter api
-
-      - name: Start API
-        env:
-          NODE_ENV: test # use this to read variables from .env file (see below)
-        run: |
-          cp apps/api/.env.example apps/api/.env
-          pnpm --filter api start > api.log 2>&1 &
-          echo $! > api.pid
-
-      - name: Wait for API health endpoint
-        run: |
-          for i in {1..60}; do
-            echo "Waiting for API to be ready... ($i/60)"
-            if curl -fsS "http://127.0.0.1:3000/status" > /dev/null; then
-              echo "API is ready."
-              exit 0
-            fi
-            echo "Retrying in 2 seconds..."
-            sleep 2
-          done
-          echo "API did not become ready in time."
-          cat api.log
-          exit 1
-
-      - name: ZAP API scan using OpenAPI
-        uses: zaproxy/action-api-scan@v0.9.0
-        with:
-          format: openapi
-          target: "http://127.0.0.1:3000/openapi.yaml"
-          fail_action: false
-          allow_issue_writing: false
-          artifact_name: zap-api-scan-report
-
-      - name: Fail on high-risk alerts only
-        run: |
-          HIGH_COUNT="$(jq '[.site[]?.alerts[]? | select((.riskcode | tonumber) == 3)] | length' report_json.json)"
-          echo "High-risk alerts: ${HIGH_COUNT}"
-          if [ "${HIGH_COUNT}" -gt 0 ]; then
-            echo "Failing because high-risk ZAP alerts were found."
-            exit 1
-          fi
-
-      - name: Upload scan artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: zap-api-scan-artifacts
-          path: |
-            report_json.json
-            api.log
-
-      - name: Stop API service
-        if: always()
-        run: |
-          if [ -f api.pid ]; then
-            kill "$(cat api.pid)" || true
-          fi
+  dast-zap:
+    needs: unit-tests
+    uses: ./.github/workflows/dast-zap.yml

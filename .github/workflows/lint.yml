@@ -1,29 +1,28 @@
 name: Lint
 
 on:
+  workflow_call:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
 
-permissions: read-all
+# Github token permissions.
+permissions: {}
 
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           fetch-depth: 0
+          # Don't persist credentials to prevent credentials to be leaked on artifacts.
+          persist-credentials: false
 
       - name: Super-Linter
-        uses: super-linter/super-linter/slim@v7.1.0
+        uses: super-linter/super-linter/slim@61abc07d755095a68f4987d1c2c3d1d64408f1f9  # v8.5.0
         env:
           # Either disable MULTI_STATUS or pass the GITHUB_TOKEN.
           MULTI_STATUS: false
+          ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: false
           # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_MARKDOWN: false
           VALIDATE_MARKDOWN_PRETTIER: false
@@ -31,7 +30,14 @@ jobs:
           #   you can re-enable it if you align your local isort with
           #   the one in the super-linter image.
           VALIDATE_PYTHON_ISORT: false
+          #
+          # XML validation is delegated to pre-commit.
+          #
           VALIDATE_XML: false
+          #
+          # Spellcheck.
+          #
+          VALIDATE_SPELL_CODESPELL: false
           #
           # YAML validation is delegated to pre-commit.
           #
@@ -39,9 +45,13 @@ jobs:
           VALIDATE_YAML_PRETTIER: false
           VALIDATE_OPENAPI: false
           VALIDATE_NATURAL_LANGUAGE: false
+          # Zizmor validated via pre-commit.
+          VALIDATE_GITHUB_ACTIONS_ZIZMOR: false
           #
           # JS/CSS delegated to eslint.
           #
+          VALIDATE_BIOME_FORMAT: false
+          VALIDATE_BIOME_LINT: false
           VALIDATE_CSS: false
           VALIDATE_JAVASCRIPT_ES: false
           VALIDATE_JAVASCRIPT_STANDARD: false
@@ -56,14 +66,19 @@ jobs:
           VALIDATE_TYPESCRIPT_STANDARD: false
           # TYPESCRIPT_ES_CONFIG_FILE: eslint.config.mjs
           VALIDATE_JSCPD: false # Disable copy-paste detection.
+          #
+          # Trivy needs to be tested before enabling.
+          #
+          VALIDATE_TRIVY: false
 
   pre-commit:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    container: python:3.9
+    container: python:3.12
     steps:
-      - uses: actions/checkout@v4
-
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          persist-credentials: false
       - name: Run commit hooks.
         run: |
           pip3 --no-cache-dir install pre-commit
@@ -77,7 +92,7 @@ jobs:
 
       # Store (expiring) logs on failure.
       # Retrieve artifacts via `gh run download`.
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6.0.0
         if: failure()
         with:
           name: pre-commit.log
