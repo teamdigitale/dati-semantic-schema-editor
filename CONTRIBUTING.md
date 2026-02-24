@@ -112,3 +112,9 @@ if the PR already exists, you can just start working from it.
 
 Each PR is tested by a CI workflow that runs on GitHub Actions.
 The final step might include a deployment to PyPI or to an OCI image registry.
+
+GH actions should be configured to:
+
+- use sha256 digests to avoid unintentional changes in the used images;
+- not persist credentials to avoid leaking them in the logs or in the artifacts,
+  unless they are strictly necessary for the workflow (e.g. for a deployment step).
