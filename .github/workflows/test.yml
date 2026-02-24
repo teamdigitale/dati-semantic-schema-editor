@@ -37,14 +37,17 @@ jobs:
         run: pnpm build --filter api
 
       - name: Start API
+        env:
+          NODE_ENV: test # use this to read variables from .env file (see below)
         run: |
-          export $(grep -v '^#' apps/api/.env.example | xargs)
+          cp apps/api/.env.example apps/api/.env
           pnpm --filter api start > api.log 2>&1 &
           echo $! > api.pid
 
       - name: Wait for API health endpoint
         run: |
           for i in {1..60}; do
+            echo "Waiting for API to be ready... ($i/60)"
             if curl -fsS "http://127.0.0.1:3000/status" > /dev/null; then
               echo "API is ready."
               exit 0
