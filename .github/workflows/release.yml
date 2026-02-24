@@ -6,11 +6,7 @@ on:
       - main
       - next
 
-permissions:
-  pull-requests: write
-  contents: write
-  packages: write
-  id-token: write
+permissions: {}
 
 env:
   CI: true
@@ -19,6 +15,11 @@ jobs:
   version:
     timeout-minutes: 15
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+      packages: write
+      id-token: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2

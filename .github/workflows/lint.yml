@@ -45,6 +45,8 @@ jobs:
           VALIDATE_YAML_PRETTIER: false
           VALIDATE_OPENAPI: false
           VALIDATE_NATURAL_LANGUAGE: false
+          # Zizmor validated via pre-commit.
+          VALIDATE_GITHUB_ACTIONS_ZIZMOR: false
           #
           # JS/CSS delegated to eslint.
           #
@@ -65,11 +67,9 @@ jobs:
           # TYPESCRIPT_ES_CONFIG_FILE: eslint.config.mjs
           VALIDATE_JSCPD: false # Disable copy-paste detection.
           #
-          # Trivy and Zizmore are new linters that we
-          #   want to test out before enabiling.
+          # Trivy needs to be tested before enabling.
           #
           VALIDATE_TRIVY: false
-          # VALIDATE_GITHUB_ACTIONS_ZIZMOR: false
 
   pre-commit:
     # The type of runner that the job will run on
