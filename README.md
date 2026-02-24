@@ -155,7 +155,6 @@ In order to process this correctly perform the following steps:
 
 ## Docker builds
 
-
 To create images for the two webapps, run the following commands:
 
 ```bash
