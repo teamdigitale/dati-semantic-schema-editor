@@ -44,7 +44,7 @@ jobs:
             # Don't persist credentials to prevent credentials to be leaked on artifacts.
             persist-credentials: false
       - name: docker-security
-        uses: instrumenta/conftest-action@ae9212d  # master
+        uses: instrumenta/conftest-action@2b17b6e48009573bfee75b6f2b51bb1dacb05a2a
         with:
           files: Dockerfile
           policy: .docker-security.rego
