@@ -40,6 +40,10 @@ jobs:
           #
           VALIDATE_XML: false
           #
+          # Spellcheck.
+          #
+          VALIDATE_SPELL_CODESPELL: false
+          #
           # YAML validation is delegated to pre-commit.
           #
           VALIDATE_YAML: false

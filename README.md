@@ -155,7 +155,8 @@ In order to process this correctly perform the following steps:
 
 ## Docker builds
 
-To create images for the two webapps, run th following commands:
+
+To create images for the two webapps, run the following commands:
 
 ```bash
 # Editor webapp
@@ -165,7 +166,8 @@ docker build . --target webapp --tag webapp:latest
 docker build . --target example --tag example:latest
 ```
 
-After creating the desired image, run it with the following command paying attention to change listening ports and config file if needed:
+
+After creating the desired image, run it with the following command, paying attention to change the listening ports and config file if needed:
 
 ```bash
 docker run -p 80:80 --mount type=bind,source=${PWD}/my-custom-config.js,target=/usr/share/nginx/html/config.js webapp:latest

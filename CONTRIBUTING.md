@@ -23,8 +23,8 @@ Or install it as a pre-commit hook
 
 Contributing to a repository is done via pull requests (PR).
 It is important to keep the code base clean and consistent in time,
-in order to make it maintanable
-and reduce unuseful deployments (see [CI](#ci)).
+in order to make it maintainable
+and reduce useless deployments (see [CI](#ci)).
 
 A correct development process, with code reviews, is part of a correct
 shift-left strategy.
@@ -50,7 +50,7 @@ if the PR already exists, you can just start working from it.
         git checkout -b ${BRANCH} par-tec/main
 
    If the PR already exists, you can continue to work on it, always fetching the latest version
-   and ensuring that your working copy is up to date. Otherwise, you risk to work waste time
+   and ensuring that your working copy is up to date. Otherwise, you risk wasting time
    resolving conflicts.
 
         git fetch --all  # Always download latest changes
