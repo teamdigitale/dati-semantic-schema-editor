@@ -69,6 +69,12 @@ jobs:
           VALIDATE_TYPESCRIPT_STANDARD: false
           # TYPESCRIPT_ES_CONFIG_FILE: eslint.config.mjs
           VALIDATE_JSCPD: false # Disable copy-paste detection.
+          #
+          # Trivy and Zizmore are new linters that we
+          #   want to test out before enabiling.
+          #
+          VALIDATE_TRIVY: false
+          VALIDATE_GITHUB_ACTIONS_ZIZMORE: false
 
   pre-commit:
     # The type of runner that the job will run on
