@@ -271,6 +271,57 @@ components:
         expect(warning).toBeUndefined();
       });
     });
+
+    describe('validate custom prefixes', () => {
+      it('should error when custom prefix is not valid', async () => {
+        const specYaml = `openapi: 3.0.3
+components:
+  schemas:
+    Foo:
+      type: object
+      x-jsonld-context:
+        CLV: 'https://w3id.org/italia/onto/CLV'
+        foo: 'CLV:foo'
+        bar: 'https://w3id.org/italia/onto/CLV/bar'
+      properties:
+        foo:
+          type: string
+        bar:
+          type: string
+          `;
+        const specJson = fromJS(yaml.load(specYaml));
+        const system = createMockSystem(specJson);
+        const errors = await validateJsonldContext(system);
+        const error = errors.find(
+          (e) =>
+            e.level === 'error' &&
+            e.message.includes('The prefix CLV is not valid. It should end with a final / or # or :'),
+        );
+        expect(error).toBeDefined();
+      });
+
+      it('should succeed when custom prefix ends with / or # or :', async () => {
+        const specYaml = `openapi: 3.0.3
+components:
+  schemas:
+    Foo:
+      type: object
+      x-jsonld-context:
+        CLV: 'https://w3id.org/italia/onto/CLV/'
+        foo: 'CLV:foo'
+        bar: 'https://w3id.org/italia/onto/CLV/bar'
+      properties:
+        foo:
+          type: string
+        bar:
+          type: string
+          `;
+        const specJson = fromJS(yaml.load(specYaml));
+        const system = createMockSystem(specJson);
+        const errors = await validateJsonldContext(system);
+        expect(errors).toHaveLength(0);
+      });
+    });
   });
 
   describe('validate properties associated with jsonld context', () => {
