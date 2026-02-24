@@ -25,7 +25,11 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          fetch-depth: 0
+          # Don't persist credentials to prevent credentials to be leaked on artifacts.
+          persist-credentials: false
 
       - name: Define env variables
         # Pass untrusted input via intermediate environment variables. See https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
@@ -80,7 +84,7 @@ jobs:
         run: pnpm deploy --filter=webapp --prod ./build
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@373f7f263a76c20808c831209c920827a82a2847  # v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/dist
@@ -89,7 +93,7 @@ jobs:
 
       - name: Post GitHub Pages URL as comment
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410  # v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -136,7 +140,7 @@ jobs:
 
       - name: Deploy the redirect index.html to GitHub Pages
         if: steps.redirect_to_latest_tag.outputs.new_index_html == 'true'
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@373f7f263a76c20808c831209c920827a82a2847  # v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./ghpages
