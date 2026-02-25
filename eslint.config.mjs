@@ -1,15 +1,26 @@
 import globals from 'globals';
 import pluginJs from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import pluginReactConfig from 'eslint-plugin-react/configs/recommended.js';
+import reactPlugin from 'eslint-plugin-react';
 import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default [
+  {
+    ignores: ['node_modules/**', 'coverage/**', 'public/**', 'dist/**', '**/pnpm-lock.yaml', '**/pnpm-workspace.yaml'],
+  },
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   { files: ['**/*.jsx'], languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } } },
-  pluginReactConfig,
+  reactPlugin.configs.flat.recommended,
+  reactPlugin.configs.flat['jsx-runtime'],
+  {
+    settings: {
+      react: {
+        version: '18',
+      },
+    },
+  },
   eslintConfigPrettier,
   {
     rules: {

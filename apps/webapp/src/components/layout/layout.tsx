@@ -11,12 +11,12 @@ import {
   Icon,
   Row,
 } from 'design-react-kit';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 
 import './layout.scss';
 import { SideMenu } from './side-menu';
 
-export function Layout({ children }: { children: JSX.Element }) {
+export function Layout({ children }: { children: ReactNode }) {
   const [showMenu, setShowMenu] = useState(false);
   const toggleMenu = () => setShowMenu(!showMenu);
 

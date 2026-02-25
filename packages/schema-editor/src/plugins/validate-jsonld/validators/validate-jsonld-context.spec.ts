@@ -1,9 +1,9 @@
-import { fromJS, OrderedMap } from 'immutable';
+import { fromJS } from 'immutable';
 import yaml from 'js-yaml';
 import { describe, expect, it, vi } from 'vitest';
 import { validateJsonldContext } from './validate-jsonld-context';
 
-const createMockSystem = (specJson: OrderedMap<string, any>) => {
+const createMockSystem = (specJson) => {
   return {
     specSelectors: {
       specJson: vi.fn(() => specJson),

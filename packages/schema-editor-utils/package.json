@@ -23,23 +23,23 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@braintree/sanitize-url": "^7.1.1",
-    "immutable": "^4.3.6",
+    "@braintree/sanitize-url": "^7.1.2",
+    "immutable": "^5.1.4",
     "js-yaml": "^4.1.1",
     "jsonld": "^9.0.0",
     "lz-string": "^1.5.0",
-    "swagger-client": "^3.35.7"
+    "swagger-client": "^3.36.2"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
     "@types/jsonld": "^1.5.15",
-    "@typescript-eslint/eslint-plugin": "^8.46.1",
-    "@typescript-eslint/parser": "^8.46.1",
-    "eslint": "^9.37.0",
-    "jsdom": "^27.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.56.1",
+    "@typescript-eslint/parser": "^8.56.1",
+    "eslint": "^9.39.3",
+    "jsdom": "^28.1.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
     "vite-plugin-dts": "^4.5.4",
-    "vitest": "^4.0.17"
+    "vitest": "^4.0.18"
   }
 }
