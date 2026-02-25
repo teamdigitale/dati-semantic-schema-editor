@@ -37,11 +37,11 @@ jobs:
   security:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
       - name: docker-security
-        uses: instrumenta/conftest-action@2b17b6e48009573bfee75b6f2b51bb1dacb05a2a  # 0.4.0
+        uses: instrumenta/conftest-action@2b17b6e48009573bfee75b6f2b51bb1dacb05a2a # 0.4.0
         with:
           files: Dockerfile
           policy: .docker-security.rego
@@ -68,12 +68,12 @@ jobs:
 
     name: Docker Build ${{ matrix.target }}
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
 
       - name: Log in to the Github Container registry
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef  # v3.6.0
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -104,7 +104,7 @@ jobs:
       - name: Extract metadata
         id: meta
         if: steps.should_build.outputs.build == 'true'
-        uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f  # v5.8.0
+        uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5.8.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}${{ matrix.image_suffix }}
           labels: |
@@ -116,7 +116,7 @@ jobs:
 
       - name: Build and push
         if: steps.should_build.outputs.build == 'true'
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83  # v6.18.0
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: .
           target: ${{ matrix.target }}
@@ -126,6 +126,9 @@ jobs:
 
   cleanup:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     needs:
       - build-containers
     strategy:
@@ -138,7 +141,7 @@ jobs:
     name: Cleanup Docker Images ${{ matrix.target }}
     steps:
       - name: Cleanup Docker Images
-        uses: actions/delete-package-versions@e5bc658cc4c965c472efe991f8beea3981499c55  # v5
+        uses: actions/delete-package-versions@e5bc658cc4c965c472efe991f8beea3981499c55 # v5
         with:
           package-name: "dati-semantic-schema-editor${{ matrix.image_suffix }}"
           package-type: "container"
