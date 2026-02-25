@@ -1,4 +1,3 @@
-/* eslint-disable react/display-name */
 import { ConfigurationProvider } from './provider';
 
 export * from './hooks';

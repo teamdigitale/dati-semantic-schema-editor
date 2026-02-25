@@ -1,5 +1,6 @@
 import { Alert } from 'design-react-kit';
 import { List } from 'immutable';
+import { ReactNode } from 'react';
 
 export const Errors = ({ editorActions, errSelectors, layoutSelectors, layoutActions, getComponent }) => {
   const Collapse = getComponent('Collapse');
@@ -68,7 +69,7 @@ const ThrownErrorItem = ({ error, jumpToLine }) => {
 };
 
 const SpecErrorItem = ({ error, jumpToLine }) => {
-  let locationMessage: JSX.Element | null = null;
+  let locationMessage: ReactNode = null;
 
   if (error.get('path')) {
     if (List.isList(error.get('path'))) {

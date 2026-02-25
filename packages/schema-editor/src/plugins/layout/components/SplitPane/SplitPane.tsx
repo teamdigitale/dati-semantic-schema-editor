@@ -1,8 +1,8 @@
 import './split-pane.scss';
 
-import { useEffect, useRef, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 
-export function SplitPane({ children }: { children: JSX.Element[] }) {
+export function SplitPane({ children }: { children: ReactNode[] }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const isDragging = useRef<boolean>(false);
   const [leftPercent, setLeftPercent] = useState<number>(50);

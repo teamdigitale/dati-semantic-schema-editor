@@ -116,10 +116,10 @@ export function SchemaEditor({
   return SwaggerUIComponent ? <SwaggerUIComponent /> : null;
 }
 
-const usePrevious = (value) => {
-  const ref = useRef();
+function usePrevious<T>(value: T): T | undefined {
+  const ref = useRef<typeof value>();
   useEffect(() => {
     ref.current = value;
   }, [value]);
   return ref.current;
-};
+}

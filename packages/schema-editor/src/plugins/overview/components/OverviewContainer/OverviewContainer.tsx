@@ -1,7 +1,7 @@
 import './overview-container.scss';
 
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'design-react-kit';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { SchemaNavigationProvider } from '../Navigation';
 
 const OverviewContainer = ({ errSelectors, specSelectors, getComponent }) => {
@@ -20,7 +20,7 @@ const OverviewContainer = ({ errSelectors, specSelectors, getComponent }) => {
   const isSpecEmpty = !specSelectors.specStr();
   const loadingStatus = specSelectors.loadingStatus();
 
-  let loadingMessage: JSX.Element | null = null;
+  let loadingMessage: ReactNode = null;
 
   if (loadingStatus === 'loading') {
     loadingMessage = (

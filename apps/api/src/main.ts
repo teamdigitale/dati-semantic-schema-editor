@@ -146,7 +146,7 @@ all'indirizzo <https://teamdigitale.github.io/dati-semantic-schema-editor/latest
         'API to compute the semantic score of an OpenAPI specification document.',
         'info',
       )
-      .addServer('http://localhost:3000/api/v1', 'Local development server')
+      .addServer('http://localhost:3000', 'Local development server')
       .addServer(
         'https://schema-editor-api-ndc-dev.apps.cloudpub.testedev.istat.it/',
         'Public development server',
