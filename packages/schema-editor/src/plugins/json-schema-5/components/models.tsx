@@ -28,7 +28,7 @@ export function Models(system) {
     <div className="modelli">
       <div className="d-flex flex-row justify-content-between align-items-center">
         <ModelsBreadcrumb specPathBase={specPathBase} />
-        <ActionsMenu system={system} url={url} />
+        <ActionsMenu {...system} />
       </div>
 
       <div className="d-flex flex-row justify-content-end align-items-center mb-2">

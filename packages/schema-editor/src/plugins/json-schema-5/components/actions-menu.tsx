@@ -26,14 +26,13 @@ export const createBundle = async (specJson: object, options: { sparqlUrl: strin
   return resolvedSpecJson;
 };
 
-export const ActionsMenu = ({ url, ...system }) => {
+export const ActionsMenu = (system) => {
   const { specSelectors, specActions, getConfigs } = system;
   const { oasCheckerUrl, schemaEditorUrl, sparqlUrl = '' } = useConfiguration();
-
-  const isEditorLayout = getConfigs().layout === LayoutTypes.EDITOR;
+  const { url, layout } = getConfigs();
 
   const actions = [
-    ...(isEditorLayout
+    ...(layout === LayoutTypes.EDITOR
       ? [
           {
             id: 'NewFromTemplate',

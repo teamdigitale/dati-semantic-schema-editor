@@ -129,10 +129,10 @@ components:
       const system = {
         specSelectors,
         specActions: {},
-        getConfigs: () => ({ layout: LayoutTypes.EDITOR }),
+        getConfigs: () => ({ layout: LayoutTypes.EDITOR, url: '' }),
       };
 
-      const { getByText, queryByText } = render(<ActionsMenu url={''} {...system} />);
+      const { getByText, queryByText } = render(<ActionsMenu {...system} />);
 
       // Check that all editor actions are present
       expect(getByText('New from template')).toBeTruthy();
@@ -156,10 +156,10 @@ components:
       const system = {
         specSelectors,
         specActions: {},
-        getConfigs: () => ({ layout: LayoutTypes.VIEWER }),
+        getConfigs: () => ({ layout: LayoutTypes.VIEWER, url: '' }),
       };
 
-      const { getByText, queryByText } = render(<ActionsMenu url={''} {...system} />);
+      const { getByText, queryByText } = render(<ActionsMenu {...system} />);
 
       // Check that only "Open in Schema Editor" is present
       expect(getByText('Open in Schema Editor')).toBeTruthy();
@@ -183,10 +183,10 @@ components:
       const system = {
         specSelectors,
         specActions: {},
-        getConfigs: () => ({ layout: LayoutTypes.VIEWER }),
+        getConfigs: () => ({ layout: LayoutTypes.VIEWER, url: '' }),
       };
 
-      const { container, queryByText } = render(<ActionsMenu url={''} {...system} />);
+      const { container, queryByText } = render(<ActionsMenu {...system} />);
 
       // Component should return false (nothing rendered) when actions.length === 0
       expect(container.firstChild).toBeNull();
