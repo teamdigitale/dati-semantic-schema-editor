@@ -7,6 +7,7 @@ import yaml from 'js-yaml';
 import { useConfiguration } from '../../configuration';
 import { LayoutTypes } from '../../layout';
 import { copyToClipboard, encodeOAS } from '../utils';
+import { useState } from 'react';
 
 const downloadContent = (content: any, mediaType: string, fileName: string) => {
   const blob = new Blob([content], { type: mediaType });
@@ -103,6 +104,18 @@ export const ActionsMenu = (system) => {
         ]),
   ];
 
+  const [clickedAction, setClickedAction] = useState<string | undefined>();
+  const handleClick = (action: (typeof actions)[number]) => {
+    if (!action.onClick) {
+      return;
+    }
+    action.onClick();
+    setClickedAction(action.id);
+    setTimeout(() => {
+      setClickedAction(undefined);
+    }, 5000);
+  };
+
   const isOnlyOpenInSchemaEditor = actions.length === 1 && actions[0]?.id === 'OpenInSchemaEditor';
 
   return (
@@ -127,10 +140,10 @@ export const ActionsMenu = (system) => {
                       className="right-icon justify-content-between d-flex"
                       inDropdown
                       href={action?.href || '#'}
-                      onClick={action?.onClick}
+                      onClick={() => handleClick(action)}
                     >
                       <span>{action?.text}</span>
-                      <Icon icon={action?.icon} size="sm" className="right" />
+                      <Icon icon={clickedAction === action.id ? 'it-check' : action.icon} size="sm" className="right" />
                     </LinkListItem>
                   ),
               )}
