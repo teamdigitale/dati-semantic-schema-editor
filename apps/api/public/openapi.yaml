@@ -164,6 +164,9 @@ paths:
         numeric value between 0 and 1.
       operationId: SemanticScoreController_updateSchemaSemanticScore_v1
       parameters: []
+      security:
+        # Anyone can use this endpoint.
+        - {}
       requestBody:
         required: true
         description: |-
