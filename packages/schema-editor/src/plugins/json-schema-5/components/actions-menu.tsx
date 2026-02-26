@@ -2,7 +2,7 @@
  * A menu with right icons, see https://italia.github.io/design-react-kit/?path=/docs/documentazione-componenti-dropdown--documentazione#menu-icona-a-destra
  */
 import { calculateSchemaSemanticScore, normalizeOpenAPISpec } from '@teamdigitale/schema-editor-utils';
-import { Dropdown, DropdownMenu, DropdownToggle, Icon, LinkList, LinkListItem } from 'design-react-kit';
+import { Button, Dropdown, DropdownMenu, DropdownToggle, Icon, LinkList, LinkListItem } from 'design-react-kit';
 import yaml from 'js-yaml';
 import { useConfiguration } from '../../configuration';
 import { LayoutTypes } from '../../layout';
@@ -103,8 +103,15 @@ export const ActionsMenu = (system) => {
         ]),
   ];
 
+  const isOnlyOpenInSchemaEditor = actions.length === 1 && actions[0]?.id === 'OpenInSchemaEditor';
+
   return (
-    actions.length > 0 && (
+    actions.length > 0 &&
+    (isOnlyOpenInSchemaEditor ? (
+      <Button color="primary" tag="a" href={actions[0].href}>
+        {actions[0].text}
+      </Button>
+    ) : (
       <Dropdown>
         <DropdownToggle color="primary">Action menu</DropdownToggle>
 
@@ -130,6 +137,6 @@ export const ActionsMenu = (system) => {
           </LinkList>
         </DropdownMenu>
       </Dropdown>
-    )
+    ))
   );
 };

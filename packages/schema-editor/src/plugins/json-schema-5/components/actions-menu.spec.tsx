@@ -134,6 +134,8 @@ components:
 
       const { getByText, queryByText } = render(<ActionsMenu {...system} />);
 
+      // Check that dropdown is shown (multiple actions)
+      expect(getByText('Action menu')).toBeTruthy();
       // Check that all editor actions are present
       expect(getByText('New from template')).toBeTruthy();
       expect(getByText('Download editor content')).toBeTruthy();
@@ -146,7 +148,7 @@ components:
       expect(queryByText('Open in Schema Editor')).toBeNull();
     });
 
-    it('must show only "Open in Schema Editor" when layout is not EDITOR and schemaEditorUrl is provided', () => {
+    it('must show only "Open in Schema Editor" as a simple button (no dropdown) when layout is not EDITOR and schemaEditorUrl is provided', () => {
       vi.spyOn(configuration, 'useConfiguration').mockReturnValue({
         oasCheckerUrl: 'https://test.com',
         schemaEditorUrl: 'https://test.com',
@@ -161,8 +163,12 @@ components:
 
       const { getByText, queryByText } = render(<ActionsMenu {...system} />);
 
-      // Check that only "Open in Schema Editor" is present
-      expect(getByText('Open in Schema Editor')).toBeTruthy();
+      // Check that "Open in Schema Editor" is present as a single button (not in dropdown)
+      const openButton = getByText('Open in Schema Editor');
+      expect(openButton).toBeTruthy();
+      expect(openButton.tagName).toBe('A');
+      // Dropdown toggle must not be shown when there is only OpenInSchemaEditor
+      expect(queryByText('Action menu')).toBeNull();
 
       // Check that editor actions are not present
       expect(queryByText('New from template')).toBeNull();
