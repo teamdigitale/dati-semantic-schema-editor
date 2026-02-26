@@ -1,5 +1,21 @@
 # webapp
 
+## 0.1.0
+
+### Minor Changes
+
+- 41e1a31: Updated schema-editor-utils semantic score response object and API output
+
+### Patch Changes
+
+- d8fb254: Updated vite and vitest to solve vitest problems with url query param. Added a warning when an invalid oas is passed.
+- Updated dependencies [41e1a31]
+- Updated dependencies [ad159cf]
+- Updated dependencies [fb74228]
+- Updated dependencies [2910eb0]
+- Updated dependencies [d8fb254]
+  - @teamdigitale/schema-editor@0.1.0
+
 ## 0.0.8
 
 ### Patch Changes
