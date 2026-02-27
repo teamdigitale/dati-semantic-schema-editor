@@ -17,7 +17,7 @@ export function Models(system) {
   const specPathBase = isOAS3 ? ['components', 'schemas'] : ['definitions'];
 
   const definitions = specSelectors.definitions();
-  const { defaultModelsExpandDepth, url } = getConfigs();
+  const { defaultModelsExpandDepth } = getConfigs();
   if (!definitions.size || defaultModelsExpandDepth < 0) {
     return null;
   }

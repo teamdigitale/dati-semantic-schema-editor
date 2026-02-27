@@ -97,7 +97,7 @@ export const ActionsMenu = (system) => {
                   id: 'OpenInSchemaEditor',
                   text: 'Open in Schema Editor',
                   icon: 'it-external-link',
-                  href: `${schemaEditorUrl}?url=${/^http/.test(url) ? url : `${window.location.origin}/${window.location.pathname}/${url}`}`,
+                  href: `${schemaEditorUrl}#url=${/^http/.test(url) ? url : `${window.location.origin}${window.location.pathname}/${url}`}`,
                 },
               ]
             : []),
