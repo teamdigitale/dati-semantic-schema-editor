@@ -91,13 +91,17 @@ components:
           country: ITA`;
     const specJson = yaml.load(specYaml) as any;
     const specJsonMap = Map(specJson);
-    const specSelectors = {
-      specJson: () => specJsonMap,
+    const system = {
+      specSelectors: {
+        specJson: () => specJsonMap,
+      },
+      getConfigs: () => ({ url: '' }),
+      specActions: {},
     };
 
     const mockDump = vi.spyOn(yaml, 'dump');
 
-    const { getByText } = render(<ActionsMenu specSelectors={specSelectors} url={''} specActions={{}} />);
+    const { getByText } = render(<ActionsMenu {...system} />);
 
     const downloadButton = getByText('Download bundle');
     downloadButton.click();

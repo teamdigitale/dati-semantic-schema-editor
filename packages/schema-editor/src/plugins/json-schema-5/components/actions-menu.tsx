@@ -25,7 +25,8 @@ export const createBundle = async (specJson: object, options: { sparqlUrl: strin
   return resolvedSpecJson;
 };
 
-export const ActionsMenu = ({ specSelectors, url, specActions }) => {
+export const ActionsMenu = ({ specSelectors, getConfigs, specActions }) => {
+  const { url } = getConfigs();
   const { oasCheckerUrl, schemaEditorUrl, sparqlUrl = '' } = useConfiguration();
 
   const actions: Array<{
@@ -84,7 +85,7 @@ export const ActionsMenu = ({ specSelectors, url, specActions }) => {
       ? {
           text: 'Open in Schema Editor',
           icon: 'it-external-link',
-          href: `${schemaEditorUrl}?url=${/^http/.test(url) ? url : `${window.location.origin}/${window.location.pathname}/${url}`}`,
+          href: `${schemaEditorUrl}#url=${/^http/.test(url) ? url : `${window.location.origin}${window.location.pathname}/${url}`}`,
         }
       : null,
   ];

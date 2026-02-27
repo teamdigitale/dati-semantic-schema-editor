@@ -7,7 +7,8 @@ import { ModelCollapseRoot } from './model-collapse-root';
 import type { ModelRoot as ModelRootComponent } from './model-root';
 import type { ModelsBreadcrumb as ModelsBreadcrumbComponent } from './models-breadcrumb';
 
-export function Models({ getComponent, specSelectors, getConfigs, specActions }) {
+export function Models(system) {
+  const { getComponent, specSelectors, getConfigs } = system;
   const { history } = useSchemaNavigation();
   const currentHistoryItem = history[history.length - 1];
 
@@ -15,7 +16,7 @@ export function Models({ getComponent, specSelectors, getConfigs, specActions })
   const specPathBase = isOAS3 ? ['components', 'schemas'] : ['definitions'];
 
   const definitions = specSelectors.definitions();
-  const { defaultModelsExpandDepth, url } = getConfigs();
+  const { defaultModelsExpandDepth } = getConfigs();
   if (!definitions.size || defaultModelsExpandDepth < 0) {
     return null;
   }
@@ -27,7 +28,7 @@ export function Models({ getComponent, specSelectors, getConfigs, specActions })
     <div className="modelli">
       <div className="d-flex flex-row justify-content-between align-items-center">
         <ModelsBreadcrumb specPathBase={specPathBase} />
-        <ActionsMenu specSelectors={specSelectors} url={url} specActions={specActions} />
+        <ActionsMenu {...system} />
       </div>
 
       <div className="d-flex flex-row justify-content-end align-items-center mb-2">
