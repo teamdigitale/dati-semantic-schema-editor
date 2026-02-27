@@ -110,6 +110,7 @@ export const ActionsMenu = (system) => {
     (isOnlyOpenInSchemaEditor ? (
       <Button color="primary" tag="a" href={actions[0].href}>
         {actions[0].text}
+        <Icon icon={actions[0].icon} size="sm" className="ms-2" fill="currentColor" />
       </Button>
     ) : (
       <Dropdown>
