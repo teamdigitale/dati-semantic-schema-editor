@@ -4,6 +4,17 @@
   }
 
   .card {
+    border-left: 5px solid transparent;
+    transition: border-color 0.3s ease;
+
+    &.score-success {
+      border-left-color: var(--bs-success);
+    }
+
+    &.score-warning {
+      border-left-color: var(--bs-warning);
+    }
+
     &:after {
       content: unset;
     }
