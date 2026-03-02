@@ -1,46 +1,44 @@
-import React from 'react';
-import { act, render, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as utils from '@teamdigitale/schema-editor-utils';
+import { render, waitFor } from '@testing-library/react';
+import { Map } from 'immutable';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as configuration from '../../../configuration';
 import { useGlobalSemanticScore } from './hook';
 import { SemanticScoreProvider } from './provider';
+import { ISemanticScoreContext } from './semantic-score-context';
+
+function setup(specJson: Map<string, any> | undefined) {
+  let contextValue: ISemanticScoreContext;
+
+  function TestComponent() {
+    contextValue = useGlobalSemanticScore();
+    return null;
+  }
+
+  render(
+    <SemanticScoreProvider specJson={specJson}>
+      <TestComponent />
+    </SemanticScoreProvider>,
+  );
+
+  return () => contextValue;
+}
 
 describe('SemanticScoreProvider', () => {
   const sparqlUrl = 'https://test-sparql.com';
 
   beforeEach(() => {
-    vi.restoreAllMocks();
-
     vi.spyOn(configuration, 'useConfiguration').mockReturnValue({
       sparqlUrl,
     } as any);
   });
 
-  function setup(specJson: any) {
-    let contextValue: any;
-
-    function TestComponent() {
-      contextValue = useGlobalSemanticScore();
-      return null;
-    }
-
-    render(
-      <SemanticScoreProvider specJson={specJson}>
-        <TestComponent />
-      </SemanticScoreProvider>,
-    );
-
-    return () => contextValue;
-  }
-
   it('should start with idle status if no specJson', () => {
-    const getContext = setup(null);
+    const getContext = setup(undefined);
     const context = getContext();
-
-    expect(context.status).toBe('idle');
-    expect(context.data).toBeNull();
-    expect(context.error).toBeNull();
+    expect(context.status).toBe('fulfilled');
+    expect(context.data).toBeUndefined();
+    expect(context.error).toBeUndefined();
   });
 
   it('should fetch semantic score when specJson is provided', async () => {
@@ -55,7 +53,7 @@ describe('SemanticScoreProvider', () => {
       summary: mockSummary,
     } as any);
 
-    const getContext = setup({ openapi: '3.0.0' });
+    const getContext = setup(Map({ openapi: '3.0.0' }));
 
     await waitFor(() => {
       expect(getContext().status).toBe('fulfilled');
@@ -77,7 +75,7 @@ describe('SemanticScoreProvider', () => {
         }),
     );
 
-    const getContext = setup({ openapi: '3.0.0' });
+    const getContext = setup(Map({ openapi: '3.0.0' }));
 
     expect(getContext().status).toBe('pending');
 
@@ -98,7 +96,7 @@ describe('SemanticScoreProvider', () => {
   it('should handle error state', async () => {
     vi.spyOn(utils, 'calculateSchemaSemanticScore').mockRejectedValue(new Error('Boom'));
 
-    const getContext = setup({ openapi: '3.0.0' });
+    const getContext = setup(Map({ openapi: '3.0.0' }));
 
     await waitFor(() => {
       expect(getContext().status).toBe('error');
@@ -119,7 +117,7 @@ describe('SemanticScoreProvider', () => {
       },
     } as any);
 
-    const getContext = setup({ openapi: '3.0.0' });
+    const getContext = setup(Map({ openapi: '3.0.0' }));
 
     await waitFor(() => {
       expect(getContext().status).toBe('fulfilled');

@@ -7,7 +7,7 @@ import { AsyncState } from '../../models';
 import { SemanticScoreContext } from './context';
 
 interface SemanticScoreProviderProps extends PropsWithChildren {
-  specJson: Map<string, any>;
+  specJson: Map<string, any> | undefined;
 }
 
 export function SemanticScoreProvider({ specJson, children }: SemanticScoreProviderProps) {
@@ -25,6 +25,7 @@ export function SemanticScoreProvider({ specJson, children }: SemanticScoreProvi
       const result = await calculateSchemaSemanticScore(debouncedSpecJson.toJS(), { sparqlUrl });
       setState({ status: 'fulfilled', data: result.summary });
     } catch (e) {
+      console.error(e);
       setState({ status: 'error', error: e?.message || e || 'Exception' });
     }
   }, [sparqlUrl]);
