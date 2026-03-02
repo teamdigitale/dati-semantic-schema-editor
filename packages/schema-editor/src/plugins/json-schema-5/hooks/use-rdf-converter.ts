@@ -2,7 +2,7 @@ import { JsonLdDocument, toRDF } from 'jsonld';
 import { useCallback, useEffect, useState } from 'react';
 import { AsyncState } from '../models';
 
-export interface JsonLdErrorInfo {
+export interface RDFConversionError {
   name?: string;
   message: string;
   details?: {
@@ -13,7 +13,7 @@ export interface JsonLdErrorInfo {
 }
 
 export const useRDFConverter = (jsonldExample: JsonLdDocument) => {
-  const [state, setState] = useState<AsyncState<string, JsonLdErrorInfo>>({ status: 'pending' });
+  const [state, setState] = useState<AsyncState<string, RDFConversionError>>({ status: 'pending' });
 
   const callback = useCallback(async (jsonldExample: JsonLdDocument) => {
     try {
