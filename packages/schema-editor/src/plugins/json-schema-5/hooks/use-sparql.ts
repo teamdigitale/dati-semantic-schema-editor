@@ -4,6 +4,7 @@ import { AsyncState } from '../models';
 
 interface SparqlQueryOptions {
   skip?: boolean;
+  format?: string;
 }
 
 export function useSparqlQuery<T = any>(query: string, options?: SparqlQueryOptions) {
@@ -16,7 +17,7 @@ export function useSparqlQuery<T = any>(query: string, options?: SparqlQueryOpti
         return;
       }
       setState({ status: 'pending' });
-      const endpoint = `${sparqlUrl?.trim()}?format=json&query=${encodeURIComponent(query)}`;
+      const endpoint = `${sparqlUrl?.trim()}?format=${encodeURIComponent(options?.format || 'json')}&query=${encodeURIComponent(query)}`;
       const response = await fetch(endpoint, { cache: 'force-cache' });
       if (!response.ok) {
         throw new Error(response.statusText);
