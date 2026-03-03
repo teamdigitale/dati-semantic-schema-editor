@@ -45,7 +45,12 @@ describe('<RDFHelperClassVocabulariesBlock />', () => {
         },
       },
     });
-    const result = render(<RDFHelperClassVocabulariesBlock classUri={'https://w3id.org/italia/onto/CLV/Feature'} />);
+    const result = render(
+      <RDFHelperClassVocabulariesBlock
+        classUri={'https://w3id.org/italia/onto/CLV/Feature'}
+        getConfigs={() => ({ jsonldPlaygroundUrl: 'https://json-ld.org/playground/' })}
+      />,
+    );
     await expect(result.findByText('Explore')).resolves.toBeTruthy(); // button to open the playground
     expect(result.container.querySelectorAll('table tbody tr').length).toEqual(4);
   });

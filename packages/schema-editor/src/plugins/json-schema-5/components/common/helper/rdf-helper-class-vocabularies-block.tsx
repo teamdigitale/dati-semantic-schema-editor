@@ -1,14 +1,16 @@
 import { Badge, Button, Icon, Spinner, Table } from 'design-react-kit';
 import { Fragment, useMemo } from 'react';
+import { System } from '../../../../../models';
 import { useRDFClassVocabulariesResolver, useVocabularyQuery } from '../../../hooks';
 import { uri2shortUri } from '../../../utils';
-import { DEFAULT_FORMAT_MODE, JSONLD_PLAYGROUND_FRAME, JSONLD_PLAYGROUND_URI } from './rdf-helper-const';
+import { JSONLD_PLAYGROUND_FRAME } from './rdf-helper-const';
 
-interface Props {
+interface Props extends Pick<System, 'getConfigs'> {
   classUri: string;
 }
 
-export const RDFHelperClassVocabulariesBlock = ({ classUri }: Props) => {
+export function RDFHelperClassVocabulariesBlock({ classUri, getConfigs }: Props) {
+  const { jsonldPlaygroundUrl } = getConfigs();
   const { data, status } = useRDFClassVocabulariesResolver(classUri);
   const vocabularies = data?.filter((x) => x?.controlledVocabulary) || [];
   const { data: jsonldData } = useVocabularyQuery(vocabularies[0]?.controlledVocabulary);
@@ -17,8 +19,7 @@ export const RDFHelperClassVocabulariesBlock = ({ classUri }: Props) => {
     if (!jsonldData) return '';
     const jsonldEncoded = encodeURIComponent(JSON.stringify(jsonldData, null, 2)); // replace with YAML.dump when json-ld.org playground supports it
     const frameEncoded = encodeURIComponent(JSON.stringify(JSONLD_PLAYGROUND_FRAME, null, 2)); // replace with YAML.dump when json-ld.org playground supports it
-    const formatMode = encodeURIComponent(DEFAULT_FORMAT_MODE);
-    return `${JSONLD_PLAYGROUND_URI}#startTab=tab-framed&json-ld=${jsonldEncoded}&frame=${frameEncoded}&formatMode=${formatMode}`;
+    return `${jsonldPlaygroundUrl}#startTab=tab-framed&json-ld=${jsonldEncoded}&frame=${frameEncoded}&formatMode=yaml`;
   }, [jsonldData]);
 
   return (
@@ -88,4 +89,4 @@ export const RDFHelperClassVocabulariesBlock = ({ classUri }: Props) => {
       )}
     </div>
   );
-};
+}
