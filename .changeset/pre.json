@@ -1,0 +1,12 @@
+{
+  "mode": "pre",
+  "tag": "next",
+  "initialVersions": {
+    "api": "0.1.0",
+    "example": "0.1.0",
+    "webapp": "0.1.0",
+    "@teamdigitale/schema-editor": "0.1.0",
+    "@teamdigitale/schema-editor-utils": "0.1.0"
+  },
+  "changesets": []
+}
