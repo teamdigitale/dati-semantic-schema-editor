@@ -8,5 +8,7 @@
     "@teamdigitale/schema-editor": "0.1.0",
     "@teamdigitale/schema-editor-utils": "0.1.0"
   },
-  "changesets": []
+  "changesets": [
+    "shaggy-news-act"
+  ]
 }
