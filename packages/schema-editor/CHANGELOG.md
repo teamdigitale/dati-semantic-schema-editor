@@ -1,5 +1,11 @@
 # @teamdigitale/schema-editor
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- 1ccce2e: Implemented trusted publisher flow
+
 ## 0.1.0
 
 ### Minor Changes
