@@ -1,5 +1,11 @@
 # @teamdigitale/schema-editor
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- debc947: Enabled NPM trusted publisher
+
 ## 0.1.0
 
 ### Minor Changes
