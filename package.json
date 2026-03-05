@@ -22,10 +22,11 @@
     "preinstall": "npx -y only-allow pnpm",
     "test": "turbo run test",
     "build": "turbo run build",
+    "build:packages": "turbo run build --filter=@teamdigitale/*",
     "dev": "turbo run dev",
     "lint": "eslint --fix",
     "ci:version": "pnpm changeset version && pnpm install",
-    "ci:publish": "pnpm build && pnpm changeset tag && npm publish -r --no-git-checks",
+    "ci:publish": "pnpm build:packages && pnpm changeset tag && pnpm publish -r --no-git-checks --access public",
     "prepare": "husky install"
   },
   "devDependencies": {
