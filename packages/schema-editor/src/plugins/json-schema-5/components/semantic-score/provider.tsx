@@ -28,7 +28,7 @@ export function SemanticScoreProvider({ specJson, children }: SemanticScoreProvi
       console.error(e);
       setState({ status: 'error', error: e?.message || e || 'Exception' });
     }
-  }, [sparqlUrl]);
+  }, [debouncedSpecJson, sparqlUrl]);
 
   useEffect(() => {
     calculate();
