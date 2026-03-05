@@ -9,7 +9,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/teamdigitale/dati-semantic-schema-editor"
+    "url": "git+https://github.com/teamdigitale/dati-semantic-schema-editor.git"
   },
   "packageManager": "pnpm@9.12.2",
   "engines": {
@@ -25,7 +25,7 @@
     "dev": "turbo run dev",
     "lint": "eslint --fix",
     "ci:version": "pnpm changeset version && pnpm install",
-    "ci:publish": "pnpm build && pnpm changeset tag && npm publish -r --no-git-checks --access public",
+    "ci:publish": "pnpm build && pnpm changeset tag && npm publish -r --no-git-checks",
     "prepare": "husky install"
   },
   "devDependencies": {

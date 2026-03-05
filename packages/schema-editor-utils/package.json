@@ -3,6 +3,14 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teamdigitale/dati-semantic-schema-editor.git",
+    "directory": "packages/schema-editor-utils"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "types": "./dist/index.d.ts",
   "main": "./dist/index.umd.cjs",
   "module": "./dist/index.js",
