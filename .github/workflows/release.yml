@@ -10,7 +10,7 @@ permissions:
   pull-requests: write
   contents: write
   packages: write
-  id-token: write
+  id-token: write  # Allow GH to generate OIDC tokens for authentication with npm.
 
 env:
   CI: true
@@ -39,7 +39,6 @@ jobs:
           title: "chore: update versions"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push tags after publish
         if: steps.changesets.outputs.published == 'true'
