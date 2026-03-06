@@ -1,5 +1,11 @@
 # @teamdigitale/schema-editor
 
+## 0.1.1
+
+### Patch Changes
+
+- a763e04: Linked action menu items visibilities to LayoutType. Added a configuration param to sort editor's tabs.
+
 ## 0.1.0
 
 ### Minor Changes
