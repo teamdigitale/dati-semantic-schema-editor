@@ -14,8 +14,8 @@ info:
     to a given set of semantic assets published via schema.gov.it
 
     It can be used by developers, API consumers or API providers
-    to get insights on the data models used in their APIs
-    and improve its semantic quality.
+    to gain insights into the data models used in their APIs
+    and improve their semantic quality.
 
     For further information on mapping JSON Schema properties
     to RDF properties, see [REST API Linked Data Keywords](https://datatracker.ietf.org/doc/draft-polli-restapi-ld-keywords/).
@@ -41,7 +41,7 @@ info:
     vedere [REST API Linked Data Keywords](https://datatracker.ietf.org/doc/draft-polli-restapi-ld-keywords/).
 
     Questa API è associata all'Editor di Schemi Dati fornito da schema.gov.it
-    all'indirizzo <https://teamdigitale.github.io/dati-semantic-schema-editor/latest/>
+    all'indirizzo <https://teamdigitale.github.io/dati-semantic-schema-editor/>
 
   version: 0.0.2
   contact:
@@ -61,7 +61,7 @@ servers:
   - url: http://localhost:3000/api/v1
     description: Local development server
     x-sandbox: true
-  - url: https://schema-editor-api-ndc-dev.apps.cloudpub.testedev.istat.it/
+  - url: https://schema-editor-api-ndc-dev.apps.cloudpub.testedev.istat.it
     description: Public development server
     x-sandbox: true
 security:
@@ -78,7 +78,7 @@ paths:
         Returns whether the service is functioning properly or not.
 
         Consumers should use this endpoint to test the service,
-        instead of issuing specific requests to the other endponts.
+        instead of issuing specific requests to the other endpoints.
 
         If the service is unavailable, the response may provide information
         about the unavailability period.
@@ -87,6 +87,8 @@ paths:
         "200":
           description: Service is healthy
           headers:
+            Cache-Control:
+              $ref: "#/components/headers/Cache-Control"
             X-RateLimit-Limit:
               $ref: "#/components/headers/X-RateLimit-Limit"
             X-RateLimit-Remaining:
@@ -94,7 +96,7 @@ paths:
             X-RateLimit-Reset:
               $ref: "#/components/headers/X-RateLimit-Reset"
           content:
-            application/problem+json:
+            application/json:
               schema:
                 $ref: "#/components/schemas/Problem"
               example:
@@ -164,6 +166,9 @@ paths:
         numeric value between 0 and 1.
       operationId: SemanticScoreController_updateSchemaSemanticScore_v1
       parameters: []
+      security:
+        # Anyone can use this endpoint.
+        - {}
       requestBody:
         required: true
         description: |-
@@ -181,8 +186,11 @@ paths:
         "200":
           description: |-
             The provided OpenAPI specification document has been successfully processed.
-            The response will output informations about the global semantic score and the models processed.
+            The response will output information about the global semantic score
+            and the models processed.
           headers:
+            Cache-Control:
+              $ref: "#/components/headers/Cache-Control"
             X-RateLimit-Limit:
               $ref: "#/components/headers/X-RateLimit-Limit"
             X-RateLimit-Remaining:
@@ -273,18 +281,18 @@ components:
     Cache-Control:
       description: |-
         Cache usage SHOULD be extensively detailed in the `description` property
-        to avoid data leaks or the usage of stale data.
-        This rule should ensure in some way that the api provider
-        documented extensively the cache usage to avoid data leaks
-        or usage of stale data.
+        to avoid data leaks or the use of stale data.
+        This rule should ensure in some way that the API provider
+        documents extensively the cache usage to avoid data leaks
+        or use of stale data.
         For now this ruleset tests:
-        * the presence of following keywords
+        * the presence of the following keywords
           in the `description`: `max-age`, `private`, `no-store`, `no-cache`.
         * that one and only one between Expires and Cache-Control is used.
-        `Cache-Control` and `Expires` should not be used in conjuction,
+        `Cache-Control` and `Expires` should not be used in conjunction,
         because `Cache-Control` overrides `Expires` when `max-age` is set.
-        Instead if neither `Cache-Control` or `Expires` are set, clients MAY use euristic cache
-        like described in RFC7234.
+        Instead, if neither `Cache-Control` nor `Expires` are set, clients MAY use heuristic cache
+        as described in RFC7234.
       schema:
         example: no-store
         externalDocs:
@@ -349,8 +357,8 @@ components:
       properties:
         detail:
           description: |
-            A human readable explanation specific to this occurrence of the
-            problem. You MUST NOT expose internal informations, personal
+            A human-readable explanation specific to this occurrence of the
+            problem. You MUST NOT expose internal information, personal
             data or implementation details through this field.
           example: Request took too long to complete.
           type: string
@@ -375,9 +383,10 @@ components:
           type: integer
         title:
           description: |
-            A short, summary of the problem type. Written in english and readable
-            for engineers (usually not suited for non technical stakeholders and
-            not localized); example: Service Unavailable
+            A short summary of the problem type. Written in English and readable
+            for engineers (usually not suited for non-technical stakeholders and
+            not localized);
+          example: Service Unavailable
           type: string
           maxLength: 512
         type:
@@ -412,7 +421,9 @@ components:
           format: int64
         sparql_endpoint:
           type: string
-          description: SPARQL endpoint URL used for validation. This field is used only for debugging purposes and could not be always available.
+          description: |-
+            SPARQL endpoint URL used for validation.
+            This field is used only for debugging purposes and may not be available.
           example: https://example.com/sparql
           format: uri
           deprecated: true
