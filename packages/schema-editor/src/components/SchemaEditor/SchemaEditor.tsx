@@ -32,6 +32,7 @@ export function SchemaEditor({
   sparqlUrl = 'https://virtuoso-test-external-service-ndc-test.apps.cloudpub.testedev.istat.it/sparql',
   oasCheckerUrl,
   schemaEditorUrl,
+  tabsList,
 }: Props) {
   const [system, setSystem] = useState<typeof SwaggerUI>(null);
   const SwaggerUIComponent = system?.getComponent('App', 'root');
@@ -69,6 +70,7 @@ export function SchemaEditor({
       sparqlUrl,
       oasCheckerUrl,
       schemaEditorUrl,
+      tabsList,
     });
 
     // Update spec text
@@ -110,8 +112,9 @@ export function SchemaEditor({
       configs.sparqlUrl = sparqlUrl;
       configs.oasCheckerUrl = oasCheckerUrl;
       configs.schemaEditorUrl = schemaEditorUrl;
+      configs.tabsList = tabsList;
     }
-  }, [system, sparqlUrl, oasCheckerUrl, schemaEditorUrl]);
+  }, [system, sparqlUrl, oasCheckerUrl, schemaEditorUrl, tabsList]);
 
   return SwaggerUIComponent ? <SwaggerUIComponent /> : null;
 }

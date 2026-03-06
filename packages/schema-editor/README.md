@@ -48,17 +48,19 @@ The package can be used in 2 ways:
 ### Standalone component
 
 ```js
-import { SchemaEditor } from '@teamdigitale/schema-editor';
+import { LayoutTypes, SchemaEditor } from '@teamdigitale/schema-editor';
 import '@teamdigitale/schema-editor/dist/style.css';
 
 function App() {
   // By omitting both params the editor will be loaded as empty
   const params = {
     url: 'https://raw.githubusercontent.com/teamdigitale/dati-semantic-schema-editor/refs/heads/main/apps/example/public/schemas/example-schema.oas3.yaml', // OPTIONAL: an OpenAPI file url
-    schema: '...', // OPTIONAL: an OpenAPI schema definition
-    oasCheckerUrl: '...', // OPTIONAL
-    schemaEditorUrl: '...', // OPTIONAL
-    sparqlUrl: '...', // OPTIONAL
+    spec: '...', // OPTIONAL: an OpenAPI schema definition (string or object)
+    layout: LayoutTypes.EDITOR, // OPTIONAL: layout type (EDITOR or VIEWER), defaults to EDITOR
+    oasCheckerUrl: '...', // OPTIONAL: URL for OAS Checker integration
+    schemaEditorUrl: '...', // OPTIONAL: URL for Schema Editor integration
+    sparqlUrl: '...', // OPTIONAL: SPARQL endpoint URL for semantic queries
+    tabsList: ['Models', 'Graph', 'Information'], // OPTIONAL: array of tab IDs to show (order matters)
   };
 
   return (
@@ -68,6 +70,31 @@ function App() {
   );
 }
 ```
+
+#### Configuring Tabs
+
+The `tabsList` prop allows you to configure which tabs are displayed and in what order. If not provided, all tabs are shown in the default order.
+
+**Available tab IDs:**
+- `'Models'` - Data Models tab
+- `'Information'` - Information tab
+- `'Graph'` - Graph tab
+- `'Help'` - Help tab
+
+**Examples:**
+
+```js
+// Show only specific tabs in a custom order
+<SchemaEditor tabsList={['Graph', 'Models']} {...otherProps} />
+
+// Show all tabs in default order (same as omitting tabsList)
+<SchemaEditor tabsList={['Models', 'Information', 'Graph', 'Help']} {...otherProps} />
+
+// Show only one tab (navigation will be hidden if tabs.length <= 1)
+<SchemaEditor tabsList={['Models']} {...otherProps} />
+```
+
+**Note:** The order of IDs in the `tabsList` array determines the order in which tabs appear. Tabs not included in the array will be hidden.
 
 ### View only component
 
@@ -79,12 +106,15 @@ function App() {
   // By omitting both params the editor will be loaded as empty
   const params = {
     url: 'https://raw.githubusercontent.com/ioggstream/draft-polli-restapi-ld-keywords/refs/heads/main/tests/test-context.oas3.yaml', // OPTIONAL: an OpenAPI file url
-    schema: '...', // OPTIONAL: an OpenAPI schema definition
+    spec: '...', // OPTIONAL: an OpenAPI schema definition (string or object)
+    layout: LayoutTypes.VIEWER, // REQUIRED: set to VIEWER for view-only mode
+    tabsList: ['Models', 'Graph'], // OPTIONAL: array of tab IDs to show
+    schemaEditorUrl: '...', // OPTIONAL: URL for Schema Editor integration
   };
 
   return (
     <div className="app-container">
-      <SchemaEditor layout={LayoutTypes.VIEWER} {...params} />
+      <SchemaEditor {...params} />
     </div>
   );
 }
