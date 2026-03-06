@@ -26,7 +26,7 @@ export function ModelCollapseRoot({ title, specPath }: Props) {
       <Card className="card-bg" spacing>
         <CardBody>
           <h5 className="big-heading d-flex justify-content-between text-primary mb-0">
-            {title || 'Show'}
+            <span className="text-truncate">{title || 'Show'}</span>
             <Icon icon="it-chevron-right" color="primary" />
           </h5>
         </CardBody>
