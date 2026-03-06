@@ -46,8 +46,8 @@ maintenance:
   type: contract
   contacts:
     - affiliation: ISTAT
-      email: info@schema.gov.it
-      name: TODO
+      email: fabrizio.davide@istat.it
+      name: Fabrizio Davide
   contractors:
     - name: ISTAT
       until: '2026-12-31'
