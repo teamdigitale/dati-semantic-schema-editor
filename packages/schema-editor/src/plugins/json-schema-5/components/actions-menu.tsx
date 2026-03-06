@@ -6,6 +6,7 @@ import { Dropdown, DropdownMenu, DropdownToggle, Icon, LinkList, LinkListItem } 
 import yaml from 'js-yaml';
 import { useConfiguration } from '../../configuration';
 import { copyToClipboard, encodeOAS } from '../utils';
+import { useState } from 'react';
 
 const downloadContent = (content: any, mediaType: string, fileName: string) => {
   const blob = new Blob([content], { type: mediaType });
@@ -27,6 +28,16 @@ export const createBundle = async (specJson: object, options: { sparqlUrl: strin
 
 export const ActionsMenu = ({ specSelectors, url, specActions }) => {
   const { oasCheckerUrl, schemaEditorUrl, sparqlUrl = '' } = useConfiguration();
+
+  const [clickedAction, setClickedAction] = useState<string | null>(null);
+  const handleClick = (actionText: string, onClick?: () => void) => {
+    if (!onClick) return;
+    onClick();
+    setClickedAction(actionText);
+    setTimeout(() => {
+      setClickedAction(null);
+    }, 5000);
+  };
 
   const actions: Array<{
     text: string;
@@ -104,10 +115,14 @@ export const ActionsMenu = ({ specSelectors, url, specActions }) => {
                     className="right-icon justify-content-between d-flex"
                     inDropdown
                     href={action?.href || '#'}
-                    onClick={action?.onClick}
+                    onClick={() => handleClick(action.text, action.onClick)}
                   >
                     <span>{action?.text}</span>
-                    <Icon icon={action?.icon} size="sm" className="right" />
+                    <Icon
+                      icon={clickedAction === action.text && action.onClick ? 'it-check' : action.icon}
+                      size="sm"
+                      className="right"
+                    />
                   </LinkListItem>
                 ),
             )}
