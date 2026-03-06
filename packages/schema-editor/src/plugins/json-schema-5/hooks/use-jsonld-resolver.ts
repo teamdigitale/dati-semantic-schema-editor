@@ -4,7 +4,7 @@ import { AsyncState } from '../models';
 import { JsonLDResolverResult, resolvePropertyByJsonldContext } from '@teamdigitale/schema-editor-utils';
 
 export const useJsonLDResolver = (jsonldContext: Map<any, any> | any, keysPath: string[]) => {
-  const [state, setState] = useState<AsyncState<JsonLDResolverResult>>({ status: 'pending' });
+  const [state, setState] = useState<AsyncState<JsonLDResolverResult | undefined>>({ status: 'pending' });
 
   useEffect(() => {
     const properties = keysPath?.filter((x) => x) || [];

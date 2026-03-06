@@ -17,9 +17,9 @@ export function useSemanticScore(
   dataModelKey: string,
   dataModelValue: Map<any, any>,
   jsonldContext: Map<any, any> | undefined,
-): AsyncState<ModelSummary> {
+): AsyncState<ModelSummary | undefined> {
   const { sparqlUrl } = useConfiguration();
-  const [state, setState] = useState<AsyncState<ModelSummary>>({ status: 'pending' });
+  const [state, setState] = useState<AsyncState<ModelSummary | undefined>>({ status: 'pending' });
 
   useEffect(() => {
     if (!dataModelKey || !dataModelValue || !sparqlUrl) {
@@ -31,11 +31,7 @@ export function useSemanticScore(
       .catch((e) => setState({ status: 'error', error: e?.message || 'Exception' }));
   }, [dataModelKey, dataModelValue, jsonldContext, sparqlUrl]);
 
-  return {
-    status: state.status,
-    error: state.error,
-    data: state.data,
-  };
+  return state;
 }
 
 interface SchemaSemanticScoreResult {
