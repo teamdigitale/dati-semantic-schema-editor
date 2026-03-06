@@ -1,4 +1,7 @@
 import { ArrayModel } from './components/array-model';
+import { RDFHelperButtonWithModal } from './components/common/helper';
+import { RDFOntologicalClassHelperBlock } from './components/common/helper/rdf-helper-block';
+import { RDFHelperClassVocabulariesBlock } from './components/common/helper/rdf-helper-class-vocabularies-block';
 import { GraphSchema } from './components/common/oas-graph/graph-schema';
 import { Model } from './components/model';
 import { ModelCollapse } from './components/model-collapse';
@@ -21,6 +24,9 @@ export const JSONSchema5Plugin = () => ({
     ArrayModel,
     ObjectModel,
     GraphSchema,
+    RDFHelperButtonWithModal,
+    RDFHelperClassVocabulariesBlock,
+    RDFOntologicalClassHelperBlock,
   },
 });
 

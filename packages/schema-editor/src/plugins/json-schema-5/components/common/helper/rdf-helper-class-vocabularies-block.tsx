@@ -1,22 +1,40 @@
-import { Badge, Spinner, Table } from 'design-react-kit';
-import { Fragment } from 'react';
-import { useRDFClassVocabulariesResolver } from '../../../hooks';
+import { Badge, Button, Icon, Spinner, Table } from 'design-react-kit';
+import { Fragment, useMemo } from 'react';
+import { System } from '../../../../../models';
+import { useRDFClassVocabulariesResolver, useVocabularyQuery } from '../../../hooks';
 import { uri2shortUri } from '../../../utils';
+import { JSONLD_PLAYGROUND_FRAME } from './rdf-helper-const';
 
-interface Props {
+interface Props extends Pick<System, 'getConfigs'> {
   classUri: string;
 }
 
-export const RDFHelperClassVocabulariesBlock = ({ classUri }: Props) => {
+export function RDFHelperClassVocabulariesBlock({ classUri, getConfigs }: Props) {
+  const { jsonldPlaygroundUrl } = getConfigs();
   const { data, status } = useRDFClassVocabulariesResolver(classUri);
-
   const vocabularies = data?.filter((x) => x?.controlledVocabulary) || [];
+  const { data: jsonldData } = useVocabularyQuery(vocabularies[0]?.controlledVocabulary);
+
+  const playgroundUrl = useMemo(() => {
+    if (!jsonldData) return '';
+    const jsonldEncoded = encodeURIComponent(JSON.stringify(jsonldData, null, 2)); // replace with YAML.dump when json-ld.org playground supports it
+    const frameEncoded = encodeURIComponent(JSON.stringify(JSONLD_PLAYGROUND_FRAME, null, 2)); // replace with YAML.dump when json-ld.org playground supports it
+    return `${jsonldPlaygroundUrl}#startTab=tab-framed&json-ld=${jsonldEncoded}&frame=${frameEncoded}&formatMode=yaml`;
+  }, [jsonldData]);
 
   return (
     <div className="lightgrey-bg-b4 p-3 mb-4">
-      <h6>
-        Vocabularies for <Badge color="primary">{uri2shortUri(classUri)}</Badge>
-      </h6>
+      <div className="d-flex justify-content-between align-items-center mb-2">
+        <h6 className="mb-0">
+          Vocabularies for <Badge color="primary">{uri2shortUri(classUri)}</Badge>
+        </h6>
+        {playgroundUrl && (
+          // @ts-expect-error Button props are not fully typed whenrendered as anchors
+          <Button outline color="primary" size="sm" href={playgroundUrl} rel="noreferrer" target="_blank">
+            Explore <Icon icon="it-external-link" size="sm" fill="currentColor" className="ms-2" />
+          </Button>
+        )}
+      </div>
 
       {status === 'pending' ? (
         <div className="d-flex align-middle">
@@ -71,4 +89,4 @@ export const RDFHelperClassVocabulariesBlock = ({ classUri }: Props) => {
       )}
     </div>
   );
-};
+}

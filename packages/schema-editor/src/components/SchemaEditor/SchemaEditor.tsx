@@ -66,7 +66,7 @@ export function SchemaEditor({
       oas3GeneratorUrl: 'https://generator3.swagger.io/openapi.json',
       swagger2ConverterUrl: 'https://converter.swagger.io/api/convert',
       // Schema editor configs:
-      jsonldPlaygroundUrl: 'https://json-ld.org/playground/#startTab=tab-expand&json-ld=',
+      jsonldPlaygroundUrl: 'https://par-tec.github.io/json-ld.org/future/playground/next',
       sparqlUrl,
       oasCheckerUrl,
       schemaEditorUrl,

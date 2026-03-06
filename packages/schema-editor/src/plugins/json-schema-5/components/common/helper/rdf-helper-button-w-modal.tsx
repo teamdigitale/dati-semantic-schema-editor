@@ -1,19 +1,19 @@
 import { Button, Icon, Modal, ModalBody, ModalFooter, ModalHeader } from 'design-react-kit';
 import { useState } from 'react';
-import { RDFOntologicalClassHelperBlock } from './rdf-helper-block';
+import { System } from '../../../../../models';
 
-interface Props {
-  getComponent: (name: string, isStatic?: boolean) => any;
+interface Props extends Pick<System, 'getComponent'> {
+  schema: Immutable.Map<string, any>;
   classUri: string;
   inferred: boolean;
-  schema: any;
 }
 
-export const RDFHelperButtonWithModal: React.FC<Props> = ({ getComponent, classUri, inferred, schema }) => {
+export function RDFHelperButtonWithModal({ classUri, inferred, schema, getComponent }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
   const Markdown = getComponent('Markdown', true);
+  const RDFOntologicalClassHelperBlock = getComponent('RDFOntologicalClassHelperBlock', true);
 
   return (
     <>
@@ -43,7 +43,7 @@ export const RDFHelperButtonWithModal: React.FC<Props> = ({ getComponent, classU
       </Modal>
     </>
   );
-};
+}
 
 const MARKDOWN_HELPER_SOURCE = `
 ###### 🇮🇹 ITALIAN
