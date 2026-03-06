@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
+import { RDFClassTreeData } from '../../../hooks';
 import { GraphElement, insertSpaceInCamelCase } from './oas-graph';
 
-export function useSuperclassDataToNodes(superclassData: { parent: string; child: string }[]): GraphElement[] {
+export function useSuperclassDataToNodes(superclassData: RDFClassTreeData[]): GraphElement[] {
   const [allNodes, setAllNodes] = useState<GraphElement[]>([]); // Keeps older nodes too
 
   useEffect(() => {
@@ -11,7 +12,7 @@ export function useSuperclassDataToNodes(superclassData: { parent: string; child
 
     const newElements: GraphElement[] = [];
 
-    for (const { child, parent } of superclassData) {
+    for (const { child, parent, equivalent } of superclassData) {
       // Add child nodes
       if (child) {
         newElements.push({
@@ -28,13 +29,31 @@ export function useSuperclassDataToNodes(superclassData: { parent: string; child
           type: 'rdf',
         });
       }
-      // Add edges
+      // Add equivalent nodes
+      if (equivalent) {
+        // If this is an equivalentClass relationship, use 'equivalent' type, otherwise 'dashed' for subClassOf
+        newElements.push({
+          id: equivalent,
+          label: insertSpaceInCamelCase(equivalent.split('/').pop() ?? equivalent),
+          type: 'rdf',
+        });
+      }
+      // Add child-parent edges
       if (child && parent) {
         newElements.push({
           id: `${child}->${parent}`,
           source: child,
           target: parent,
           type: 'dashed',
+        });
+      }
+      // Add equivalent edges
+      if (child && equivalent) {
+        newElements.push({
+          id: `${child}->${equivalent}`,
+          source: child,
+          target: equivalent,
+          type: 'equivalent',
         });
       }
     }
