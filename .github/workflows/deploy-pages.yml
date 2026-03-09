@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
           # Don't persist credentials to prevent credentials to be leaked on artifacts.
@@ -37,13 +37,13 @@ jobs:
           UNTRUSTED_GITHUB_HEAD_REF: ${{ github.head_ref }} # E.g. feature/my-feature - Only populated in pull request events (the source branch name); empty otherwise.
           UNTRUSTED_GITHUB_REF_NAME: ${{ github.ref_name }} # E.g. my-app@1.0.0 - Always populated; contains the branch name, tag name, or ref name depending on the event type.
         run: |
-          # Push on main branch
-          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
+          # Event on main branch
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             NAME="latest"
             DESTINATION_DIR="${NAME}"
 
-          # Push on tag
-          elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" =~ ^refs/tags/ ]]; then
+          # Event on tag
+          elif [[ "${{ github.ref }}" =~ ^refs/tags/ ]]; then
             NAME="${UNTRUSTED_GITHUB_REF_NAME#*@}" # Strip the prefix from the tag name in order to get the tag version only
             # For test tags, include prefix in destination directory to avoid conflicts with webapp tags
             if [[ "$UNTRUSTED_GITHUB_REF_NAME" =~ ^test@ ]]; then
@@ -52,9 +52,10 @@ jobs:
               DESTINATION_DIR="${NAME}"
             fi
 
-          # Other cases (pull requests, manual dispatch, etc.)
+          # Other cases (pull requests, manual dispatch, push on other branches)
           else
-            NAME="${UNTRUSTED_GITHUB_HEAD_REF//\//%2F}" # Escape slashes for URL in branch name, for example the ones created by dependabot
+            REF_VALUE="${UNTRUSTED_GITHUB_HEAD_REF:-$UNTRUSTED_GITHUB_REF_NAME}" # Take the branch name (see above for details about the environment variables)
+            NAME="${REF_VALUE//\//%2F}" # Escape slashes for URL in branch name, for example the ones created by dependabot
             DESTINATION_DIR="${NAME}"
           fi
 
@@ -71,6 +72,10 @@ jobs:
           echo "BASE_URL: ${{ env.BASE_URL }}"
           echo "DESTINATION_DIR: ${{ env.DESTINATION_DIR }}"
           echo "URL: ${{ env.URL }}"
+          if [[ -z "${{ env.BASE_URL }}" || -z "${{ env.DESTINATION_DIR }}" ]]; then
+            echo "BASE_URL or DESTINATION_DIR is not set"
+            exit 1
+          fi
 
       - name: Install dependencies
         uses: ./.github/actions/install
@@ -84,7 +89,7 @@ jobs:
         run: pnpm deploy --filter=webapp --prod ./build
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@373f7f263a76c20808c831209c920827a82a2847  # v3
+        uses: peaceiris/actions-gh-pages@373f7f263a76c20808c831209c920827a82a2847 # v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/dist
@@ -93,7 +98,7 @@ jobs:
 
       - name: Post GitHub Pages URL as comment
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410  # v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -140,7 +145,7 @@ jobs:
 
       - name: Deploy the redirect index.html to GitHub Pages
         if: steps.redirect_to_latest_tag.outputs.new_index_html == 'true'
-        uses: peaceiris/actions-gh-pages@373f7f263a76c20808c831209c920827a82a2847  # v3
+        uses: peaceiris/actions-gh-pages@373f7f263a76c20808c831209c920827a82a2847 # v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./ghpages
