@@ -43,7 +43,8 @@
     "lz-string": "^1.5.0",
     "react-cytoscapejs": "^2.0.0",
     "react-dropzone": "^15.0.0",
-    "styled-components": "^6.3.11"
+    "styled-components": "^6.3.11",
+    "use-debounce": "^10.1.0"
   },
   "peerDependencies": {
     "react": ">=18",

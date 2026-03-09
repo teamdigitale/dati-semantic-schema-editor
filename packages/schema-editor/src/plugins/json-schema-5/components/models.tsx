@@ -2,10 +2,11 @@ import './models.scss';
 
 import { useSchemaNavigation } from '../../overview/components/Navigation';
 import { ActionsMenu } from './actions-menu';
-import { SchemaSemanticScoreButton } from './schema-semantic-score-button';
 import { ModelCollapseRoot } from './model-collapse-root';
 import type { ModelRoot as ModelRootComponent } from './model-root';
 import type { ModelsBreadcrumb as ModelsBreadcrumbComponent } from './models-breadcrumb';
+import { SchemaSemanticScoreButton } from './schema-semantic-score-button';
+import { SemanticScoreProvider } from './semantic-score';
 
 export function Models(system) {
   const { getComponent, specSelectors, getConfigs } = system;
@@ -26,26 +27,28 @@ export function Models(system) {
 
   return (
     <div className="modelli">
-      <div className="d-flex flex-row justify-content-between align-items-center">
-        <ModelsBreadcrumb specPathBase={specPathBase} />
-        <ActionsMenu {...system} />
-      </div>
+      <SemanticScoreProvider specJson={specSelectors.specJson()}>
+        <div className="d-flex flex-row justify-content-between align-items-center">
+          <ModelsBreadcrumb specPathBase={specPathBase} />
+          <ActionsMenu {...system} />
+        </div>
 
-      <div className="d-flex flex-row justify-content-end align-items-center mb-2">
-        <SchemaSemanticScoreButton specSelectors={specSelectors} />
-      </div>
+        <div className="d-flex flex-row justify-content-end align-items-center mb-2">
+          <SchemaSemanticScoreButton />
+        </div>
 
-      {/* Root */}
-      {history.length === 0 &&
-        definitions
-          .entrySeq()
-          .map(([key, schema]) => (
-            <ModelCollapseRoot key={key} title={key} specPath={[...specPathBase, key]} schema={schema} />
-          ))
-          .toArray()}
+        {/* Root */}
+        {history.length === 0 &&
+          definitions
+            .entrySeq()
+            .map(([key, schema]) => (
+              <ModelCollapseRoot key={key} title={key} specPath={[...specPathBase, key]} schema={schema} />
+            ))
+            .toArray()}
 
-      {/* Schema model */}
-      {currentHistoryItem && <ModelRoot name={currentHistoryItem.title} fullPath={currentHistoryItem.fullPath} />}
+        {/* Schema model */}
+        {currentHistoryItem && <ModelRoot name={currentHistoryItem.title} fullPath={currentHistoryItem.fullPath} />}
+      </SemanticScoreProvider>
     </div>
   );
 }

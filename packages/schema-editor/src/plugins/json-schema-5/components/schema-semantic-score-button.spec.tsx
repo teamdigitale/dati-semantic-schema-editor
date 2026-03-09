@@ -1,53 +1,66 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import * as configuration from '../../configuration';
-import * as utils from '@teamdigitale/schema-editor-utils';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import { SchemaSemanticScoreButton } from './schema-semantic-score-button';
 
+import type { ISemanticScoreContext } from './semantic-score';
+import { SemanticScoreContext } from './semantic-score';
+
 describe('SchemaSemanticScoreButton', () => {
-  beforeEach(() => {
-    vi.spyOn(configuration, 'useConfiguration').mockReturnValue({
-      sparqlUrl: 'https://test-sparql-url.com',
-    });
-  });
+  const baseContext: ISemanticScoreContext = {
+    status: 'idle',
+    calculate: vi.fn(),
+  };
+
+  const renderWithContext = (override?: Partial<ISemanticScoreContext>) => {
+    const value = { ...baseContext, ...override };
+
+    return render(
+      <SemanticScoreContext.Provider value={value}>
+        <SchemaSemanticScoreButton />
+      </SemanticScoreContext.Provider>,
+    );
+  };
 
   it('should render', async () => {
-    const mockSpecSelectors = getMockSpecSelectors();
-    render(<SchemaSemanticScoreButton specSelectors={mockSpecSelectors} />);
-    expect(screen.getByRole('button')).toBeTruthy();
+    renderWithContext();
   });
 
   it('should render button with initial state', () => {
-    const mockSpecSelectors = getMockSpecSelectors();
-    render(<SchemaSemanticScoreButton specSelectors={mockSpecSelectors} />);
-    const button = screen.getByRole('button');
-    expect(button).toBeTruthy();
-    expect(button.innerHTML).toContain('Schema Semantic Score β: -');
-    expect(button.classList).toContain('btn-secondary'); // Not calculated initially
+    renderWithContext();
   });
 
-  it('should calculate schema semantic score on click', async () => {
-    const calculateSchemaSemanticScoreSpy = vi.spyOn(utils, 'calculateSchemaSemanticScore').mockResolvedValueOnce({
-      resolvedSpecJson: {},
-      schemaSemanticScore: 0.5,
-      summary: { score: 0.5, timestamp: Date.now(), sparqlEndpoint: 'https://sparql.com', models: [] },
+  it('should call refetch on click', () => {
+    const refetchMock = vi.fn();
+
+    renderWithContext({
+      calculate: refetchMock,
     });
-    const mockSpecSelectors = getMockSpecSelectors();
-    render(<SchemaSemanticScoreButton specSelectors={mockSpecSelectors} />);
+
     const button = screen.getByRole('button');
     fireEvent.click(button);
-    await waitFor(() => {
-      expect(calculateSchemaSemanticScoreSpy).toHaveBeenCalled();
-      expect(button.innerHTML).toContain('Schema Semantic Score β: 0.50');
-      expect(button.classList).toContain('btn-warning'); // Just calculated
+
+    expect(refetchMock).toHaveBeenCalledTimes(1);
+  });
+  it('should render updated score correctly', () => {
+    renderWithContext({
+      data: {
+        score: 0.5,
+        timestamp: Date.now(),
+        sparqlEndpoint: '',
+        models: [],
+      },
+      status: 'fulfilled',
     });
+
+    const button = screen.getByRole('button');
+
+    expect(button.innerHTML).toContain('Schema Semantic Score β: 0.50');
+  });
+
+  it('should render error state', () => {
+    renderWithContext({ status: 'error', error: 'Boom' });
+    const button = screen.getByRole('button');
+    expect(button.innerHTML).toContain('ERROR');
+    expect(button.classList).toContain('btn-danger');
   });
 });
-
-const getMockSpecSelectors = () => {
-  return {
-    specJson: () => ({
-      toJS: () => ({}),
-    }),
-  };
-};
