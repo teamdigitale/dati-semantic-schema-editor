@@ -15,8 +15,8 @@ on:
       - ".husky/**"
       - ".changeset/**"
   pull_request:
-    branches:
-      - main
+    branches-ignore:
+    - "changeset-release/**"
     paths-ignore:
       - "*.md"
       - "LICENSE"
@@ -82,7 +82,7 @@ jobs:
       - name: Check if should build
         id: should_build
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]] || [[ "${{ github.event_name }}" == "pull_request" ]] || [[ "${{ github.ref }}" =~ ${{ matrix.tag_pattern }} ]]; then
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]] || [[ "${{ github.event_name }}" == "pull_request" ]] || [[ "${{ github.ref }}" =~ ${{ matrix.tag_pattern }} ]] || [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "build=true" >> "$GITHUB_OUTPUT"
           else
             echo "build=false" >> "$GITHUB_OUTPUT"
