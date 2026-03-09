@@ -140,9 +140,9 @@ In order to process this correctly perform the following steps:
 
 - Commit the generated files that are inside `.changeset` folder
 
-- When the changesets files reach the "baseBranch" (actually "main"), a github action will generate a new PR with updated packages versions. Review the PR and approve merge when ready to release a new version.
+- When the changesets files reach the "baseBranch" (actually "main"), **a github action will generate a new PR with updated packages versions**. Review the PR and **approve merge when ready to release a new version**.
 
-- Once the PR is merged into the baseBranch, a github action will publish packages automatically.
+- Once the PR is merged into the baseBranch, a github action will publish packages automatically, using trusted publish NPM capability.
 
 - If you want to build and publish a pre-release version before going to the main branch, then rebase the "next" branch to the needed commit from main branch.
   The github action will open a new PR with the "-next.X" tag. Once merged in the "next" branch it will publish the package(s) as described above.
@@ -164,7 +164,6 @@ docker build . --target webapp --tag webapp:latest
 # Showcase webapp
 docker build . --target example --tag example:latest
 ```
-
 
 After creating the desired image, run it with the following command, paying attention to change the listening ports and config file if needed:
 

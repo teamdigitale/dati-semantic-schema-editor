@@ -1,5 +1,5 @@
 FROM docker.io/nginxinc/nginx-unprivileged:alpine3.22-perl AS nginx
-FROM docker.io/library/node:22-slim AS node
+FROM docker.io/library/node:24-slim AS node
 
 # checkov:skip=CKV_DOCKER_2
 # checkov:skip=CKV_DOCKER_3
