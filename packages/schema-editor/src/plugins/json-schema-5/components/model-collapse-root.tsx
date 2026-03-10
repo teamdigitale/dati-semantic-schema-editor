@@ -4,6 +4,7 @@ import { Card, CardBody, Icon } from 'design-react-kit';
 import { useSchemaNavigation } from '../../overview/components/Navigation';
 import { useSemanticScoreColor } from '../hooks';
 import { useGlobalSemanticScore } from './semantic-score';
+import { SemanticScoreTooltip } from './semantic-score-tooltip';
 
 interface Props {
   title: string;
@@ -28,11 +29,14 @@ export function ModelCollapseRoot({ title, specPath }: Props) {
   const modelScoreEntry = semanticData?.models.find((m) => m.name === name);
   const modelScore = modelScoreEntry?.score ?? 0;
   const semanticScoreColor = useSemanticScoreColor(modelScore);
-  const semanticScoreClass = modelScoreEntry ? `score-${semanticScoreColor}` : '';
+  const semanticScoreClass = modelScoreEntry ? `score-${semanticScoreColor}` : 'score-none';
+  const hasSemanticScore = !!modelScoreEntry;
+  const tooltipId = `model-card-tooltip-${specPathArray.join('-')}`;
 
   return (
     <a href="#" className="text-decoration-none" onClick={handleClick}>
-      <Card className={`card-bg ${semanticScoreClass}`} spacing>
+      <Card className="card-bg" spacing>
+        <div id={tooltipId} className={`model-border ${semanticScoreClass}`}></div>
         <CardBody>
           <h5 className="big-heading d-flex justify-content-between text-primary mb-0">
             {title || 'Show'}
@@ -40,6 +44,7 @@ export function ModelCollapseRoot({ title, specPath }: Props) {
           </h5>
         </CardBody>
       </Card>
+      <SemanticScoreTooltip targetId={tooltipId} score={modelScoreEntry?.score} />
     </a>
   );
 }
