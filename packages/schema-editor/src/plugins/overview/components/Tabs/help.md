@@ -17,6 +17,9 @@ L'applicazione mostra:
   i vincoli legati alle classi semantiche
   ([`rdfs:Class`](https://www.w3.org/2000/01/rdf-schema#Class) / [`owl:Class`](https://www.w3.org/2002/07/owl#Class))
   e al dominio applicativo ([`rdfs:domain`](https://www.w3.org/2000/01/rdf-schema#domain), [`rdfs:range`](https://www.w3.org/2000/01/rdf-schema#range)).
+- un punteggio semantico (semantic score) che indica il livello di completezza
+  delle annotazioni semantiche presenti nello schema.
+  Il punteggio viene calcolato sulla base delle informazioni semantiche disponibili ed è visualizzato nell'interfaccia tramite apposita dicitura 'Schema Semantic Score' e tramite un indicatore laterale accanto agli elementi dello schema di tipo `object`. L'indicatore avrà colore verde nel caso di un punteggio sufficiente, giallo in caso contrario, grigio in caso di tipo non `object`.
 
 Puoi aprire uno schema OpenAPI in formato JSON o YAML:
 
@@ -57,6 +60,13 @@ The application shows:
   the title([`rdfs:label`](https://www.w3.org/2000/01/rdf-schema#label)),
   the constraints related to the semantic classes
   ( [`rdfs:Class`](https://www.w3.org/2000/01/rdf-schema#Class) / [`owl:Class`](https://www.w3.org/2002/07/owl#Class)) and to the application domain (`rdfs:domain`, `rdfs:range`).
+- a semantic score indicating the level of completeness
+  of the semantic annotations in the schema.
+  The score is calculated based on the available semantic metadata
+  (for example `rdfs:label`, `rdfs:comment`, `rdfs:domain`, `rdfs:range`, etc.)
+  and is displayed in the interface through the "Schema Semantic Score" label
+  and through a side indicator next to schema elements defined as `type: object`.
+  The indicator is green when the score is considered sufficient, yellow otherwise, grey if type is non-object.
 
 You can open an OpenAPI schema in JSON or YAML format:
 
