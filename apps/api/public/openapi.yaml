@@ -61,7 +61,7 @@ servers:
   - url: http://localhost:3000/api/v1
     description: Local development server
     x-sandbox: true
-  - url: https://schema-editor-api-ndc-dev.apps.cloudpub.testedev.istat.it/
+  - url: https://schema-editor-api-ndc-dev.apps.cloudpub.testedev.istat.it
     description: Public development server
     x-sandbox: true
 security:
@@ -87,6 +87,8 @@ paths:
         "200":
           description: Service is healthy
           headers:
+            Cache-Control:
+              $ref: "#/components/headers/Cache-Control"
             X-RateLimit-Limit:
               $ref: "#/components/headers/X-RateLimit-Limit"
             X-RateLimit-Remaining:
@@ -94,7 +96,7 @@ paths:
             X-RateLimit-Reset:
               $ref: "#/components/headers/X-RateLimit-Reset"
           content:
-            application/problem+json:
+            application/json:
               schema:
                 $ref: "#/components/schemas/Problem"
               example:
@@ -187,6 +189,8 @@ paths:
             The response will output information about the global semantic score
             and the models processed.
           headers:
+            Cache-Control:
+              $ref: "#/components/headers/Cache-Control"
             X-RateLimit-Limit:
               $ref: "#/components/headers/X-RateLimit-Limit"
             X-RateLimit-Remaining:
