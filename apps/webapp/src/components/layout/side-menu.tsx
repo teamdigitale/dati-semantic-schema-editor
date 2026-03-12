@@ -1,4 +1,4 @@
-import { Button, Form, Icon, Input, Sidebar } from 'design-react-kit';
+import { Button, Form, FormGroup, Icon, Input, Sidebar, Toggle } from 'design-react-kit';
 import { Controller, useForm } from 'react-hook-form';
 import { Config, useConfiguration } from '../../features/configuration';
 
@@ -13,6 +13,7 @@ export function SideMenu() {
   } = useForm<Config>({
     defaultValues: {
       sparqlUrl: config.sparqlUrl || '',
+      sparqlAutocompleteEnabled: config.sparqlAutocompleteEnabled ?? false,
     },
   });
 
@@ -45,7 +46,21 @@ export function SideMenu() {
             render={({ field }) => <Input label="SparQL URL" {...field} />}
           />
 
-          <Button color="primary" size="sm" className="w-100" disabled={!isValid || !isDirty}>
+          <FormGroup check className="mt-3">
+            <Controller
+              name="sparqlAutocompleteEnabled"
+              control={control}
+              render={({ field }) => (
+                <Toggle
+                  label="Enable SPARQL class autocomplete"
+                  checked={!!field.value}
+                  onChange={(e) => field.onChange((e.target as HTMLInputElement).checked)}
+                />
+              )}
+            />
+          </FormGroup>
+
+          <Button color="primary" size="sm" className="w-100 mt-3" disabled={!isValid || !isDirty}>
             Save
             <Icon icon="it-check" size="sm" color="white" className="ms-2" />
           </Button>
