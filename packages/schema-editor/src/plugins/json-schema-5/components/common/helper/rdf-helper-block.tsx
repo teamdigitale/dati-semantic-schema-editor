@@ -1,17 +1,17 @@
 import { Alert, Spinner } from 'design-react-kit';
 import { useState } from 'react';
+import { System } from '../../../../../models';
 import { useRDFClassPropertiesResolver } from '../../../hooks';
 import { uri2shortUri } from '../../../utils';
 import { RDFOntologicalClassBlock } from '../rdf-ontological-class-block';
 import { ClassPropertiesFilteredTable } from './rdf-helper-class-properties-filtered-table';
-import { RDFHelperClassVocabulariesBlock } from './rdf-helper-class-vocabularies-block';
 
-interface Props {
+interface Props extends Pick<System, 'getComponent'> {
   classUri: string;
   inferred: boolean;
 }
 
-export function RDFOntologicalClassHelperBlock({ classUri, inferred }: Props) {
+export function RDFOntologicalClassHelperBlock({ getComponent, classUri, inferred }: Props) {
   const { data, status } = useRDFClassPropertiesResolver(classUri);
   const superClasses = data?.classProperties
     ?.map((property) => property.baseClass)
@@ -21,6 +21,8 @@ export function RDFOntologicalClassHelperBlock({ classUri, inferred }: Props) {
   const handleSuperClassChange = (event) => {
     setSelectedSuperClass(event.target.value);
   };
+
+  const RDFHelperClassVocabulariesBlock = getComponent('RDFHelperClassVocabulariesBlock', true);
 
   return status === 'pending' ? (
     <div className="d-flex justify-content-center mb-4">

@@ -41,7 +41,11 @@ export function ExampleAccordion({ depth, schema, jsonldContext, getConfigs }: P
               outline
               rel="noreferrer"
               disabled={!jsonldPlaygroundUrl || !jsonldContext || !example}
-              href={jsonldPlaygroundUrl + encodeURIComponent(JSON.stringify(jsonldExample, null, 2))}
+              href={
+                jsonldPlaygroundUrl +
+                '#startTab=tab-expand&json-ld=' +
+                encodeURIComponent(JSON.stringify(jsonldExample, null, 2))
+              }
               title="Open in playground"
               /** @ts-expect-error missing target attribute in interface when rendering a button as a link */
               target="_blank"

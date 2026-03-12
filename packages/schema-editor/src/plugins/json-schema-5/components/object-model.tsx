@@ -8,7 +8,6 @@ import { DescriptionBlock } from './common/description-block';
 import { ExampleAccordion } from './common/example-accordion';
 import { ExternalDocsBlock } from './common/external-docs-block';
 import { HeadingBlock, HeadingBlockLeft, HeadingBlockRight } from './common/heading-block';
-import { RDFHelperButtonWithModal } from './common/helper';
 import { JsonLdContextAccordion } from './common/jsonld-context-accordion';
 import { ModelTitle } from './common/model-title';
 import { NavigateBack } from './common/navigate-back';
@@ -88,6 +87,7 @@ export const ObjectModel = ({
   const Model = getComponent('Model');
   const ModelCollapse: typeof ModelCollapseComponent = getComponent('ModelCollapse', true);
   const JumpToPath = getComponent('JumpToPath', true);
+  const RDFHelperButtonWithModal = getComponent('RDFHelperButtonWithModal', true);
 
   // Collapsed view
   if (!expanded) {
@@ -139,10 +139,9 @@ export const ObjectModel = ({
         <div>
           {depth === 1 && ontologicalClassResolverData?.ontologicalClassUri && (
             <RDFHelperButtonWithModal
-              getComponent={getComponent}
+              schema={schema}
               classUri={ontologicalClassResolverData?.ontologicalClassUri}
               inferred={ontologicalClassResolverData.inferred}
-              schema={schema}
             />
           )}
         </div>
