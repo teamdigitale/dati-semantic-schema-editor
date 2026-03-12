@@ -2,11 +2,16 @@ import { AsyncState } from '../models';
 import { useJsonLDResolver } from './use-jsonld-resolver';
 import { useRDFPropertyResolver } from './use-rdf-ontologies-resolver';
 
+export interface OntologicalClassResolverResult {
+  ontologicalClassUri: string | undefined;
+  inferred: boolean;
+}
+
 export function useOntologicalClassResolver(
   jsonldContext: Map<any, any>,
   jsonldType: string | undefined,
   path: string[],
-): AsyncState<{ ontologicalClassUri: string | undefined; inferred: boolean }> {
+): AsyncState<OntologicalClassResolverResult> {
   const resolutionPath = jsonldType ? [...path.slice(0, -1), jsonldType] : path;
 
   const {
@@ -41,7 +46,7 @@ export function useOntologicalClassResolver(
         ontologicalClassUri: jsonldResolverData?.fieldUri,
         inferred: false,
       },
-    };
+    } as AsyncState<OntologicalClassResolverResult>;
   }
   // If parent jsonld context exists, but no x-jsonld-type use context + propertyName
   return {
@@ -58,5 +63,5 @@ export function useOntologicalClassResolver(
       ontologicalClassUri: rdfPropertyResolverData?.ontologicalClass,
       inferred: true,
     },
-  };
+  } as AsyncState<OntologicalClassResolverResult>;
 }

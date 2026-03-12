@@ -9,6 +9,8 @@ interface Props {
   jsonldContext: Map<any, any>;
 }
 
+const truncate = (str: string, max = 200) => (str.length > max ? str.slice(0, max) + '…' : str);
+
 export function RDFContentAccordion({ schema, jsonldContext }: Props) {
   const [isOpened, setIsOpened] = useState(false);
   const jsonld = useMemo(() => {
@@ -22,7 +24,7 @@ export function RDFContentAccordion({ schema, jsonldContext }: Props) {
       : {};
   }, [schema, jsonldContext]);
 
-  const { data, status } = useRDFConverter(jsonld);
+  const { status, data, error } = useRDFConverter(jsonld);
   const { namespaces, shortenedTurtle } = useMemo(() => shortenRDF(data), [data]);
   const prefixes = namespaces
     ? Object.entries(namespaces)
@@ -69,7 +71,28 @@ export function RDFContentAccordion({ schema, jsonldContext }: Props) {
         <AccordionItem>
           <AccordionBody active={isOpened} listClassName="p-3" className="mt-3">
             {status === 'error' ? (
-              <span>Error converting to text/turtle</span>
+              <>
+                <span>Error converting to text/turtle</span>
+                {!error?.message ? (
+                  <>Unknown error</>
+                ) : (
+                  <>
+                    <div>
+                      <strong>Message:</strong> {truncate(error.message)}
+                    </div>
+                    {error?.details?.term && (
+                      <div>
+                        <strong>Term:</strong> {error.details.term}
+                      </div>
+                    )}
+                    {error?.details?.code && (
+                      <div>
+                        <strong>Code:</strong> {truncate(error.details.code)}
+                      </div>
+                    )}
+                  </>
+                )}
+              </>
             ) : namespaces && shortenedTurtle ? (
               <small>
                 <span title={prefixes}># Hover to show prefixes</span>

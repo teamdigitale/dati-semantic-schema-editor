@@ -72,7 +72,7 @@ export function useRDFPropertyResolver(fieldUri: string | undefined): AsyncState
     },
     status: sparqlStatus,
     error: sparqlError,
-  };
+  } as AsyncState<RDFProperty>;
 }
 
 /*
@@ -106,7 +106,7 @@ export function useRDFClassTreeResolver(classUri: string | undefined): AsyncStat
     data: items,
     status,
     error,
-  };
+  } as AsyncState<{ parent: string; child: string }[]>;
 }
 
 export function useRDFClassResolver(classUri: string | undefined) {
@@ -332,5 +332,5 @@ SELECT DISTINCT
     data: content as RDFClassVocabularies[] | undefined,
     status: sparqlStatus,
     error: error,
-  };
+  } as AsyncState<RDFClassVocabularies[]>;
 }
