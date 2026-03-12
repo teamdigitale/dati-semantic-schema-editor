@@ -50,7 +50,7 @@ export function useVocabulariesQuery(): AsyncState<any> {
     data,
     status,
     error,
-  };
+  } as AsyncState<any>;
 }
 
 export function useVocabularyQuery(vocabulary_uri: string): AsyncState<any> {
@@ -97,5 +97,5 @@ export function useVocabularyQuery(vocabulary_uri: string): AsyncState<any> {
     data,
     status,
     error,
-  };
+  } as AsyncState<any>;
 }
