@@ -1,5 +1,14 @@
 # @teamdigitale/schema-editor
 
+## 0.1.1
+
+### Patch Changes
+
+- bd1b8a4: Improved RDF tab errors description
+- a763e04: Linked action menu items visibilities to LayoutType. Added a configuration param to sort editor's tabs.
+- 0c366a9: Added a per-model semantic score visual indicator in root view and shared global semantic score calculation
+- aa6ef6d: Enabled NPM trusted publisher
+
 ## 0.1.0
 
 ### Minor Changes

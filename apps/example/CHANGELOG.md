@@ -1,5 +1,15 @@
 # example
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [bd1b8a4]
+- Updated dependencies [a763e04]
+- Updated dependencies [0c366a9]
+- Updated dependencies [aa6ef6d]
+  - @teamdigitale/schema-editor@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
