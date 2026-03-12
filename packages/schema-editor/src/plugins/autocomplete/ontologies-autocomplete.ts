@@ -2,11 +2,11 @@ import { InClientCache } from '@teamdigitale/schema-editor-utils';
 import { Suggestion } from './models';
 import { uri2shortUri } from '../json-schema-5';
 
-type OperationType = 'ontologies' | 'controlledVocabularies' | 'classes';
+export type OperationType = 'ontologies' | 'controlledVocabularies' | 'classes';
 
-const cache = new InClientCache<Promise<Suggestion[]>>({ ttl: 1000 * 60 * 60 * 24 });
+export const cache = new InClientCache<Promise<Suggestion[]>>({ ttl: 1000 * 60 * 60 * 24 });
 
-const DEFAULT_SPARQL_ENDPOINTS = [
+export const DEFAULT_SPARQL_ENDPOINTS = [
   {
     label: 'ISTAT Virtuoso',
     url: 'https://virtuoso-test-external-service-ndc-test.apps.cloudpub.testedev.istat.it/sparql',
