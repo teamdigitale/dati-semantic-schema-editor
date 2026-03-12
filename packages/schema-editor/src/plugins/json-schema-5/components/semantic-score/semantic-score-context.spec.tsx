@@ -36,7 +36,7 @@ describe('SemanticScoreProvider', () => {
   it('should start with idle status if no specJson', () => {
     const getContext = setup(undefined);
     const context = getContext();
-    expect(context.status).toBe('fulfilled');
+    expect(context.status).toBe('idle');
     expect(context.data).toBeUndefined();
     expect(context.error).toBeUndefined();
   });

@@ -18,7 +18,7 @@ export function SemanticScoreProvider({ specJson, children }: SemanticScoreProvi
   const calculate = useCallback(async () => {
     try {
       if (!debouncedSpecJson) {
-        setState({ status: 'fulfilled', data: undefined });
+        setState({ status: 'idle' });
         return;
       }
       setState({ status: 'pending' });

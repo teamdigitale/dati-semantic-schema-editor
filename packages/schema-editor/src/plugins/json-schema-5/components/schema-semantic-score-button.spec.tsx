@@ -12,7 +12,7 @@ describe('SchemaSemanticScoreButton', () => {
   };
 
   const renderWithContext = (override?: Partial<ISemanticScoreContext>) => {
-    const value = { ...baseContext, ...override };
+    const value = { ...baseContext, ...(override || {}) } as ISemanticScoreContext;
 
     return render(
       <SemanticScoreContext.Provider value={value}>
