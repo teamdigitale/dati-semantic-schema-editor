@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { EditorAutosuggestCustomPlugin } from './index';
-import { cache, DEFAULT_SPARQL_ENDPOINTS, OperationType } from './ontologies-autocomplete';
+import { cache, DEFAULT_SPARQL_ENDPOINTS, OperationKey } from './ontologies-autocomplete';
 
 describe('EditorAutosuggestCustomPlugin', () => {
   const mockEditor = { getValue: () => 'x-jsonld-type: ' };
@@ -240,7 +240,7 @@ describe('EditorAutosuggestCustomPlugin', () => {
 });
 
 function clearAutocompleteCacheForTesting(): void {
-  const operationTypes: OperationType[] = ['ontologies', 'controlledVocabularies', 'classes'];
+  const operationTypes: OperationKey[] = ['ontologies', 'controlledVocabularies', 'classes'];
   for (const op of operationTypes) {
     for (const endpoint of DEFAULT_SPARQL_ENDPOINTS) {
       cache.delete(`${op}__${endpoint.url}`);
