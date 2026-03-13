@@ -3,6 +3,8 @@ import {
   getClassesSuggestions,
   getControlledVocabulariesSuggestions,
   getOntologiesSuggestions,
+  getPropertiesSuggestions,
+  initAutocomplete,
 } from './ontologies-autocomplete';
 
 const SUGGESTIONS_MAP: Record<string, Suggestion[]> = {
@@ -159,193 +161,6 @@ const SUGGESTIONS_MAP: Record<string, Suggestion[]> = {
       score: 100,
     },
   ],
-
-  // Autocomplete (ontologies, controlled vocabularies, classes)
-  '@vocab': [
-    {
-      snippet: 'https://w3id.org/italia/onto/CPV/',
-      docHTML: 'The Core Person Vocabulary',
-      caption: 'onto:CPV',
-      meta: 'onto',
-      score: 100,
-    },
-    {
-      snippet: 'https://w3id.org/italia/onto/RPO/',
-      docHTML: 'Registered Residence Person Ontology',
-      caption: 'onto:RPO',
-      meta: 'onto',
-      score: 90,
-    },
-    {
-      snippet: 'https://w3id.org/italia/onto/CLV/',
-      docHTML: 'Italian Core Location Vocabulary',
-      caption: 'onto:CLV',
-      meta: 'onto',
-      score: 50,
-    },
-    {
-      snippet: 'https://w3id.org/italia/onto/Learning/',
-      docHTML: 'Learning Ontology',
-      caption: 'onto:Learning',
-      meta: 'onto',
-      score: 50,
-    },
-    {
-      snippet: 'https://w3id.org/italia/onto/l0/',
-      docHTML: 'Top level ontology',
-      caption: 'onto:l0',
-      meta: 'onto',
-      score: 50,
-    },
-    {
-      snippet: 'http://publications.europa.eu/ontology/euvoc#',
-      docHTML: 'Euvoc Ontology',
-      caption: 'ontology:euvoc',
-      meta: 'onto',
-      score: 50,
-    },
-  ],
-  '@base': [
-    {
-      caption: 'Country',
-      snippet: 'http://publications.europa.eu/resource/authority/country/',
-      docHTML: 'authority:country',
-      meta: 'vocab',
-      score: 100,
-    },
-    {
-      caption: 'Vehicle Code',
-      snippet: 'https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/',
-      docHTML: 'provinces-identifiers:vehicle-code',
-      meta: 'vocab',
-      score: 90,
-    },
-    {
-      caption: 'Education Level',
-      snippet: 'https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/',
-      docHTML: 'classifications-for-people:education-level',
-      meta: 'vocab',
-      score: 90,
-    },
-  ],
-  'x-jsonld-type': [
-    {
-      snippet: 'https://w3id.org/italia/onto/CPV/Person',
-      docHTML: 'A natural person',
-      caption: 'CPV:Person',
-      meta: 'class',
-      score: 100,
-    },
-    {
-      snippet: 'https://w3id.org/italia/onto/CPV/Alive',
-      docHTML: 'An alive person',
-      caption: 'CPV:Alive',
-      meta: 'class',
-      score: 90,
-    },
-    {
-      snippet: 'https://w3id.org/italia/onto/CPV/EducationLevel',
-      docHTML: 'Education Level',
-      caption: 'CPV:EducationLevel',
-      meta: 'class',
-      score: 50,
-    },
-    {
-      snippet: 'https://w3id.org/italia/onto/CPV/ResidenceInTime',
-      docHTML: 'Residenza nel tempo (storica)',
-      caption: 'CPV:ResidenceInTime',
-      meta: 'class',
-      score: 50,
-    },
-    // RPO
-    {
-      snippet: 'https://w3id.org/italia/onto/RPO/RegisteredResidence',
-      docHTML: 'Residenza anagrafica',
-      caption: 'RPO:RegisteredResidence',
-      meta: 'class',
-      score: 50,
-    },
-    {
-      snippet: 'https://w3id.org/italia/onto/RPO/RegisteredResidentPerson',
-      docHTML: 'Persona anagraficamente residente',
-      caption: 'RPO:RegisteredResidentPerson',
-      meta: 'class',
-      score: 50,
-    },
-    // CLV
-    {
-      snippet: 'https://w3id.org/italia/onto/CLV/Feature',
-      docHTML: 'Luogo',
-      caption: 'CLV:Feature',
-      meta: 'class',
-      score: 50,
-    },
-    {
-      snippet: 'https://w3id.org/italia/onto/CLV/Geometry',
-      docHTML: 'Geometria',
-      caption: 'CLV:Geometry',
-      meta: 'class',
-      score: 50,
-    },
-    {
-      snippet: 'https://w3id.org/italia/onto/CLV/Address',
-      docHTML: 'Indirizzo / Accesso Esterno',
-      caption: 'CLV:Address',
-      meta: 'class',
-      score: 50,
-    },
-    {
-      snippet: 'https://w3id.org/italia/onto/CLV/CivicNumbering',
-      docHTML: 'Numerazione Civica / Numero Civico',
-      caption: 'CLV:CivicNumbering',
-      meta: 'class',
-      score: 50,
-    },
-    // Learning
-    {
-      snippet: 'https://w3id.org/italia/onto/Learning/DegreeCourse',
-      docHTML: 'Corso di Laurea',
-      caption: 'Learning:DegreeCourse',
-      meta: 'class',
-      score: 30,
-    },
-    {
-      snippet: 'https://w3id.org/italia/onto/Learning/EducationalOffering',
-      docHTML: 'Offerta formativa',
-      caption: 'Learning:EducationalOffering',
-      meta: 'class',
-      score: 30,
-    },
-    {
-      snippet: 'https://w3id.org/italia/onto/Learning/DegreeClass',
-      docHTML: 'Classe di Laurea',
-      caption: 'Learning:DegreeClass',
-      meta: 'class',
-      score: 30,
-    },
-    {
-      snippet: 'https://w3id.org/italia/onto/Learning/Qualification',
-      docHTML: 'Qualifica (Titolo di Studio)',
-      caption: 'Learning:Qualification',
-      meta: 'class',
-      score: 30,
-    },
-    {
-      snippet: 'https://w3id.org/italia/onto/Learning/Enrolment',
-      docHTML: 'Iscrizione',
-      caption: 'Learning:Enrolment',
-      meta: 'class',
-      score: 30,
-    },
-    // l0
-    {
-      snippet: 'https://w3id.org/italia/onto/l0/Location',
-      docHTML: 'Location',
-      caption: 'l0:Location',
-      meta: 'class',
-      score: 50,
-    },
-  ],
 };
 
 export const EditorAutosuggestCustomPlugin = () => ({
@@ -355,11 +170,7 @@ export const EditorAutosuggestCustomPlugin = () => ({
     if (!config.sparqlAutocompleteEnabled) {
       return;
     }
-    Promise.all([
-      getOntologiesSuggestions(config),
-      getClassesSuggestions(config),
-      getControlledVocabulariesSuggestions(config),
-    ]).catch((e) => {
+    initAutocomplete(config).catch((e) => {
       console.error(e);
     });
   },
@@ -395,7 +206,6 @@ export const EditorAutosuggestCustomPlugin = () => ({
 
                   // X-jsonld-context keys
                   if (lastPath === 'x-jsonld-context' || lastPath === '@context') {
-                    // SPARQL autocomplete enabled / disabled
                     const keywordsSuggestions = SUGGESTIONS_MAP['x-jsonld-context'];
                     if (keywordsSuggestions) {
                       suggestions.push(...keywordsSuggestions);
@@ -404,11 +214,7 @@ export const EditorAutosuggestCustomPlugin = () => ({
 
                   // Classes autocomplete
                   else if (lastPath === 'x-jsonld-type') {
-                    // SPARQL autocomplete enabled / disabled
-                    const classesSuggestions = config.sparqlAutocompleteEnabled
-                      ? await getClassesSuggestions(config)
-                      : SUGGESTIONS_MAP['x-jsonld-type'];
-
+                    const classesSuggestions = await getClassesSuggestions(config);
                     if (classesSuggestions) {
                       suggestions.push(...classesSuggestions);
                     }
@@ -416,11 +222,7 @@ export const EditorAutosuggestCustomPlugin = () => ({
 
                   // Ontologies autocomplete
                   else if (lastPath === '@vocab') {
-                    // SPARQL autocomplete enabled / disabled
-                    const ontologiesSuggestions = config.sparqlAutocompleteEnabled
-                      ? await getOntologiesSuggestions(config)
-                      : SUGGESTIONS_MAP['@vocab'];
-
+                    const ontologiesSuggestions = await getOntologiesSuggestions(config);
                     if (ontologiesSuggestions) {
                       suggestions.push(...ontologiesSuggestions);
                     }
@@ -428,19 +230,15 @@ export const EditorAutosuggestCustomPlugin = () => ({
 
                   // Controlled vocabularies autocomplete
                   else if (lastPath === '@base') {
-                    // SPARQL autocomplete enabled / disabled
-                    const ontologiesSuggestions = config.sparqlAutocompleteEnabled
-                      ? await getControlledVocabulariesSuggestions(config)
-                      : SUGGESTIONS_MAP['@base'];
-
-                    if (ontologiesSuggestions) {
-                      suggestions.push(...ontologiesSuggestions);
+                    const controlledVocabulariesSuggestions = await getControlledVocabulariesSuggestions(config);
+                    if (controlledVocabulariesSuggestions) {
+                      suggestions.push(...controlledVocabulariesSuggestions);
                     }
                   }
 
                   // Other keywords autocomplete
                   else {
-                    // Custom autocomplete suggestions
+                    // JSON-LD keywords autocomplete suggestions
                     const keywordsSuggestions = SUGGESTIONS_MAP[lastPath];
                     if (keywordsSuggestions) {
                       suggestions.push(...keywordsSuggestions);
@@ -448,13 +246,22 @@ export const EditorAutosuggestCustomPlugin = () => ({
 
                     // Custom URIs or prefixes autocomplete
                     if (isInsideXJsonldContext) {
-                      // SPARQL autocomplete enabled / disabled
-                      const classesSuggestions = config.sparqlAutocompleteEnabled
-                        ? await getClassesSuggestions(config)
-                        : SUGGESTIONS_MAP['x-jsonld-type'];
+                      const value = system.specSelectors.specJson().getIn(path);
 
-                      if (classesSuggestions) {
-                        suggestions.push(...classesSuggestions.map((x) => ({ ...x, score: 100 }))); // High score because user is likely to select a class
+                      // SPARQL autocomplete
+                      const ontologiesSuggestions = await getOntologiesSuggestions(config);
+                      if (ontologiesSuggestions) {
+                        suggestions.push(...ontologiesSuggestions);
+                      }
+
+                      // Semantic properties (if the text editor value equals an ontology URI)
+                      if (value && ontologiesSuggestions.some((suggestion) => suggestion.snippet === value)) {
+                        const propertiesSuggestions = await getPropertiesSuggestions(config, value);
+                        if (propertiesSuggestions) {
+                          suggestions.push(
+                            ...propertiesSuggestions.map((suggestion) => ({ ...suggestion, score: 100 })),
+                          );
+                        }
                       }
                     }
                   }
