@@ -10,4 +10,6 @@ export class NoopCache<T = unknown> implements ICacheService<T> {
   public set(key: string, value: T): void {}
 
   public delete(key: string): void {}
+
+  public clear(): void {}
 }

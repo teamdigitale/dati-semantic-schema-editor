@@ -1,10 +1,7 @@
-import { InClientCache } from '@teamdigitale/schema-editor-utils';
 import { uri2shortUri } from '../json-schema-5';
 import { Suggestion } from './models';
 
-export type OperationKey = 'ontologies' | 'controlledVocabularies' | 'classes' | `properties-${string}`;
-
-export const cache = new InClientCache<Promise<Suggestion[]>>({ ttl: 1000 * 60 * 60 * 24 });
+export type OperationKey = 'ontologies' | 'controlledVocabularies' | `classes-${string}` | `properties-${string}`;
 
 export const DEFAULT_SPARQL_ENDPOINTS = [
   {
@@ -23,11 +20,7 @@ export const DEFAULT_SPARQL_ENDPOINTS = [
 ];
 
 export async function initAutocomplete(config: any): Promise<void> {
-  await Promise.all([
-    getOntologiesSuggestions(config),
-    getClassesSuggestions(config),
-    getControlledVocabulariesSuggestions(config),
-  ]);
+  await Promise.all([getOntologiesSuggestions(config), getControlledVocabulariesSuggestions(config)]);
 }
 
 async function recursiveFetch(
@@ -43,21 +36,7 @@ async function recursiveFetch(
   }
 
   // Per ogni endpoint, effettuo la ricerca delle ontologie e memorizzo il risultato in cache
-  const promises = await Promise.allSettled(
-    sparqlEndpoints.map((endpoint) => {
-      const cacheKey = `${key}__${endpoint.url}`;
-      const cachedPromise = cache.get(cacheKey);
-      if (cachedPromise) {
-        return cachedPromise;
-      }
-      const promise = fetchFunction(endpoint.url);
-      cache.set(cacheKey, promise);
-      return promise.catch((error) => {
-        cache.delete(cacheKey);
-        throw error;
-      });
-    }),
-  );
+  const promises = await Promise.allSettled(sparqlEndpoints.map((endpoint) => fetchFunction(endpoint.url)));
 
   // Return all suggestions
   return promises
@@ -66,7 +45,7 @@ async function recursiveFetch(
     .flat();
 }
 
-// Ontologies (i.e. https://www.w3id.org/italia/onto/CPV/)
+// Ontologies (i.e. https://www.w3id.org/italia/onto/CPV/) [~90 suggestions]
 const DEFAULT_ONTOLOGIES_SUGGESTIONS = [
   {
     snippet: 'https://w3id.org/italia/onto/CPV/',
@@ -138,6 +117,9 @@ SELECT DISTINCT ?ontologyUri ?label ?comment WHERE {
     ) AS ?ontologyUri
   )
 
+  # Filter out blank nodes
+  FILTER(!isBlank(?ontology))
+
   # Get the label from rdfs or skos.
   OPTIONAL {
     ?ontology (rdfs:label|skos:prefLabel) ?label_it .
@@ -162,7 +144,7 @@ SELECT DISTINCT ?ontologyUri ?label ?comment WHERE {
 }
 
 ORDER BY ?ontology
-LIMIT 300
+LIMIT 500
 `;
     const endpoint = `${sparqlUrl.trim()}?format=json&query=${encodeURIComponent(sparqlQuery)}`;
     const response = await fetch(endpoint, { cache: 'force-cache' });
@@ -174,28 +156,26 @@ LIMIT 300
 
     const data = await response.json();
 
-    return data.results.bindings
-      .filter((binding: any) => !binding.ontologyUri.value.startsWith('nodeID://')) // Filter out blank nodes
-      .map((binding: any) => {
-        const ontologyUri = binding.ontologyUri.value;
-        const label = binding.label?.value;
-        const description = binding.description?.value;
+    return data.results.bindings.map((binding: any) => {
+      const ontologyUri = binding.ontologyUri.value;
+      const label = binding.label?.value;
+      const description = binding.description?.value;
 
-        return {
-          snippet: ontologyUri,
-          docHTML: `${ontologyUri}<br/>${description || label || ''}`,
-          caption: uri2shortUri(ontologyUri.endsWith('/') ? ontologyUri.slice(0, -1) : ontologyUri),
-          meta: 'onto',
-          score: 50,
-        };
-      });
+      return {
+        snippet: ontologyUri,
+        docHTML: `${ontologyUri}<br/>${description || label || ''}`,
+        caption: uri2shortUri(ontologyUri.endsWith('/') ? ontologyUri.slice(0, -1) : ontologyUri),
+        meta: 'onto',
+        score: 50,
+      };
+    });
   } catch (error) {
     console.error('Error fetching ontology classes from SPARQL:', error);
     return [];
   }
 }
 
-// Controlled Vocabularies (i.e. https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/)
+// Controlled Vocabularies (i.e. https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/) [~350 suggestions]
 const DEFAULT_CONTROLLED_VOCABULARIES_SUGGESTIONS = [
   {
     caption: 'Country',
@@ -246,6 +226,9 @@ SELECT DISTINCT ?controlledVocabularyUri ?label ?comment WHERE {
     ) AS ?controlledVocabularyUri
   )
 
+  # Filter out blank nodes
+  FILTER(!isBlank(?controlledVocabulary))
+
   # Get the label from rdfs or skos.
   OPTIONAL {
     ?controlledVocabulary (rdfs:label|skos:prefLabel) ?label_it .
@@ -270,7 +253,7 @@ SELECT DISTINCT ?controlledVocabularyUri ?label ?comment WHERE {
 }
 
 ORDER BY ?controlledVocabulary
-LIMIT 300
+LIMIT 500
 `;
     const endpoint = `${sparqlUrl.trim()}?format=json&query=${encodeURIComponent(sparqlQuery)}`;
     const response = await fetch(endpoint, { cache: 'force-cache' });
@@ -282,30 +265,28 @@ LIMIT 300
 
     const data = await response.json();
 
-    return data.results.bindings
-      .filter((binding: any) => !binding.ontologyUri.value.startsWith('nodeID://')) // Filter out blank nodes
-      .map((binding: any) => {
-        const controlledVocabularyUri = binding.controlledVocabularyUri.value;
-        const label = binding.label?.value;
-        const description = binding.description?.value;
+    return data.results.bindings.map((binding: any) => {
+      const controlledVocabularyUri = binding.controlledVocabularyUri.value;
+      const label = binding.label?.value;
+      const description = binding.description?.value;
 
-        return {
-          snippet: controlledVocabularyUri,
-          docHTML: `${controlledVocabularyUri}<br/>${description || label || ''}`,
-          caption: uri2shortUri(
-            controlledVocabularyUri.endsWith('/') ? controlledVocabularyUri.slice(0, -1) : controlledVocabularyUri,
-          ),
-          meta: 'vocab',
-          score: 50,
-        };
-      });
+      return {
+        snippet: controlledVocabularyUri,
+        docHTML: `${controlledVocabularyUri}<br/>${description || label || ''}`,
+        caption: uri2shortUri(
+          controlledVocabularyUri.endsWith('/') ? controlledVocabularyUri.slice(0, -1) : controlledVocabularyUri,
+        ),
+        meta: 'vocab',
+        score: 50,
+      };
+    });
   } catch (error) {
     console.error('Error fetching controlled vocabularies from SPARQL:', error);
     return [];
   }
 }
 
-// Classes (i.e. https://w3id.org/italia/onto/CPV/Person)
+// Classes (i.e. https://w3id.org/italia/onto/CPV/Person) [~2500 suggestions]
 const DEFAULT_CLASSES_SUGGESTIONS = [
   {
     snippet: 'https://w3id.org/italia/onto/CPV/Person',
@@ -425,14 +406,19 @@ const DEFAULT_CLASSES_SUGGESTIONS = [
   },
 ];
 
-export async function getClassesSuggestions(config: any): Promise<Suggestion[]> {
+export async function getClassesSuggestions(config: any, ontologyUri: string): Promise<Suggestion[]> {
   return config.sparqlAutocompleteEnabled
-    ? await recursiveFetch('classes', config, fetchClasses)
+    ? await recursiveFetch(`classes-${ontologyUri}`, config, (sparqlUrl: string) =>
+        fetchClasses(sparqlUrl, ontologyUri),
+      )
     : DEFAULT_CLASSES_SUGGESTIONS;
 }
 
-async function fetchClasses(sparqlUrl: string): Promise<Suggestion[]> {
+async function fetchClasses(sparqlUrl: string, ontologyUri: string): Promise<Suggestion[]> {
   try {
+    const trimmedOntologyUri =
+      ontologyUri.endsWith('/') || ontologyUri.endsWith('#') ? ontologyUri.slice(0, -1) : ontologyUri;
+
     const sparqlQuery = `
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -441,6 +427,7 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
 SELECT ?class ?label ?comment WHERE {
   ?class a owl:Class .
+  ?class rdfs:isDefinedBy <${trimmedOntologyUri}> .
 
   # Filter out blank nodes
   FILTER(!isBlank(?class))
@@ -469,7 +456,6 @@ SELECT ?class ?label ?comment WHERE {
 }
 
 ORDER BY ?class
-LIMIT 300
 `;
     const endpoint = `${sparqlUrl.trim()}?format=json&query=${encodeURIComponent(sparqlQuery)}`;
     const response = await fetch(endpoint, { cache: 'force-cache' });
@@ -481,28 +467,26 @@ LIMIT 300
 
     const data = await response.json();
 
-    return data.results.bindings
-      .filter((binding: any) => !binding.ontologyUri.value.startsWith('nodeID://')) // Filter out blank nodes
-      .map((binding: any) => {
-        const classUri = binding.class.value;
-        const label = binding.label?.value;
-        const description = binding.description?.value;
+    return data.results.bindings.map((binding: any) => {
+      const classUri = binding.class.value;
+      const label = binding.label?.value;
+      const description = binding.description?.value;
 
-        return {
-          snippet: classUri,
-          docHTML: `${classUri}<br/>${description || label || ''}`,
-          caption: uri2shortUri(classUri),
-          meta: 'class',
-          score: 50,
-        };
-      });
+      return {
+        snippet: classUri.replace(ontologyUri, ''),
+        docHTML: `${classUri}<br/>${description || label || ''}`,
+        caption: uri2shortUri(classUri),
+        meta: 'class',
+        score: 50,
+      };
+    });
   } catch (error) {
     console.error('Error fetching ontology classes from SPARQL:', error);
     return [];
   }
 }
 
-// Properties (i.e. https://w3id.org/italia/onto/CPV/taxCode)
+// Properties (i.e. https://w3id.org/italia/onto/CPV/taxCode) [~300 suggestions per ontology]
 export async function getPropertiesSuggestions(config: any, ontologyUri: string): Promise<Suggestion[]> {
   return config.sparqlAutocompleteEnabled
     ? await recursiveFetch(`properties-${ontologyUri}`, config, (sparqlUrl: string) =>
@@ -559,7 +543,7 @@ SELECT ?property ?label ?comment WHERE {
 }
 
 ORDER BY ?property
-LIMIT 300
+LIMIT 500
 `;
     const endpoint = `${sparqlUrl.trim()}?format=json&query=${encodeURIComponent(sparqlQuery)}`;
     const response = await fetch(endpoint, { cache: 'force-cache' });
@@ -571,21 +555,19 @@ LIMIT 300
 
     const data = await response.json();
 
-    return data.results.bindings
-      .filter((binding: any) => !binding.property.value.startsWith('nodeID://')) // Filter out blank nodes
-      .map((binding: any) => {
-        const propertyUri = binding.property.value;
-        const label = binding.label?.value;
-        const description = binding.description?.value;
+    return data.results.bindings.map((binding: any) => {
+      const propertyUri = binding.property.value;
+      const label = binding.label?.value;
+      const description = binding.description?.value;
 
-        return {
-          snippet: propertyUri.replace(ontologyUri, ''),
-          docHTML: `${propertyUri}<br/>${description || label || ''}`,
-          caption: uri2shortUri(propertyUri),
-          meta: 'property',
-          score: 50,
-        };
-      });
+      return {
+        snippet: propertyUri.replace(ontologyUri, ''),
+        docHTML: `${propertyUri}<br/>${description || label || ''}`,
+        caption: uri2shortUri(propertyUri),
+        meta: 'property',
+        score: 50,
+      };
+    });
   } catch (error) {
     console.error('Error fetching ontology classes from SPARQL:', error);
     return [];

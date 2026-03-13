@@ -14,13 +14,13 @@ const SUGGESTIONS_MAP: Record<string, Suggestion[]> = {
       caption: 'x-jsonld-type',
       snippet: 'x-jsonld-type: ',
       meta: 'keyword',
-      score: 100,
+      score: 1000,
     },
     {
       snippet: `x-jsonld-context:\n  '@vocab': `,
       caption: 'x-jsonld-context',
       meta: 'object',
-      score: 100,
+      score: 1000,
     },
   ],
 
@@ -214,9 +214,25 @@ export const EditorAutosuggestCustomPlugin = () => ({
 
                   // Classes autocomplete
                   else if (lastPath === 'x-jsonld-type') {
-                    const classesSuggestions = await getClassesSuggestions(config);
-                    if (classesSuggestions) {
-                      suggestions.push(...classesSuggestions);
+                    const value = system.specSelectors.specJson().getIn(path)?.trim() || '';
+
+                    // Show ontologies suggestions if the value is empty
+                    const ontologiesSuggestions = await getOntologiesSuggestions(config);
+                    if (!value && ontologiesSuggestions) {
+                      suggestions.push(
+                        ...ontologiesSuggestions.map((suggestion) => ({
+                          ...suggestion,
+                          caption: `${suggestion.caption} (load classes...)`, // Show three dots to indicate that there are more suggestions to load
+                        })),
+                      );
+                    }
+
+                    // Semantic classes (if the text editor value equals an ontology URI)
+                    if (value && ontologiesSuggestions.some((suggestion) => suggestion.snippet === value)) {
+                      const classesSuggestions = await getClassesSuggestions(config, value);
+                      if (classesSuggestions) {
+                        suggestions.push(...classesSuggestions.map((suggestion) => ({ ...suggestion, score: 100 })));
+                      }
                     }
                   }
 
@@ -246,11 +262,11 @@ export const EditorAutosuggestCustomPlugin = () => ({
 
                     // Custom URIs or prefixes autocomplete
                     if (isInsideXJsonldContext) {
-                      const value = system.specSelectors.specJson().getIn(path);
+                      const value = system.specSelectors.specJson().getIn(path)?.trim() || '';
 
-                      // SPARQL autocomplete
+                      // Show ontologies suggestions if the value is empty
                       const ontologiesSuggestions = await getOntologiesSuggestions(config);
-                      if (ontologiesSuggestions) {
+                      if (!value && ontologiesSuggestions) {
                         suggestions.push(...ontologiesSuggestions);
                       }
 

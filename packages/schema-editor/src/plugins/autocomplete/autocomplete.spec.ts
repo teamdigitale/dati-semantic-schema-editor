@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { EditorAutosuggestCustomPlugin } from './index';
-import { cache, DEFAULT_SPARQL_ENDPOINTS, OperationKey } from './ontologies-autocomplete';
 
 describe('EditorAutosuggestCustomPlugin', () => {
   const mockEditor = { getValue: () => 'x-jsonld-type: ' };
@@ -135,7 +134,6 @@ describe('EditorAutosuggestCustomPlugin', () => {
     let fetchMock: ReturnType<typeof vi.fn>;
 
     beforeEach(() => {
-      clearAutocompleteCacheForTesting();
       fetchMock = vi.fn();
       vi.stubGlobal('fetch', fetchMock);
     });
@@ -238,12 +236,3 @@ describe('EditorAutosuggestCustomPlugin', () => {
     });
   });
 });
-
-function clearAutocompleteCacheForTesting(): void {
-  const operationTypes: OperationKey[] = ['ontologies', 'controlledVocabularies', 'classes'];
-  for (const op of operationTypes) {
-    for (const endpoint of DEFAULT_SPARQL_ENDPOINTS) {
-      cache.delete(`${op}__${endpoint.url}`);
-    }
-  }
-}

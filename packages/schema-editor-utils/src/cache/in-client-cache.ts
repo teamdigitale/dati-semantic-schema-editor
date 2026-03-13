@@ -32,6 +32,10 @@ export class InClientCache<T = unknown> implements ICacheService<T> {
     this.cleanupExpired();
   }
 
+  public clear(): void {
+    this.cacheEntries.clear();
+  }
+
   private isExpired({ timestamp }: CacheEntity<T>): boolean {
     return Date.now() - timestamp >= this.options.ttl;
   }
