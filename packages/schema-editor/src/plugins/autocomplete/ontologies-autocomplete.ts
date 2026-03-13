@@ -531,7 +531,7 @@ SELECT ?property ?label ?comment WHERE {
     owl:FunctionalProperty
   ))
   ?property rdfs:isDefinedBy <${trimmedOntologyUri}> .
-  
+
   # Filter out blank nodes
   FILTER(!isBlank(?property))
 
