@@ -2,11 +2,11 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as configuration from '../../configuration';
 import {
-  useRDFPropertyResolver,
-  useRDFClassTreeResolver,
-  useRDFClassResolver,
   useRDFClassPropertiesResolver,
+  useRDFClassResolver,
+  useRDFClassTreeResolver,
   useRDFClassVocabulariesResolver,
+  useRDFPropertyResolver,
 } from './use-rdf-ontologies-resolver';
 
 describe('useRDFPropertyResolver', () => {
@@ -179,6 +179,33 @@ describe('useRDFClassTreeResolver', () => {
     const { result } = renderHook(() => useRDFClassTreeResolver('https://w3id.org/italia/onto/CPV/NonExistentClass'));
     await waitFor(() => expect(result.current.status).toBe('fulfilled'));
     expect(result.current.data).toEqual([]);
+  });
+
+  it('should resolve equivalent classes', async () => {
+    const mockResponse = {
+      results: {
+        bindings: [
+          {
+            parent: { type: 'uri', value: 'https://w3id.org/italia/onto/CPV/EquivalentClass' },
+            child: { type: 'uri', value: 'https://w3id.org/italia/onto/CPV/Person' },
+            equivalent: { type: 'uri', value: 'https://w3id.org/italia/onto/CPV/EquivalentClass' },
+          },
+        ],
+      },
+    };
+
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(mockResponse)));
+
+    const { result } = renderHook(() => useRDFClassTreeResolver('https://w3id.org/italia/onto/CPV/Person'));
+
+    await waitFor(() => expect(result.current.status).toBe('fulfilled'));
+
+    expect(result.current.data).toHaveLength(1);
+    expect(result.current.data?.[0]).toEqual({
+      parent: 'https://w3id.org/italia/onto/CPV/EquivalentClass',
+      child: 'https://w3id.org/italia/onto/CPV/Person',
+      equivalent: 'https://w3id.org/italia/onto/CPV/EquivalentClass',
+    });
   });
 });
 
