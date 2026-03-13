@@ -8,12 +8,22 @@ describe('EditorAutosuggestCustomPlugin', () => {
   const mockPrefix = '';
   const mockContext = {};
 
-  function createSystemMock(config: { sparqlAutocompleteEnabled: boolean; sparqlUrl?: string }, path: string[]) {
+  function createSystemMock(
+    config: { sparqlAutocompleteEnabled: boolean; sparqlUrl?: string },
+    path: string[],
+    options?: { specJsonGetIn?: string },
+  ) {
+    const valueAtPath = options?.specJsonGetIn ?? '';
     return {
       getConfigs: vi.fn(() => config),
       fn: {
         getPathForPosition: vi.fn(() => path),
         AST: null,
+      },
+      specSelectors: {
+        specJson: vi.fn(() => ({
+          getIn: vi.fn(() => valueAtPath),
+        })),
       },
     };
   }
@@ -112,8 +122,9 @@ describe('EditorAutosuggestCustomPlugin', () => {
 
       expect(suggestions).toBeDefined();
       expect(Array.isArray(suggestions)).toBe(true);
-      expect((suggestions as { caption: string }[]).some((s) => s.caption === 'CPV:Person')).toBe(true);
-      expect((suggestions as { caption: string }[]).some((s) => s.caption === 'CPV:Alive')).toBe(true);
+      // Empty value shows ontologies with "(load classes...)" caption
+      expect((suggestions as { caption: string }[]).some((s) => s.caption.includes('onto:CPV'))).toBe(true);
+      expect((suggestions as { caption: string }[]).some((s) => s.caption.includes('(load classes...)'))).toBe(true);
       expect(fetchMock).not.toHaveBeenCalled();
     });
 
@@ -126,6 +137,48 @@ describe('EditorAutosuggestCustomPlugin', () => {
       expect(Array.isArray(suggestions)).toBe(true);
       expect((suggestions as { caption: string }[]).some((s) => s.caption === 'Country')).toBe(true);
       expect((suggestions as { caption: string }[]).some((s) => s.caption === 'Vehicle Code')).toBe(true);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('returns x-jsonld-type and x-jsonld-context when completing schema keys (x-jsonld keywords)', async () => {
+      const system = createSystemMock({ sparqlAutocompleteEnabled: false }, ['components', 'schemas', 'MySchema']);
+      const completer = getCompleter(system);
+      const [, suggestions] = await runGetCompletions(completer);
+
+      expect(suggestions).toBeDefined();
+      expect(Array.isArray(suggestions)).toBe(true);
+      expect((suggestions as { caption: string }[]).some((s) => s.caption === 'x-jsonld-type')).toBe(true);
+      expect((suggestions as { caption: string }[]).some((s) => s.caption === 'x-jsonld-context')).toBe(true);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('returns @vocab, @base and other JSON-LD keywords for x-jsonld-context object keys', async () => {
+      const system = createSystemMock({ sparqlAutocompleteEnabled: false }, ['a', 'b', 'x-jsonld-context']);
+      const completer = getCompleter(system);
+      const [, suggestions] = await runGetCompletions(completer);
+
+      expect(suggestions).toBeDefined();
+      expect(Array.isArray(suggestions)).toBe(true);
+      expect((suggestions as { caption: string }[]).some((s) => s.caption === '"@vocab"')).toBe(true);
+      expect((suggestions as { caption: string }[]).some((s) => s.caption === '"@base"')).toBe(true);
+      expect((suggestions as { caption: string }[]).some((s) => s.caption === '"@context"')).toBe(true);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('returns ontology suggestions for inner property value inside x-jsonld-context', async () => {
+      const system = createSystemMock({ sparqlAutocompleteEnabled: false }, [
+        'a',
+        'b',
+        'x-jsonld-context',
+        'customProperty',
+      ]);
+      const completer = getCompleter(system);
+      const [, suggestions] = await runGetCompletions(completer);
+
+      expect(suggestions).toBeDefined();
+      expect(Array.isArray(suggestions)).toBe(true);
+      expect((suggestions as { caption: string }[]).some((s) => s.caption === 'onto:CPV')).toBe(true);
+      expect((suggestions as { caption: string }[]).some((s) => s.caption === 'onto:RPO')).toBe(true);
       expect(fetchMock).not.toHaveBeenCalled();
     });
   });
@@ -181,7 +234,7 @@ describe('EditorAutosuggestCustomPlugin', () => {
               class: { value: 'https://example.org/onto/Foo' },
               label: { value: 'Foo' },
               description: { value: 'A class' },
-              ontologyUri: { value: 'https://example.org/onto/Foo' },
+              ontologyUri: { value: 'https://example.org/onto/' },
             },
           ],
         },
@@ -191,14 +244,18 @@ describe('EditorAutosuggestCustomPlugin', () => {
         json: () => Promise.resolve(sparqlJson),
       });
 
-      const system = createSystemMock({ sparqlAutocompleteEnabled: true }, ['a', 'b', 'x-jsonld-type']);
+      // Current value is an ontology URI so plugin fetches classes from SPARQL
+      const system = createSystemMock({ sparqlAutocompleteEnabled: true }, ['a', 'b', 'x-jsonld-type'], {
+        specJsonGetIn: 'https://example.org/onto/',
+      });
       const completer = getCompleter(system);
       const [, suggestions] = await runGetCompletions(completer);
 
       expect(fetchMock).toHaveBeenCalled();
       expect(suggestions).toBeDefined();
+      // fetchClasses returns snippet as class URI with ontology prefix stripped (e.g. "Foo")
       const fromMock = (suggestions as { snippet: string; caption: string; meta: string }[]).find(
-        (s) => s.snippet === 'https://example.org/onto/Foo',
+        (s) => s.snippet === 'Foo' && s.meta === 'class',
       );
       expect(fromMock).toBeDefined();
       expect(fromMock?.meta).toBe('class');
