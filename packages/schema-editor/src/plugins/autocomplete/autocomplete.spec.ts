@@ -122,9 +122,9 @@ describe('EditorAutosuggestCustomPlugin', () => {
 
       expect(suggestions).toBeDefined();
       expect(Array.isArray(suggestions)).toBe(true);
-      // Empty value shows ontologies with "(load classes...)" caption
-      expect((suggestions as { caption: string }[]).some((s) => s.caption.includes('onto:CPV'))).toBe(true);
-      expect((suggestions as { caption: string }[]).some((s) => s.caption.includes('(load classes...)'))).toBe(true);
+      // Offline: static class suggestions (caption from uri2shortUri)
+      expect((suggestions as { caption: string }[]).some((s) => s.caption === 'CPV:Person')).toBe(true);
+      expect((suggestions as { caption: string }[]).some((s) => s.caption === 'CPV:Alive')).toBe(true);
       expect(fetchMock).not.toHaveBeenCalled();
     });
 
@@ -135,8 +135,11 @@ describe('EditorAutosuggestCustomPlugin', () => {
 
       expect(suggestions).toBeDefined();
       expect(Array.isArray(suggestions)).toBe(true);
-      expect((suggestions as { caption: string }[]).some((s) => s.caption === 'Country')).toBe(true);
-      expect((suggestions as { caption: string }[]).some((s) => s.caption === 'Vehicle Code')).toBe(true);
+      // Caption from uri2shortUri (path-based short form)
+      expect((suggestions as { caption: string }[]).some((s) => s.caption === 'authority:country')).toBe(true);
+      expect(
+        (suggestions as { caption: string }[]).some((s) => s.caption === 'provinces-identifiers:vehicle-code'),
+      ).toBe(true);
       expect(fetchMock).not.toHaveBeenCalled();
     });
 

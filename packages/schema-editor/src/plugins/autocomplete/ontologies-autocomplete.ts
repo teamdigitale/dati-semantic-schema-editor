@@ -1,7 +1,11 @@
 import { uri2shortUri } from '../json-schema-5';
 import { Suggestion } from './models';
 
-export type OperationKey = 'ontologies' | 'controlledVocabularies' | `classes-${string}` | `properties-${string}`;
+export type SemanticItem = {
+  uri: string;
+  label: string;
+  description: string;
+};
 
 export const DEFAULT_SPARQL_ENDPOINTS = [
   {
@@ -23,11 +27,10 @@ export async function initAutocomplete(config: any): Promise<void> {
   await Promise.all([getOntologiesSuggestions(config), getControlledVocabulariesSuggestions(config)]);
 }
 
-async function recursiveFetch(
-  key: OperationKey,
+async function parallelFetch(
   config: any,
-  fetchFunction: (sparqlUrl: string) => Promise<Suggestion[]>,
-): Promise<Suggestion[]> {
+  fetchFunction: (sparqlUrl: string) => Promise<SemanticItem[]>,
+): Promise<SemanticItem[]> {
   // Definisco tutti gli endpoint sparql da cui effettuare la ricerca
   const sparqlEndpoints = [...DEFAULT_SPARQL_ENDPOINTS];
   const sparqlUrl = config.sparqlUrl?.trim() || '';
@@ -46,58 +49,52 @@ async function recursiveFetch(
 }
 
 // Ontologies (i.e. https://www.w3id.org/italia/onto/CPV/) [~90 suggestions]
-const DEFAULT_ONTOLOGIES_SUGGESTIONS = [
+const DEFAULT_ONTOLOGIES_SUGGESTIONS: SemanticItem[] = [
   {
-    snippet: 'https://w3id.org/italia/onto/CPV/',
-    docHTML: 'The Core Person Vocabulary',
-    caption: 'onto:CPV',
-    meta: 'onto',
-    score: 100,
+    uri: 'https://w3id.org/italia/onto/CPV/',
+    label: 'The Core Person Vocabulary',
+    description: 'The Core Person Vocabulary',
   },
   {
-    snippet: 'https://w3id.org/italia/onto/RPO/',
-    docHTML: 'Registered Residence Person Ontology',
-    caption: 'onto:RPO',
-    meta: 'onto',
-    score: 90,
+    uri: 'https://w3id.org/italia/onto/RPO/',
+    label: 'Registered Residence Person Ontology',
+    description: 'Registered Residence Person Ontology',
   },
   {
-    snippet: 'https://w3id.org/italia/onto/CLV/',
-    docHTML: 'Italian Core Location Vocabulary',
-    caption: 'onto:CLV',
-    meta: 'onto',
-    score: 50,
+    uri: 'https://w3id.org/italia/onto/CLV/',
+    label: 'Italian Core Location Vocabulary',
+    description: 'Italian Core Location Vocabulary',
   },
   {
-    snippet: 'https://w3id.org/italia/onto/Learning/',
-    docHTML: 'Learning Ontology',
-    caption: 'onto:Learning',
-    meta: 'onto',
-    score: 50,
+    uri: 'https://w3id.org/italia/onto/Learning/',
+    label: 'Learning Ontology',
+    description: 'Learning Ontology',
   },
   {
-    snippet: 'https://w3id.org/italia/onto/l0/',
-    docHTML: 'Top level ontology',
-    caption: 'onto:l0',
-    meta: 'onto',
-    score: 50,
+    uri: 'https://w3id.org/italia/onto/l0/',
+    label: 'Top level ontology',
+    description: 'Top level ontology',
   },
   {
-    snippet: 'http://publications.europa.eu/ontology/euvoc#',
-    docHTML: 'Euvoc Ontology',
-    caption: 'ontology:euvoc',
-    meta: 'onto',
-    score: 50,
+    uri: 'http://publications.europa.eu/ontology/euvoc#',
+    label: 'Euvoc Ontology',
+    description: 'Euvoc Ontology',
   },
 ];
 
 export async function getOntologiesSuggestions(config: any): Promise<Suggestion[]> {
-  return config.sparqlAutocompleteEnabled
-    ? await recursiveFetch('ontologies', config, fetchOntologies)
-    : DEFAULT_ONTOLOGIES_SUGGESTIONS;
+  return (
+    config.sparqlAutocompleteEnabled ? await parallelFetch(config, fetchOntologies) : DEFAULT_ONTOLOGIES_SUGGESTIONS
+  ).map(({ uri, description, label }) => ({
+    snippet: uri,
+    docHTML: `${uri}<br />${description || label || ''}`,
+    caption: uri2shortUri(uri.endsWith('/') ? uri.slice(0, -1) : uri),
+    meta: 'onto',
+    score: 50,
+  }));
 }
 
-async function fetchOntologies(sparqlUrl: string): Promise<Suggestion[]> {
+async function fetchOntologies(sparqlUrl: string): Promise<SemanticItem[]> {
   try {
     const sparqlQuery = `
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -156,19 +153,13 @@ LIMIT 500
 
     const data = await response.json();
 
-    return data.results.bindings.map((binding: any) => {
-      const ontologyUri = binding.ontologyUri.value;
-      const label = binding.label?.value;
-      const description = binding.description?.value;
-
-      return {
-        snippet: ontologyUri,
-        docHTML: `${ontologyUri}<br/>${description || label || ''}`,
-        caption: uri2shortUri(ontologyUri.endsWith('/') ? ontologyUri.slice(0, -1) : ontologyUri),
-        meta: 'onto',
-        score: 50,
-      };
-    });
+    return data.results.bindings.map(
+      (binding): SemanticItem => ({
+        uri: binding.ontologyUri.value,
+        label: binding.label?.value,
+        description: binding.description?.value,
+      }),
+    );
   } catch (error) {
     console.error('Error fetching ontology classes from SPARQL:', error);
     return [];
@@ -176,37 +167,39 @@ LIMIT 500
 }
 
 // Controlled Vocabularies (i.e. https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/) [~350 suggestions]
-const DEFAULT_CONTROLLED_VOCABULARIES_SUGGESTIONS = [
+const DEFAULT_CONTROLLED_VOCABULARIES_SUGGESTIONS: SemanticItem[] = [
   {
-    caption: 'Country',
-    snippet: 'http://publications.europa.eu/resource/authority/country/',
-    docHTML: 'authority:country',
-    meta: 'vocab',
-    score: 100,
+    uri: 'http://publications.europa.eu/resource/authority/country/',
+    label: 'Country',
+    description: 'Country',
   },
   {
-    caption: 'Vehicle Code',
-    snippet: 'https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/',
-    docHTML: 'provinces-identifiers:vehicle-code',
-    meta: 'vocab',
-    score: 90,
+    uri: 'https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/',
+    label: 'Vehicle Code',
+    description: 'Vehicle Code',
   },
   {
-    caption: 'Education Level',
-    snippet: 'https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/',
-    docHTML: 'classifications-for-people:education-level',
-    meta: 'vocab',
-    score: 90,
+    uri: 'https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/',
+    label: 'Education Level',
+    description: 'Education Level',
   },
 ];
 
 export async function getControlledVocabulariesSuggestions(config: any): Promise<Suggestion[]> {
-  return config.sparqlAutocompleteEnabled
-    ? await recursiveFetch('controlledVocabularies', config, fetchControlledVocabularies)
-    : DEFAULT_CONTROLLED_VOCABULARIES_SUGGESTIONS;
+  return (
+    config.sparqlAutocompleteEnabled
+      ? await parallelFetch(config, fetchControlledVocabularies)
+      : DEFAULT_CONTROLLED_VOCABULARIES_SUGGESTIONS
+  ).map(({ uri, description, label }) => ({
+    snippet: uri,
+    docHTML: `${uri}<br/>${description || label || ''}`,
+    caption: uri2shortUri(uri.endsWith('/') ? uri.slice(0, -1) : uri),
+    meta: 'vocab',
+    score: 50,
+  }));
 }
 
-async function fetchControlledVocabularies(sparqlUrl: string): Promise<Suggestion[]> {
+async function fetchControlledVocabularies(sparqlUrl: string): Promise<SemanticItem[]> {
   try {
     const sparqlQuery = `
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -265,21 +258,13 @@ LIMIT 500
 
     const data = await response.json();
 
-    return data.results.bindings.map((binding: any) => {
-      const controlledVocabularyUri = binding.controlledVocabularyUri.value;
-      const label = binding.label?.value;
-      const description = binding.description?.value;
-
-      return {
-        snippet: controlledVocabularyUri,
-        docHTML: `${controlledVocabularyUri}<br/>${description || label || ''}`,
-        caption: uri2shortUri(
-          controlledVocabularyUri.endsWith('/') ? controlledVocabularyUri.slice(0, -1) : controlledVocabularyUri,
-        ),
-        meta: 'vocab',
-        score: 50,
-      };
-    });
+    return data.results.bindings.map(
+      (binding): SemanticItem => ({
+        uri: binding.controlledVocabularyUri.value,
+        label: binding.label?.value,
+        description: binding.description?.value,
+      }),
+    );
   } catch (error) {
     console.error('Error fetching controlled vocabularies from SPARQL:', error);
     return [];
@@ -287,134 +272,108 @@ LIMIT 500
 }
 
 // Classes (i.e. https://w3id.org/italia/onto/CPV/Person) [~2500 suggestions]
-const DEFAULT_CLASSES_SUGGESTIONS = [
+const DEFAULT_CLASSES_SUGGESTIONS: SemanticItem[] = [
   {
-    snippet: 'https://w3id.org/italia/onto/CPV/Person',
-    docHTML: 'A natural person',
-    caption: 'CPV:Person',
-    meta: 'class',
-    score: 100,
+    uri: 'https://w3id.org/italia/onto/CPV/Person',
+    label: 'Person',
+    description: 'A natural person',
   },
   {
-    snippet: 'https://w3id.org/italia/onto/CPV/Alive',
-    docHTML: 'An alive person',
-    caption: 'CPV:Alive',
-    meta: 'class',
-    score: 90,
+    uri: 'https://w3id.org/italia/onto/CPV/Alive',
+    label: 'Alive',
+    description: 'An alive person',
   },
   {
-    snippet: 'https://w3id.org/italia/onto/CPV/EducationLevel',
-    docHTML: 'Education Level',
-    caption: 'CPV:EducationLevel',
-    meta: 'class',
-    score: 50,
+    uri: 'https://w3id.org/italia/onto/CPV/EducationLevel',
+    label: 'Education Level',
+    description: 'Education Level',
   },
   {
-    snippet: 'https://w3id.org/italia/onto/CPV/ResidenceInTime',
-    docHTML: 'Residenza nel tempo (storica)',
-    caption: 'CPV:ResidenceInTime',
-    meta: 'class',
-    score: 50,
+    uri: 'https://w3id.org/italia/onto/CPV/ResidenceInTime',
+    label: 'Residence In Time',
+    description: 'Residence In Time',
   },
   // RPO
   {
-    snippet: 'https://w3id.org/italia/onto/RPO/RegisteredResidence',
-    docHTML: 'Residenza anagrafica',
-    caption: 'RPO:RegisteredResidence',
-    meta: 'class',
-    score: 50,
+    uri: 'https://w3id.org/italia/onto/RPO/RegisteredResidence',
+    label: 'Registered Residence',
+    description: 'Registered Residence',
   },
   {
-    snippet: 'https://w3id.org/italia/onto/RPO/RegisteredResidentPerson',
-    docHTML: 'Persona anagraficamente residente',
-    caption: 'RPO:RegisteredResidentPerson',
-    meta: 'class',
-    score: 50,
+    uri: 'https://w3id.org/italia/onto/RPO/RegisteredResidentPerson',
+    label: 'Registered Resident Person',
+    description: 'Registered Resident Person',
   },
   // CLV
   {
-    snippet: 'https://w3id.org/italia/onto/CLV/Feature',
-    docHTML: 'Luogo',
-    caption: 'CLV:Feature',
-    meta: 'class',
-    score: 50,
+    uri: 'https://w3id.org/italia/onto/CLV/Feature',
+    label: 'Feature',
+    description: 'Feature',
   },
   {
-    snippet: 'https://w3id.org/italia/onto/CLV/Geometry',
-    docHTML: 'Geometria',
-    caption: 'CLV:Geometry',
-    meta: 'class',
-    score: 50,
+    uri: 'https://w3id.org/italia/onto/CLV/Geometry',
+    label: 'Geometry',
+    description: 'Geometry',
   },
   {
-    snippet: 'https://w3id.org/italia/onto/CLV/Address',
-    docHTML: 'Indirizzo / Accesso Esterno',
-    caption: 'CLV:Address',
-    meta: 'class',
-    score: 50,
+    uri: 'https://w3id.org/italia/onto/CLV/Address',
+    label: 'Address',
+    description: 'Address',
   },
   {
-    snippet: 'https://w3id.org/italia/onto/CLV/CivicNumbering',
-    docHTML: 'Numerazione Civica / Numero Civico',
-    caption: 'CLV:CivicNumbering',
-    meta: 'class',
-    score: 50,
+    uri: 'https://w3id.org/italia/onto/CLV/CivicNumbering',
+    label: 'Civic Numbering',
+    description: 'Civic Numbering',
   },
   // Learning
   {
-    snippet: 'https://w3id.org/italia/onto/Learning/DegreeCourse',
-    docHTML: 'Corso di Laurea',
-    caption: 'Learning:DegreeCourse',
-    meta: 'class',
-    score: 30,
+    uri: 'https://w3id.org/italia/onto/Learning/DegreeCourse',
+    label: 'Degree Course',
+    description: 'Degree Course',
   },
   {
-    snippet: 'https://w3id.org/italia/onto/Learning/EducationalOffering',
-    docHTML: 'Offerta formativa',
-    caption: 'Learning:EducationalOffering',
-    meta: 'class',
-    score: 30,
+    uri: 'https://w3id.org/italia/onto/Learning/EducationalOffering',
+    label: 'Educational Offering',
+    description: 'Educational Offering',
   },
   {
-    snippet: 'https://w3id.org/italia/onto/Learning/DegreeClass',
-    docHTML: 'Classe di Laurea',
-    caption: 'Learning:DegreeClass',
-    meta: 'class',
-    score: 30,
+    uri: 'https://w3id.org/italia/onto/Learning/DegreeClass',
+    label: 'Degree Class',
+    description: 'Degree Class',
   },
   {
-    snippet: 'https://w3id.org/italia/onto/Learning/Qualification',
-    docHTML: 'Qualifica (Titolo di Studio)',
-    caption: 'Learning:Qualification',
-    meta: 'class',
-    score: 30,
+    uri: 'https://w3id.org/italia/onto/Learning/Qualification',
+    label: 'Qualification',
+    description: 'Qualification',
   },
   {
-    snippet: 'https://w3id.org/italia/onto/Learning/Enrolment',
-    docHTML: 'Iscrizione',
-    caption: 'Learning:Enrolment',
-    meta: 'class',
-    score: 30,
+    uri: 'https://w3id.org/italia/onto/Learning/Enrolment',
+    label: 'Enrolment',
+    description: 'Enrolment',
   },
   // l0
   {
-    snippet: 'https://w3id.org/italia/onto/l0/Location',
-    docHTML: 'Location',
-    caption: 'l0:Location',
-    meta: 'class',
-    score: 50,
+    uri: 'https://w3id.org/italia/onto/l0/Location',
+    label: 'Location',
+    description: 'Location',
   },
 ];
 
 export async function getClassesSuggestions(config: any, ontologyUri: string): Promise<Suggestion[]> {
-  return config.sparqlAutocompleteEnabled
-    ? await recursiveFetch(`classes-${ontologyUri}`, config, (sparqlUrl: string) =>
-        fetchClasses(sparqlUrl, ontologyUri),
-      )
-    : DEFAULT_CLASSES_SUGGESTIONS;
+  return (
+    config.sparqlAutocompleteEnabled
+      ? await parallelFetch(config, (sparqlUrl: string) => fetchClasses(sparqlUrl, ontologyUri))
+      : DEFAULT_CLASSES_SUGGESTIONS
+  ).map(({ uri, description, label }) => ({
+    snippet: uri.replace(ontologyUri, ''),
+    docHTML: `${uri}<br/>${description || label || ''}`,
+    caption: uri2shortUri(uri),
+    meta: 'class',
+    score: 50,
+  }));
 }
 
-async function fetchClasses(sparqlUrl: string, ontologyUri: string): Promise<Suggestion[]> {
+async function fetchClasses(sparqlUrl: string, ontologyUri: string): Promise<SemanticItem[]> {
   try {
     const trimmedOntologyUri =
       ontologyUri.endsWith('/') || ontologyUri.endsWith('#') ? ontologyUri.slice(0, -1) : ontologyUri;
@@ -467,19 +426,13 @@ ORDER BY ?class
 
     const data = await response.json();
 
-    return data.results.bindings.map((binding: any) => {
-      const classUri = binding.class.value;
-      const label = binding.label?.value;
-      const description = binding.description?.value;
-
-      return {
-        snippet: classUri.replace(ontologyUri, ''),
-        docHTML: `${classUri}<br/>${description || label || ''}`,
-        caption: uri2shortUri(classUri),
-        meta: 'class',
-        score: 50,
-      };
-    });
+    return data.results.bindings.map(
+      (binding): SemanticItem => ({
+        uri: binding.class.value,
+        label: binding.label?.value,
+        description: binding.description?.value,
+      }),
+    );
   } catch (error) {
     console.error('Error fetching ontology classes from SPARQL:', error);
     return [];
@@ -488,14 +441,20 @@ ORDER BY ?class
 
 // Properties (i.e. https://w3id.org/italia/onto/CPV/taxCode) [~300 suggestions per ontology]
 export async function getPropertiesSuggestions(config: any, ontologyUri: string): Promise<Suggestion[]> {
-  return config.sparqlAutocompleteEnabled
-    ? await recursiveFetch(`properties-${ontologyUri}`, config, (sparqlUrl: string) =>
-        fetchProperties(sparqlUrl, ontologyUri),
-      )
-    : [];
+  return (
+    config.sparqlAutocompleteEnabled
+      ? await parallelFetch(config, (sparqlUrl: string) => fetchProperties(sparqlUrl, ontologyUri))
+      : []
+  ).map(({ uri, description, label }) => ({
+    snippet: uri.replace(ontologyUri, ''),
+    docHTML: `${uri}<br/>${description || label || ''}`,
+    caption: uri2shortUri(uri),
+    meta: 'property',
+    score: 50,
+  }));
 }
 
-async function fetchProperties(sparqlUrl: string, ontologyUri: string): Promise<Suggestion[]> {
+async function fetchProperties(sparqlUrl: string, ontologyUri: string): Promise<SemanticItem[]> {
   try {
     const trimmedOntologyUri =
       ontologyUri.endsWith('/') || ontologyUri.endsWith('#') ? ontologyUri.slice(0, -1) : ontologyUri;
@@ -555,19 +514,13 @@ LIMIT 500
 
     const data = await response.json();
 
-    return data.results.bindings.map((binding: any) => {
-      const propertyUri = binding.property.value;
-      const label = binding.label?.value;
-      const description = binding.description?.value;
-
-      return {
-        snippet: propertyUri.replace(ontologyUri, ''),
-        docHTML: `${propertyUri}<br/>${description || label || ''}`,
-        caption: uri2shortUri(propertyUri),
-        meta: 'property',
-        score: 50,
-      };
-    });
+    return data.results.bindings.map(
+      (binding): SemanticItem => ({
+        uri: binding.property.value,
+        label: binding.label?.value,
+        description: binding.description?.value,
+      }),
+    );
   } catch (error) {
     console.error('Error fetching ontology classes from SPARQL:', error);
     return [];

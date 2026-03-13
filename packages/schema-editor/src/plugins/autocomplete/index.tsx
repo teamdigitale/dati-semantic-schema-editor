@@ -191,6 +191,11 @@ export const EditorAutosuggestCustomPlugin = () => ({
                     editorValue: editor.getValue(),
                     AST: system.fn.AST,
                   });
+                  if (!path) {
+                    cb(null, []);
+                    return;
+                  }
+
                   const lastPath = path[path.length - 1];
                   const isInsideXJsonldContext = path.includes('x-jsonld-context') && lastPath !== 'x-jsonld-context';
 
@@ -216,19 +221,29 @@ export const EditorAutosuggestCustomPlugin = () => ({
                   else if (lastPath === 'x-jsonld-type') {
                     const value = system.specSelectors.specJson().getIn(path)?.trim() || '';
 
-                    // Show ontologies suggestions if the value is empty
-                    const ontologiesSuggestions = await getOntologiesSuggestions(config);
-                    if (!value && ontologiesSuggestions) {
-                      suggestions.push(
-                        ...ontologiesSuggestions.map((suggestion) => ({
-                          ...suggestion,
-                          caption: `${suggestion.caption} (load classes...)`, // Show three dots to indicate that there are more suggestions to load
-                        })),
-                      );
-                    }
+                    // Autocomplete enabled
+                    if (config.sparqlAutocompleteEnabled) {
+                      // Show ontologies suggestions if the value is empty
+                      const ontologiesSuggestions = await getOntologiesSuggestions(config);
+                      if (!value && ontologiesSuggestions) {
+                        suggestions.push(
+                          ...ontologiesSuggestions.map((suggestion) => ({
+                            ...suggestion,
+                            caption: `${suggestion.caption} (load classes...)`, // Show three dots to indicate that there are more suggestions to load
+                          })),
+                        );
+                      }
 
-                    // Semantic classes (if the text editor value equals an ontology URI)
-                    if (value && ontologiesSuggestions.some((suggestion) => suggestion.snippet === value)) {
+                      // Semantic classes (if the text editor value equals an ontology URI)
+                      if (value && ontologiesSuggestions.some((suggestion) => suggestion.snippet === value)) {
+                        const classesSuggestions = await getClassesSuggestions(config, value);
+                        if (classesSuggestions) {
+                          suggestions.push(...classesSuggestions.map((suggestion) => ({ ...suggestion, score: 100 })));
+                        }
+                      }
+                    }
+                    // Autocomplete disabled
+                    else {
                       const classesSuggestions = await getClassesSuggestions(config, value);
                       if (classesSuggestions) {
                         suggestions.push(...classesSuggestions.map((suggestion) => ({ ...suggestion, score: 100 })));

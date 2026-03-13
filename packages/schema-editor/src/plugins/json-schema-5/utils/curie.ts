@@ -34,10 +34,15 @@ export function uri2shortUri(uri: string) {
 
   try {
     const url = new URL(uri);
-    const pathParts = url.pathname.split('/');
+    const pathParts = url.pathname.split('/').filter((p) => p !== '');
     // Return the fragment if present
     if (url.hash) {
-      return pathParts[pathParts.length - 1] + ':' + url.hash.substring(1);
+      return (pathParts[pathParts.length - 1] ?? url.hostname) + ':' + url.hash.substring(1);
+    }
+    // No parent path: use hostname as prefix and single segment as local name
+    if (pathParts.length < 2) {
+      const segment = pathParts[0] ?? '';
+      return url.hostname + ':' + segment;
     }
     return pathParts[pathParts.length - 2] + ':' + pathParts[pathParts.length - 1];
   } catch (e) {
