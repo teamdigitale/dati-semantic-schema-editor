@@ -8,4 +8,5 @@ export interface ICacheService<V = unknown> {
   get(key: string): V | undefined;
   set(key: string, value: V): void;
   delete(key: string): void;
+  clear(): void;
 }

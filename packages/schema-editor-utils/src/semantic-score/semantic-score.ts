@@ -55,7 +55,7 @@ export async function fetchValidSemanticScoreProperties(
   // Create new promise for the fetch
   const fetchPromise = (async (): Promise<string[]> => {
     const endpoint = `${options.sparqlUrl?.trim()}?format=json&query=${encodeURIComponent(sparqlQuery)}`;
-    const response = await fetch(endpoint);
+    const response = await fetch(endpoint, { cache: 'force-cache' });
     if (!response.ok) {
       return [];
     }

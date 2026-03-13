@@ -110,7 +110,8 @@ export function applyTheme() {
     }\
     .ace-tomorrow-night-blue .ace_indent-guide {\
     background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNgYGBgYJDzqfwPAANXAeNsiA+ZAAAAAElFTkSuQmCC) right repeat-y\
-    }';
+    }\
+    .ace_editor.ace_autocomplete { width: 400px; }';
 
       const dom = acequire('../lib/dom');
       dom.importCssString(exports.cssText, exports.cssClass);
