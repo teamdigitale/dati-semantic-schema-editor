@@ -155,10 +155,10 @@ const params = {
 
 The `x-jsonld-type` keyword is used in OpenAPI schemas to assign a JSON-LD type (semantic class) to a schema. Autocomplete works in **two steps**:
 
-1. **Choose an ontology**  
+1. **Choose an ontology**
    Place the cursor in the value of `x-jsonld-type` (empty or after the cursor) and trigger autocomplete (e.g. Ctrl+Space). You will see a list of **ontologies** (e.g. CPV, RPO, CLV, Learning). When SPARQL autocomplete is enabled, entries are labelled with “(load classes...)” to indicate that selecting one will load the next level.
 
-2. **Choose a class inside that ontology**  
+2. **Choose a class inside that ontology**
    After inserting or typing an ontology URI (e.g. `https://w3id.org/italia/onto/CPV/`), trigger autocomplete again. The editor will show **classes** belonging to that ontology (e.g. `Person`, `Alive`, `EducationLevel`). Pick one to complete the `x-jsonld-type` value.
 
 **Example:** To set the type to the CPV class “Person”:
