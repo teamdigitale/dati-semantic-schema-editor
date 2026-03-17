@@ -2,8 +2,8 @@ import 'swagger-ui/dist/swagger-ui.css';
 import './SchemaEditor.scss';
 
 import { useEffect, useRef, useState } from 'react';
-import SwaggerUI from 'swagger-ui';
 import SwaggerEditor from 'swagger-editor';
+import SwaggerUI from 'swagger-ui';
 import {
   Config,
   ConfigurationPlugin,
@@ -30,6 +30,7 @@ export function SchemaEditor({
   url,
   layout = LayoutTypes.EDITOR,
   sparqlUrl = 'https://virtuoso-test-external-service-ndc-test.apps.cloudpub.testedev.istat.it/sparql',
+  sparqlAutocompleteEnabled = false,
   oasCheckerUrl,
   schemaEditorUrl,
   tabsList,
@@ -68,6 +69,7 @@ export function SchemaEditor({
       // Schema editor configs:
       jsonldPlaygroundUrl: 'https://par-tec.github.io/json-ld.org/future/playground/next',
       sparqlUrl,
+      sparqlAutocompleteEnabled,
       oasCheckerUrl,
       schemaEditorUrl,
       tabsList,
@@ -110,11 +112,12 @@ export function SchemaEditor({
     if (system) {
       const configs = system.getConfigs();
       configs.sparqlUrl = sparqlUrl;
+      configs.sparqlAutocompleteEnabled = sparqlAutocompleteEnabled;
       configs.oasCheckerUrl = oasCheckerUrl;
       configs.schemaEditorUrl = schemaEditorUrl;
       configs.tabsList = tabsList;
     }
-  }, [system, sparqlUrl, oasCheckerUrl, schemaEditorUrl, tabsList]);
+  }, [system, sparqlUrl, sparqlAutocompleteEnabled, oasCheckerUrl, schemaEditorUrl, tabsList]);
 
   return SwaggerUIComponent ? <SwaggerUIComponent /> : null;
 }

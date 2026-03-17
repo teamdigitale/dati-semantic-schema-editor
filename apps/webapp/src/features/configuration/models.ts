@@ -6,6 +6,7 @@ declare global {
 
 export interface Config {
   sparqlUrl?: string;
+  sparqlAutocompleteEnabled?: boolean;
   oasCheckerUrl?: string;
   schemaEditorUrl?: string;
 }
