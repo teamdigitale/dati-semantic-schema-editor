@@ -83,25 +83,25 @@ const SUGGESTIONS_MAP: Record<string, Suggestion[]> = {
       score: 0,
     },
     {
-      snippet: 'http://www.w3.org/2004/02/skos/core#',
+      snippet: 'skos: http://www.w3.org/2004/02/skos/core#\n',
       docHTML: 'Simple Knowledge Organization System',
       caption: 'skos',
       score: 50,
     },
     {
-      snippet: 'http://purl.org/dc/terms/',
+      snippet: 'dcterms: http://purl.org/dc/terms/\n',
       docHTML: 'Dublin Core Metadata Terms',
       caption: 'dcterms',
       score: 50,
     },
     {
-      snippet: 'http://www.w3.org/2000/01/rdf-schema#',
+      snippet: 'rdfs: http://www.w3.org/2000/01/rdf-schema#\n',
       docHTML: 'RDF Schema',
       caption: 'rdfs',
       score: 50,
     },
     {
-      snippet: 'http://www.w3.org/2001/XMLSchema#',
+      snippet: 'xsd: http://www.w3.org/2001/XMLSchema#\n',
       docHTML: 'XML Schema Datatypes',
       caption: 'xsd',
       score: 50,
@@ -204,8 +204,8 @@ export const EditorAutosuggestCustomPlugin = () => ({
                     const xJsonldSuggestions = SUGGESTIONS_MAP['x-jsonld'];
                     if (xJsonldSuggestions) {
                       suggestions.push(...xJsonldSuggestions);
-                      cb(null, suggestions);
                     }
+                    cb(null, suggestions);
                     return; // No need to perform other checks
                   }
 

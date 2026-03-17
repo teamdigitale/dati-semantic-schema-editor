@@ -52,7 +52,7 @@ export function SideMenu() {
               control={control}
               render={({ field }) => (
                 <Toggle
-                  label="Enable SPARQL class autocomplete"
+                  label="Autocomplete via SparQL (beta)"
                   checked={!!field.value}
                   onChange={(e) => field.onChange((e.target as HTMLInputElement).checked)}
                 />

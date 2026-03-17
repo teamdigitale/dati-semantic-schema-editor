@@ -7,22 +7,6 @@ export type SemanticItem = {
   description: string;
 };
 
-export const DEFAULT_SPARQL_ENDPOINTS = [
-  {
-    label: 'ISTAT Virtuoso',
-    url: 'https://virtuoso-test-external-service-ndc-test.apps.cloudpub.testedev.istat.it/sparql',
-  },
-  // Disabled due to CORS errors
-  // {
-  //   label: 'EU Publications Office',
-  //   url: 'https://publications.europa.eu/webapi/rdf/sparql',
-  // },
-  {
-    label: 'CORDIS',
-    url: 'https://cordis.europa.eu/datalab/sparql',
-  },
-];
-
 export async function initAutocomplete(config: any): Promise<void> {
   await Promise.all([getOntologiesSuggestions(config), getControlledVocabulariesSuggestions(config)]);
 }
@@ -32,7 +16,8 @@ async function parallelFetch(
   fetchFunction: (sparqlUrl: string) => Promise<SemanticItem[]>,
 ): Promise<SemanticItem[]> {
   // Definisco tutti gli endpoint sparql da cui effettuare la ricerca
-  const sparqlEndpoints = [...DEFAULT_SPARQL_ENDPOINTS];
+  // Supporta più endpoints in parallelo ma al momento usiamo solo quello passato in configurazione
+  const sparqlEndpoints: { label: string; url: string }[] = [];
   const sparqlUrl = config.sparqlUrl?.trim() || '';
   if (sparqlUrl && !sparqlEndpoints.some((endpoint) => endpoint.url.includes(sparqlUrl))) {
     sparqlEndpoints.push({ label: 'Custom', url: sparqlUrl });
@@ -157,7 +142,7 @@ LIMIT 500
       (binding): SemanticItem => ({
         uri: binding.ontologyUri.value,
         label: binding.label?.value,
-        description: binding.description?.value,
+        description: binding.comment?.value,
       }),
     );
   } catch (error) {
@@ -262,7 +247,7 @@ LIMIT 500
       (binding): SemanticItem => ({
         uri: binding.controlledVocabularyUri.value,
         label: binding.label?.value,
-        description: binding.description?.value,
+        description: binding.comment?.value,
       }),
     );
   } catch (error) {
@@ -430,7 +415,7 @@ ORDER BY ?class
       (binding): SemanticItem => ({
         uri: binding.class.value,
         label: binding.label?.value,
-        description: binding.description?.value,
+        description: binding.comment?.value,
       }),
     );
   } catch (error) {
@@ -518,7 +503,7 @@ LIMIT 500
       (binding): SemanticItem => ({
         uri: binding.property.value,
         label: binding.label?.value,
-        description: binding.description?.value,
+        description: binding.comment?.value,
       }),
     );
   } catch (error) {

@@ -15,7 +15,11 @@ describe('EditorAutosuggestCustomPlugin', () => {
   ) {
     const valueAtPath = options?.specJsonGetIn ?? '';
     return {
-      getConfigs: vi.fn(() => config),
+      getConfigs: vi.fn(() => ({
+        ...config,
+        sparqlUrl:
+          config.sparqlUrl ?? 'https://virtuoso-test-external-service-ndc-test.apps.cloudpub.testedev.istat.it/sparql',
+      })),
       fn: {
         getPathForPosition: vi.fn(() => path),
         AST: null,
