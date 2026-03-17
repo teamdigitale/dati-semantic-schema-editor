@@ -87,7 +87,7 @@ components:
       example:
         taxCode: MRORSS77
         parent:
-          - taxCode: LGORSA25
+            taxCode: LGORSA25
             birthplace:
               hasCity: Rome
               country: ITA
