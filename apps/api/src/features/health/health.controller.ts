@@ -3,10 +3,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { API_HEADER_RATE_LIMIT, API_RESPONSE_503 } from '../swagger';
 
 @ApiTags('Health')
-@Controller({
-  version: '',
-  path: 'status',
-})
+@Controller('status')
 export class HealthController {
   @Get()
   @ApiOperation({

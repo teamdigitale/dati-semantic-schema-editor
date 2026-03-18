@@ -25,7 +25,6 @@
     "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.1.14",
     "@nestjs/platform-express": "^11.1.14",
-    "@nestjs/serve-static": "^5.0.4",
     "@nestjs/swagger": "^11.2.6",
     "@nestjs/throttler": "^6.5.0",
     "@teamdigitale/schema-editor-utils": "workspace:*",
@@ -38,7 +37,8 @@
     "multer": "^2.0.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
-    "winston": "^3.19.0"
+    "winston": "^3.19.0",
+    "yaml": "^2.8.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.4",

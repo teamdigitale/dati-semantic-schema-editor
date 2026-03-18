@@ -7,7 +7,7 @@ This API provides endpoints for calculating semantic scores of OpenAPI 3.0 schem
 
 - Semantic Score Calculation: Upload OpenAPI 3.0 files to calculate their semantic score based on content structure and semantic keywords
 - Health Monitoring: Built-in health check endpoint for service monitoring
-- OpenAPI 3.0 documentation: available at `http://localhost:3000/openapi.yaml`
+- OpenAPI 3.0 documentation: available at `http://localhost:3000/api/v1/openapi.yaml`
 
 ## Environment Setup
 
@@ -80,7 +80,7 @@ $ pnpm run format
 
 When running in development mode, the API provides interactive documentation via Swagger UI:
 
-- URL: `http://localhost:3000/openapi.yaml`
+- URL: `http://localhost:3000/api/v1/openapi.yaml`
 
 - Features:
   - Interactive API testing
@@ -93,7 +93,7 @@ When running in development mode, the API provides interactive documentation via
 #### Health Check
 
 ```bash
-curl http://localhost:3000/status
+curl http://localhost:3000/api/v1/status
 ```
 
 Response:
@@ -115,8 +115,8 @@ Response:
 
 2. **Access the application**:
    - API Base URL: `http://localhost:3000`
-   - Health Check: `http://localhost:3000/status`
-   - Swagger UI: `http://localhost:3000/docs` (development only)
+   - Health Check: `http://localhost:3000/api/v1/status`
+   - Swagger UI: `http://localhost:3000/api/v1/swagger-ui` (development only)
 
 3. **Test the endpoints**:
    - Use the Swagger UI to inspect endpoints
@@ -178,6 +178,8 @@ docker run -d \
   -e SPARQL_URL=https://virtuoso.example.com/sparql \
   -e THROTTLE_LIMIT=15 \
   -e THROTTLE_TTL=60000 \
+  -e BASE_PATH=http://api.local \
+  -e CORS_ORIGIN=* \
   api:latest
 ```
 

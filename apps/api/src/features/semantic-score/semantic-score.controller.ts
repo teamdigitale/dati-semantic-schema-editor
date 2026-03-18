@@ -5,6 +5,7 @@ import {
   Inject,
   Logger,
   NotAcceptableException,
+  ParseFilePipe,
   PayloadTooLargeException,
   Post,
   SerializeOptions,
@@ -103,7 +104,7 @@ The response will output informations about the global semantic score and the mo
   @UseInterceptors(ClassSerializerInterceptor)
   @SerializeOptions({ type: SemanticScoreResponseDTO })
   async updateSchemaSemanticScore(
-    @UploadedFile() file: any,
+    @UploadedFile(new ParseFilePipe({ fileIsRequired: true })) file: any,
   ): Promise<SemanticScoreResponseDTO> {
     this.logger.log(`Calculating schema semantic score for file`);
     this.logger.debug(`File: ${file.originalname}`);

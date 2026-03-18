@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { join } from 'path';
 import { Config, configuration, validate } from './features/configs';
 import { HealthModule } from './features/health';
 import { LoggerModule } from './features/logger';
+import { OpenapiModule } from './features/openapi';
 import { SemanticScoreModule } from './features/semantic-score';
 
 @Module({
@@ -35,10 +34,7 @@ import { SemanticScoreModule } from './features/semantic-score';
       }),
     }),
     HealthModule,
-    ServeStaticModule.forRoot({
-      renderPath: 'openapi.yaml',
-      rootPath: join(__dirname, '..', 'public'),
-    }),
+    OpenapiModule,
     SemanticScoreModule,
   ],
   providers: [

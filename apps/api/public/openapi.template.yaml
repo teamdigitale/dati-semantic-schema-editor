@@ -43,7 +43,7 @@ info:
     Questa API è associata all'Editor di Schemi Dati fornito da schema.gov.it
     all'indirizzo <https://teamdigitale.github.io/dati-semantic-schema-editor/>
 
-  version: 0.0.2
+  version: 0.0.1
   contact:
     name: Team Digitale
     url: https://teamdigitale.governo.it
@@ -61,9 +61,9 @@ servers:
   - url: http://localhost:3000/api/v1
     description: Local development server
     x-sandbox: true
-  - url: https://schema-editor-api-ndc-dev.apps.cloudpub.testedev.istat.it
-    description: Public development server
-    x-sandbox: true
+  - url: https://example.com/api/v1
+    description: Public server
+    x-sandbox: false
 security:
   # Anyone can use this API.
   - {}
