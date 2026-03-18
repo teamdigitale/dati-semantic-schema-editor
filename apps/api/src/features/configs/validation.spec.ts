@@ -17,6 +17,7 @@ describe('config', () => {
   it('should continue if valid config', () => {
     // Make sure to have a correct .env file in root directory!
     const config = {
+      BASE_PATH: 'https://api.example.com',
       PORT: 3000,
       CORS_ORIGIN: '*',
       SPARQL_URL: 'https://api.example.com',
