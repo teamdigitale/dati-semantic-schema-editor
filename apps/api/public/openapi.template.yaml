@@ -61,9 +61,10 @@ servers:
   - url: http://localhost:3000/api/v1
     description: Local development server
     x-sandbox: true
+  # The following server block is replaced at deploy time via
+  #   a configuration/environment variable.
   - url: https://example.com/api/v1
     description: Public server
-    x-sandbox: false
 security:
   # Anyone can use this API.
   - {}
