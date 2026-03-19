@@ -19,7 +19,7 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
     [JSON.stringify(specSelectors?.spec().toJSON())],
   );
 
-  // Nodes from resolved superclasses
+  // Nodes from resolved superclasses and equivalent classes
   const [selectedClassUri, setSelectedClassUri] = useState<string | undefined>(undefined);
   const { data: superclassData = [], status: superclassStatus } = useRDFClassTreeResolver(selectedClassUri);
   const superclassNodes = useSuperclassDataToNodes(superclassData);
@@ -27,7 +27,7 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
   // Toggle superclasses visibility
   const [showSuperclasses, setShowSuperclasses] = useState(true);
 
-  // All nodes (merge both spec and superclass nodes)
+  // All nodes (merge spec, superclass, and equivalent class nodes)
   const allNodes = useMemo(
     () => [
       ...specNodes,
@@ -238,6 +238,15 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
               selector: 'edge[type="dashed"]',
               style: {
                 'line-style': 'dashed',
+                'target-arrow-shape': 'triangle',
+              },
+            },
+            {
+              selector: 'edge[type="equivalent"]',
+              style: {
+                label: 'equivalent to',
+                'line-style': 'dashed',
+                'source-arrow-shape': 'triangle',
                 'target-arrow-shape': 'triangle',
               },
             },

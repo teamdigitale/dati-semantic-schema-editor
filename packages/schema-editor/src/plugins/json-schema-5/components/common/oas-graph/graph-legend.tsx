@@ -99,6 +99,14 @@ const LEGEND_ITEMS: LegendSection[] = [
           background: 'repeating-linear-gradient(to right, #9dbaea 0, #9dbaea 4px, transparent 4px, transparent 8px)',
         },
       },
+      {
+        label: 'Equivalent class',
+        indicator: {
+          width: '24px',
+          height: '3px',
+          backgroundColor: '#ff6b35',
+        },
+      },
     ],
   },
 ];

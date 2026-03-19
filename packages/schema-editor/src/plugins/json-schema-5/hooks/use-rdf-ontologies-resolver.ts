@@ -76,23 +76,40 @@ export function useRDFPropertyResolver(fieldUri: string | undefined): AsyncState
 }
 
 /*
-  This hook resolves the class hierarchy tree, returning parent-child relationships.
+  This hook resolves the class hierarchy tree, returning parent-child relationships and equivalent classes.
 */
-export function useRDFClassTreeResolver(classUri: string | undefined): AsyncState<{ parent: string; child: string }[]> {
+export interface RDFClassTreeData {
+  parent: string;
+  child: string;
+  equivalent?: string;
+}
+
+export function useRDFClassTreeResolver(classUri: string | undefined): AsyncState<RDFClassTreeData[]> {
   const { data, status, error } = useSparqlQuery(
     `
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
     SELECT DISTINCT
       ?child
       ?parent
+      ?equivalent
     WHERE {
 
       <${classUri}> rdfs:subClassOf* ?child .
       ?child rdfs:subClassOf ?parent .
 
-      FILTER( !isBlank(?child) && !isBlank(?parent) && ?child != ?parent)
+      OPTIONAL {
+        ?child (owl:equivalentClass | ^owl:equivalentClass) ?equivalent .
+        FILTER(!isBlank(?equivalent))
+      }
+
+      FILTER(
+        !isBlank(?child) &&
+        !isBlank(?parent) &&
+        ?child != ?parent
+      )
     }
   `,
     { skip: !classUri || !isUri(classUri) },
