@@ -6,5 +6,5 @@ export const configuration = () => ({
   throttleLimit: parseInt(process.env.THROTTLE_LIMIT || '15'),
   sparqlUrl: process.env.SPARQL_URL as string,
   sparqlCacheTTL: parseInt(process.env.SPARQL_CACHE_TTL || '300000'), // 5 minutes default
-  basePath: process.env.BASE_PATH as string,
+  serverUrl: process.env.SERVER_URL as string,
 });

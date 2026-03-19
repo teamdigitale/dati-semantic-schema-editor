@@ -19,5 +19,5 @@ export class EnvironmentVariables {
   SPARQL_CACHE_TTL: number;
 
   @IsString()
-  BASE_PATH: string;
+  SERVER_URL: string;
 }

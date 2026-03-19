@@ -152,6 +152,7 @@ For local environment deployment, follow these steps:
 ```env
 NODE_ENV=production
 PORT=3000
+SERVER_URL=https://example.com
 SPARQL_URL=your_production_sparql_url
 etc...
 ```
@@ -175,10 +176,10 @@ docker run -d \
   -p 3000:3000 \
   -e NODE_ENV=production \
   -e PORT=3000 \
+  -e SERVER_URL=https://example.com \
   -e SPARQL_URL=https://virtuoso.example.com/sparql \
   -e THROTTLE_LIMIT=15 \
   -e THROTTLE_TTL=60000 \
-  -e BASE_PATH=http://api.local \
   -e CORS_ORIGIN=* \
   api:latest
 ```

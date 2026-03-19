@@ -17,6 +17,8 @@ export class OpenapiService {
   getOpenApiDocument() {
     this.logger.debug('Reading OpenAPI template document');
 
+    const serverUrl = this.configService.get('serverUrl', { infer: true });
+    const isDevelopmentServer = serverUrl.includes('localhost');
     const templatePath = join(
       __dirname,
       '..',
@@ -26,13 +28,19 @@ export class OpenapiService {
       'openapi.template.yaml',
     );
     this.logger.debug(`Template path: ${templatePath}`);
-    let rawYaml = readFileSync(templatePath, 'utf8');
 
-    const basePath = this.configService.get('basePath', { infer: true });
-    rawYaml = rawYaml
-      .replace('version: 0.0.1', `version: ${packageJson.version}`)
-      .replace('https://example.com', basePath);
+    const rawYaml = readFileSync(templatePath, 'utf8');
+    const yamlObject: OpenAPIObject = yaml.parse(rawYaml);
+    yamlObject.info.version = packageJson.version;
+    yamlObject.servers![1] = {
+      url: `${serverUrl}/api/v1`,
+      description: isDevelopmentServer
+        ? 'Local development server'
+        : 'Public server',
+      // @ts-expect-error - x-sandbox is not a valid property of ServerObject
+      'x-sandbox': isDevelopmentServer,
+    };
 
-    return yaml.parse(rawYaml) as OpenAPIObject;
+    return yamlObject;
   }
 }
