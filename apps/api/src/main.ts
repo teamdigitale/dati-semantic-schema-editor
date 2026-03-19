@@ -14,9 +14,6 @@ import { AllExceptionsFilter } from './features/exceptions';
 import { LoggerService } from './features/logger';
 import { OpenapiService } from './features/openapi';
 
-const GLOBAL_PREFIX = 'api';
-const API_VERSION = '1';
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
@@ -26,6 +23,9 @@ async function bootstrap() {
   app.useLogger(logger);
 
   const configService = app.get(ConfigService<Config, true>);
+  const globalPrefix = configService.get('globalPrefix', { infer: true });
+  const apiVersion = configService.get('apiVersion', { infer: true });
+  const port = configService.get('port', { infer: true });
 
   // Security middleware
   app.use(
@@ -54,12 +54,12 @@ async function bootstrap() {
   });
 
   // Global prefix for API
-  app.setGlobalPrefix(GLOBAL_PREFIX);
+  app.setGlobalPrefix(globalPrefix);
 
   // API versioning
   app.enableVersioning({
     type: VersioningType.URI,
-    defaultVersion: API_VERSION,
+    defaultVersion: apiVersion,
   });
 
   // Global serializer interceptor
@@ -91,27 +91,26 @@ async function bootstrap() {
   const openapiService = app.get(OpenapiService);
   const document = openapiService.getOpenApiDocument();
   SwaggerModule.setup(
-    `${GLOBAL_PREFIX}/v${API_VERSION}/swagger-ui`,
+    `${globalPrefix}/v${apiVersion}/swagger-ui`,
     app,
     document,
     {
       ui: swaggerUIEnabled,
-      yamlDocumentUrl: `${GLOBAL_PREFIX}/v${API_VERSION}/openapi.yaml`,
-      jsonDocumentUrl: `${GLOBAL_PREFIX}/v${API_VERSION}/openapi.json`,
+      yamlDocumentUrl: `${globalPrefix}/v${apiVersion}/openapi.yaml`,
+      jsonDocumentUrl: `${globalPrefix}/v${apiVersion}/openapi.json`,
     },
   );
 
-  const port = configService.get('port', { infer: true });
   await app.listen(port);
 
   logger.log(`Application is running on: http://localhost:${port}`);
   logger.log(`Environment: ${configService.get('nodeEnv', { infer: true })}`);
   logger.log(
-    `Health Check: http://localhost:${port}/${GLOBAL_PREFIX}/v${API_VERSION}/status`,
+    `Health Check: http://localhost:${port}/${globalPrefix}/v${apiVersion}/status`,
   );
   if (swaggerUIEnabled) {
     logger.log(
-      `Swagger UI: http://localhost:${port}/${GLOBAL_PREFIX}/v${API_VERSION}/swagger-ui`,
+      `Swagger UI: http://localhost:${port}/${globalPrefix}/v${apiVersion}/swagger-ui`,
     );
   }
 }
