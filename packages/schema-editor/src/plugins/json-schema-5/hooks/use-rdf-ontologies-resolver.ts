@@ -1,3 +1,4 @@
+import { useConfiguration } from '../../configuration';
 import { AsyncState } from '../models';
 import { isUri } from '../utils';
 import { useSparqlQuery } from './use-sparql';
@@ -12,6 +13,7 @@ export interface RDFProperty {
 }
 
 export function useRDFPropertyResolver(fieldUri: string | undefined): AsyncState<RDFProperty> {
+  const { sparqlUrl } = useConfiguration();
   const {
     data: sparqlData,
     status: sparqlStatus,
@@ -54,7 +56,7 @@ export function useRDFPropertyResolver(fieldUri: string | undefined): AsyncState
       }
     }
   `,
-    { skip: !fieldUri },
+    { sparqlUrl: sparqlUrl!, skip: !fieldUri },
   );
 
   const content = sparqlData?.results?.bindings?.[0]
@@ -79,6 +81,7 @@ export function useRDFPropertyResolver(fieldUri: string | undefined): AsyncState
   This hook resolves the class hierarchy tree, returning parent-child relationships.
 */
 export function useRDFClassTreeResolver(classUri: string | undefined): AsyncState<{ parent: string; child: string }[]> {
+  const { sparqlUrl } = useConfiguration();
   const { data, status, error } = useSparqlQuery(
     `
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -95,7 +98,7 @@ export function useRDFClassTreeResolver(classUri: string | undefined): AsyncStat
       FILTER( !isBlank(?child) && !isBlank(?parent) && ?child != ?parent)
     }
   `,
-    { skip: !classUri || !isUri(classUri) },
+    { sparqlUrl: sparqlUrl!, skip: !classUri || !isUri(classUri) },
   );
 
   const items = data?.results?.bindings?.map((binding: any) =>
@@ -110,6 +113,7 @@ export function useRDFClassTreeResolver(classUri: string | undefined): AsyncStat
 }
 
 export function useRDFClassResolver(classUri: string | undefined) {
+  const { sparqlUrl } = useConfiguration();
   const {
     data: sparqlData,
     status: sparqlStatus,
@@ -150,7 +154,7 @@ export function useRDFClassResolver(classUri: string | undefined) {
 
     }
   `,
-    { skip: !classUri || !isUri(classUri) },
+    { sparqlUrl: sparqlUrl!, skip: !classUri || !isUri(classUri) },
   );
 
   const content = sparqlData?.results?.bindings
@@ -182,6 +186,7 @@ export interface RDFClassProperties {
   controlledVocabulary: string | undefined;
 }
 export function useRDFClassPropertiesResolver(classUri: string | undefined) {
+  const { sparqlUrl } = useConfiguration();
   const { data: sparqlData, status: sparqlStatus } = useSparqlQuery(
     `
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -238,7 +243,7 @@ export function useRDFClassPropertiesResolver(classUri: string | undefined) {
 
     }
   `,
-    { skip: !classUri },
+    { sparqlUrl: sparqlUrl!, skip: !classUri },
   );
 
   const content = sparqlData?.results?.bindings
@@ -268,6 +273,7 @@ export interface RDFClassVocabularies {
   api?: string;
 }
 export function useRDFClassVocabulariesResolver(classUri: string | undefined): AsyncState<RDFClassVocabularies[]> {
+  const { sparqlUrl } = useConfiguration();
   const {
     data: sparqlData,
     status: sparqlStatus,
@@ -319,7 +325,7 @@ SELECT DISTINCT
   }
 }
   `,
-    { skip: !classUri },
+    { sparqlUrl: sparqlUrl!, skip: !classUri },
   );
 
   const content = sparqlData?.results?.bindings
