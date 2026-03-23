@@ -1,5 +1,22 @@
 # api
 
+## 0.2.0
+
+### Minor Changes
+
+- 9539adb: Added SERVER_URL environment variable to populate server url in openapi file.
+
+  BREAKING CHANGES:
+  - SERVER_URL environment variable is required at startup
+  - The healthcheck endpoint is now served via /api/v1/status
+  - The openapi file is now served via /api/v1/opanapi.{yaml|json}
+  - The swagger UI is now served via /api/v1/swagger-ui
+
+### Patch Changes
+
+- Updated dependencies [b69d23d]
+  - @teamdigitale/schema-editor-utils@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
