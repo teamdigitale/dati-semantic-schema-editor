@@ -184,7 +184,7 @@ export const GraphSchema = ({ specSelectors, editorActions }) => {
                 color: '#ffffff',
                 'text-wrap': 'wrap',
                 'text-max-width': '80px',
-                'text-overflow-wrap': 'break-word',
+                'text-overflow-wrap': 'whitespace',
               },
             },
             {

@@ -95,7 +95,7 @@ export function SearchSchemaModal() {
 
   // Select
   const handleSelectUrl = (url: string) => {
-    window.history.pushState({}, '', `#url=${url}`);
+    window.location.href = `#url=${encodeURIComponent(url)}`;
     setIsOpen(false);
   };
 
