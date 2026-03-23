@@ -1,7 +1,9 @@
+import { useConfiguration } from '../../configuration';
 import { AsyncState } from '../models';
 import { useSparqlQuery } from './use-sparql';
 
 export function useVocabulariesQuery(): AsyncState<any> {
+  const { sparqlUrl } = useConfiguration();
   const { data, status, error } = useSparqlQuery<any>(
     `
     PREFIX ndc: <https://w3id.org/italia/onto/NDC/>
@@ -42,6 +44,7 @@ export function useVocabulariesQuery(): AsyncState<any> {
     LIMIT 7
   `,
     {
+      sparqlUrl: sparqlUrl!,
       format: 'application/ld+json',
     },
   );
@@ -57,6 +60,7 @@ export function useVocabularyQuery(vocabulary_uri: string): AsyncState<any> {
   // Fetch vocabulary data in JSON-LD format
   //   LIMIT is in triples, not in resources, so
   //   you need to count resources * entries.
+  const { sparqlUrl } = useConfiguration();
   const { data, status, error } = useSparqlQuery<any>(
     `
     PREFIX ndc: <https://w3id.org/italia/onto/NDC/>
@@ -89,6 +93,7 @@ export function useVocabularyQuery(vocabulary_uri: string): AsyncState<any> {
     LIMIT 100
   `,
     {
+      sparqlUrl: sparqlUrl!,
       format: 'application/ld+json',
     },
   );

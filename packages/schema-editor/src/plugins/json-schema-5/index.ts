@@ -11,6 +11,7 @@ import { ModelsBreadcrumb } from './components/models-breadcrumb';
 import { ObjectModel } from './components/object-model';
 import { PrimitiveModel } from './components/primitive-model';
 
+export * from './hooks';
 export * from './utils';
 
 export const JSONSchema5Plugin = () => ({
