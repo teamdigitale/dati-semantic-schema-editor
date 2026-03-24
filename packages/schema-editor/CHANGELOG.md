@@ -1,5 +1,18 @@
 # @teamdigitale/schema-editor
 
+## 0.1.1
+
+### Patch Changes
+
+- bd1b8a4: Improved RDF tab errors description
+- b69d23d: Autocomplete concepts via sparql queries
+- a763e04: Linked action menu items visibilities to LayoutType. Added a configuration param to sort editor's tabs.
+- fdf06b1: Resolved bug on tooltip when models have dots inside their names
+- 0c366a9: Added a per-model semantic score visual indicator in root view and shared global semantic score calculation
+- aa6ef6d: Enabled NPM trusted publisher
+- Updated dependencies [b69d23d]
+  - @teamdigitale/schema-editor-utils@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes

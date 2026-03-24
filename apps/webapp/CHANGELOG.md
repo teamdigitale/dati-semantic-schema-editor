@@ -1,5 +1,18 @@
 # webapp
 
+## 0.1.1
+
+### Patch Changes
+
+- b69d23d: Autocomplete concepts via sparql queries
+- Updated dependencies [bd1b8a4]
+- Updated dependencies [b69d23d]
+- Updated dependencies [a763e04]
+- Updated dependencies [fdf06b1]
+- Updated dependencies [0c366a9]
+- Updated dependencies [aa6ef6d]
+  - @teamdigitale/schema-editor@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
