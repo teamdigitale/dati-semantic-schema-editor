@@ -1,0 +1,41 @@
+name: Bug Report
+description: File a bug report
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: textarea
+    id: when
+    attributes:
+      label: When (optional)
+      description: A clear and concise description of when the bug occurs.
+      placeholder: When does the bug occur?
+  - type: textarea
+    id: expect
+    attributes:
+      label: I expect
+      description: A clear and concise description of what you expect to happen.
+      placeholder: What do you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: instead
+    attributes:
+      label: Instead
+      description: A clear and concise description of what actually happens.
+      placeholder: What actually happens?
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Relevant notes
+      description: >-
+        Please copy and paste any relevant notes or logs.
+        This will be automatically formatted into code,
+        so no need for backticks.
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If applicable, add screenshots of the errors.
+      placeholder: Enter screenshots here

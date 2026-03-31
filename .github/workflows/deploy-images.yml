@@ -82,7 +82,7 @@ jobs:
       - name: Check if should build
         id: should_build
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]] || [[ "${{ github.event_name }}" == "pull_request" ]] || [[ "${{ github.ref }}" =~ ${{ matrix.tag_pattern }} ]] || [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]] || [[ "${{ github.event_name }}" == "pull_request" ]] || [[ "${GITHUB_REF}" =~ ${{ matrix.tag_pattern }} ]] || [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "build=true" >> "$GITHUB_OUTPUT"
           else
             echo "build=false" >> "$GITHUB_OUTPUT"
@@ -94,9 +94,9 @@ jobs:
         env:
           UNTRUSTED_GITHUB_REF_NAME: ${{ github.ref_name }} # E.g. my-app@1.0.0 - Always populated; contains the branch name, tag name, or ref name depending on the event type.
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
             VERSION="latest"
-          elif [[ "${{ github.ref }}" =~ ${{ matrix.tag_pattern }} ]]; then
+          elif [[ "${GITHUB_REF}" =~ ${{ matrix.tag_pattern }} ]]; then
             VERSION="${UNTRUSTED_GITHUB_REF_NAME#*@}" # Strip the prefix from the tag name in order to get the tag version only
           fi
           echo "value=${VERSION}" >> "$GITHUB_OUTPUT"
