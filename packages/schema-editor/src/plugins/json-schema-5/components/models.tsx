@@ -7,20 +7,16 @@ import type { ModelRoot as ModelRootComponent } from './model-root';
 import type { ModelsBreadcrumb as ModelsBreadcrumbComponent } from './models-breadcrumb';
 import { SchemaSemanticScoreButton } from './schema-semantic-score-button';
 import { SemanticScoreProvider } from './semantic-score';
+import { Alert } from 'design-react-kit';
 
 export function Models(system) {
-  const { getComponent, specSelectors, getConfigs } = system;
+  const { getComponent, specSelectors } = system;
   const { history } = useSchemaNavigation();
   const currentHistoryItem = history[history.length - 1];
 
   const isOAS3 = specSelectors.isOAS3();
   const specPathBase = isOAS3 ? ['components', 'schemas'] : ['definitions'];
-
   const definitions = specSelectors.definitions();
-  const { defaultModelsExpandDepth } = getConfigs();
-  if (!definitions.size || defaultModelsExpandDepth < 0) {
-    return null;
-  }
 
   const ModelsBreadcrumb: typeof ModelsBreadcrumbComponent = getComponent('ModelsBreadcrumb', true);
   const ModelRoot: typeof ModelRootComponent = getComponent('ModelRoot', true);
@@ -33,21 +29,33 @@ export function Models(system) {
           <ActionsMenu {...system} />
         </div>
 
-        <div className="d-flex flex-row justify-content-end align-items-center mb-2">
-          <SchemaSemanticScoreButton />
-        </div>
+        {/* No data models found */}
+        {!definitions?.size ? (
+          <Alert color="warning">
+            <strong>No data models found.</strong> <br />
+            Create a new data model to get started by clicking on the <i>New from template</i> button from the action
+            menu.
+          </Alert>
+        ) : (
+          /* Data models found */
+          <>
+            <div className="d-flex flex-row justify-content-end align-items-center mb-2">
+              <SchemaSemanticScoreButton />
+            </div>
 
-        {/* Root */}
-        {history.length === 0 &&
-          definitions
-            .entrySeq()
-            .map(([key, schema]) => (
-              <ModelCollapseRoot key={key} title={key} specPath={[...specPathBase, key]} schema={schema} />
-            ))
-            .toArray()}
+            {/* Root */}
+            {history.length === 0 &&
+              definitions
+                .entrySeq()
+                .map(([key, schema]) => (
+                  <ModelCollapseRoot key={key} title={key} specPath={[...specPathBase, key]} schema={schema} />
+                ))
+                .toArray()}
 
-        {/* Schema model */}
-        {currentHistoryItem && <ModelRoot name={currentHistoryItem.title} fullPath={currentHistoryItem.fullPath} />}
+            {/* Schema model */}
+            {currentHistoryItem && <ModelRoot name={currentHistoryItem.title} fullPath={currentHistoryItem.fullPath} />}
+          </>
+        )}
       </SemanticScoreProvider>
     </div>
   );
