@@ -31,6 +31,7 @@ export function SchemaEditor({
   layout = LayoutTypes.EDITOR,
   sparqlUrl = 'https://virtuoso-test-external-service-ndc-test.apps.cloudpub.testedev.istat.it/sparql',
   sparqlAutocompleteEnabled = false,
+  vocabulariesApiUrl = 'https://vocabularies-api-ndc-dev.apps.cloudpub.testedev.istat.it',
   oasCheckerUrl,
   schemaEditorUrl,
   tabsList,
@@ -70,6 +71,7 @@ export function SchemaEditor({
       jsonldPlaygroundUrl: 'https://teamdigitale.github.io/dati-semantic-jsonld-playground/latest',
       sparqlUrl,
       sparqlAutocompleteEnabled,
+      vocabulariesApiUrl,
       oasCheckerUrl,
       schemaEditorUrl,
       tabsList,
@@ -112,12 +114,13 @@ export function SchemaEditor({
     if (system) {
       const configs = system.getConfigs();
       configs.sparqlUrl = sparqlUrl;
+      configs.vocabulariesApiUrl = vocabulariesApiUrl;
       configs.sparqlAutocompleteEnabled = sparqlAutocompleteEnabled;
       configs.oasCheckerUrl = oasCheckerUrl;
       configs.schemaEditorUrl = schemaEditorUrl;
       configs.tabsList = tabsList;
     }
-  }, [system, sparqlUrl, sparqlAutocompleteEnabled, oasCheckerUrl, schemaEditorUrl, tabsList]);
+  }, [system, sparqlUrl, vocabulariesApiUrl, sparqlAutocompleteEnabled, oasCheckerUrl, schemaEditorUrl, tabsList]);
 
   return SwaggerUIComponent ? <SwaggerUIComponent /> : null;
 }

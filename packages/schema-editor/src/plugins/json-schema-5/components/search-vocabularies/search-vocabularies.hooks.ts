@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useConfiguration } from '../../../configuration';
 import { AsyncState } from '../../models/async-state';
 import { APICatalog, Linkset, VocabularyCatalogQueryParams } from './vocabularies.models';
 
@@ -6,16 +7,14 @@ export interface Options {
   skip?: boolean;
 }
 
-const vocabulariesApiUrl = 'https://vocabularies-api-ndc-dev.apps.cloudpub.testedev.istat.it';
-
 export function useSearchVocabularies(
   params?: VocabularyCatalogQueryParams,
   options?: Options,
 ): AsyncState<APICatalog> {
-  // const { vocabulariesApiUrl } = useConfiguration();
+  const { vocabulariesApiUrl } = useConfiguration();
   const queryString = new URLSearchParams(
     Object.entries({ limit: 10, offset: 0, ...params })
-      .filter(([key, value]) => !!value || value === 0)
+      .filter(([, value]) => !!value || value === 0)
       .map(([key, value]) => `${key}=${value}`)
       .join('&'),
   );
