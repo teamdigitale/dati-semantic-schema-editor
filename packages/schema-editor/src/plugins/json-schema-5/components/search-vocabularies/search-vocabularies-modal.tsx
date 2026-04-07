@@ -11,10 +11,10 @@ import {
   Modal,
   ModalBody,
   ModalHeader,
-  Pager,
   Spinner,
 } from 'design-react-kit';
 import { type FormEvent, useEffect, useState } from 'react';
+import { Pagination } from '../pagination/pagination';
 import { useSearchVocabularies } from './search-vocabularies.hooks';
 
 export function SearchVocabulariesModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -100,44 +100,11 @@ export function SearchVocabulariesModal({ isOpen, onClose }: { isOpen: boolean; 
                   ))}
                 </List>
 
-                <Pager aria-label="Esempio di navigazione" className="justify-content-center mt-3">
-                  <ul className="pagination">
-                    <li className="page-item">
-                      <Button
-                        href="#"
-                        disabled={params.page === 0}
-                        onClick={() => setParams((x) => ({ ...x, page: 0 }))}
-                        className="page-link"
-                        aria-label="Previous"
-                      >
-                        <Icon icon="it-chevron-left" />
-                      </Button>
-                    </li>
-                    {Array.from({ length: totalPages }).map((_, index) => (
-                      <li className="d-sm-block page-item" key={index}>
-                        <Button
-                          aria-current={index === params.page ? 'page' : undefined}
-                          href="#"
-                          onClick={() => setParams((x) => ({ ...x, page: index }))}
-                          className="page-link"
-                        >
-                          {index + 1}
-                        </Button>
-                      </li>
-                    ))}
-                    <li className="page-item">
-                      <Button
-                        href="#"
-                        disabled={params.page === totalPages - 1}
-                        onClick={() => setParams((x) => ({ ...x, page: totalPages - 1 }))}
-                        className="page-link"
-                        aria-label="Next"
-                      >
-                        <Icon icon="it-chevron-right" />
-                      </Button>
-                    </li>
-                  </ul>
-                </Pager>
+                <Pagination
+                  currentPage={params.page}
+                  totalPages={totalPages}
+                  pageChanged={(page) => setParams((x) => ({ ...x, page }))}
+                />
               </div>
             )
           ) : (
