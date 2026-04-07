@@ -18,9 +18,7 @@ import { type FormEvent, useEffect, useState } from 'react';
 import { useSearchVocabularies } from './search-vocabularies.hooks';
 
 export function SearchVocabulariesModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [page, setPage] = useState(0);
-  const [params, setParams] = useState({ limit: 10, page, searchTerm });
+  const [params, setParams] = useState({ limit: 10, page: 0, searchTerm: '' });
   const { data, status, error } = useSearchVocabularies({
     limit: params.limit,
     offset: params.page,
@@ -31,7 +29,7 @@ export function SearchVocabulariesModal({ isOpen, onClose }: { isOpen: boolean; 
 
   useEffect(() => {
     if (!isOpen) {
-      setSearchTerm('');
+      setParams((x) => ({ ...x, page: 0, searchTerm: '' }));
     }
   }, [isOpen]);
 
@@ -107,8 +105,8 @@ export function SearchVocabulariesModal({ isOpen, onClose }: { isOpen: boolean; 
                     <li className="page-item">
                       <Button
                         href="#"
-                        disabled={page === 0}
-                        onClick={() => setPage(0)}
+                        disabled={params.page === 0}
+                        onClick={() => setParams((x) => ({ ...x, page: 0 }))}
                         className="page-link"
                         aria-label="Previous"
                       >
@@ -118,9 +116,9 @@ export function SearchVocabulariesModal({ isOpen, onClose }: { isOpen: boolean; 
                     {Array.from({ length: totalPages }).map((_, index) => (
                       <li className="d-sm-block page-item" key={index}>
                         <Button
-                          aria-current={index === page ? 'page' : undefined}
+                          aria-current={index === params.page ? 'page' : undefined}
                           href="#"
-                          onClick={() => setPage(index)}
+                          onClick={() => setParams((x) => ({ ...x, page: index }))}
                           className="page-link"
                         >
                           {index + 1}
@@ -130,8 +128,8 @@ export function SearchVocabulariesModal({ isOpen, onClose }: { isOpen: boolean; 
                     <li className="page-item">
                       <Button
                         href="#"
-                        disabled={page === totalPages - 1}
-                        onClick={() => setPage(totalPages - 1)}
+                        disabled={params.page === totalPages - 1}
+                        onClick={() => setParams((x) => ({ ...x, page: totalPages - 1 }))}
                         className="page-link"
                         aria-label="Next"
                       >

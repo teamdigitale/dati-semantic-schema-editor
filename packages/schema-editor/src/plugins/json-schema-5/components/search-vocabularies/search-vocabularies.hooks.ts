@@ -12,12 +12,11 @@ export function useSearchVocabularies(
   options?: Options,
 ): AsyncState<APICatalog> {
   const { vocabulariesApiUrl } = useConfiguration();
-  const queryString = new URLSearchParams(
-    Object.entries({ limit: 10, offset: 0, ...params })
-      .filter(([, value]) => !!value || value === 0)
-      .map(([key, value]) => `${key}=${value}`)
-      .join('&'),
-  );
+  const queryParams = new URLSearchParams();
+  Object.entries({ limit: 10, offset: 0, ...params })
+    .filter(([, value]) => !!value || value === 0)
+    .forEach(([key, value]) => queryParams.append(key, String(value)));
+  const queryString = queryParams.toString();
 
   const [state, setState] = useState<AsyncState<APICatalog>>({ status: 'idle' });
 
@@ -54,7 +53,7 @@ export function useSearchVocabularies(
     return () => {
       isCancelled = true;
     };
-  }, [JSON.stringify(params), JSON.stringify(options)]);
+  }, [vocabulariesApiUrl, queryString, JSON.stringify(options)]);
 
   return state;
 }
