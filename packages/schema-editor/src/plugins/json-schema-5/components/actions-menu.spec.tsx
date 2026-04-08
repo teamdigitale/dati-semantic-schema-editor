@@ -95,6 +95,7 @@ components:
     const system = {
       specSelectors: {
         specJson: () => specJsonMap,
+        definitions: () => ({ size: 1 }),
       },
       getConfigs: () => ({ layout: LayoutTypes.EDITOR, url: '' }),
       specActions: {},
@@ -115,6 +116,7 @@ components:
     const specSelectors = {
       specJson: () => Map({}),
       specStr: () => '',
+      definitions: () => ({ size: 1 }),
     };
 
     it('must show all editor actions when layout is EDITOR', () => {
@@ -136,6 +138,7 @@ components:
       expect(getByText('Action menu')).toBeTruthy();
       // Check that all editor actions are present
       expect(getByText('New from template')).toBeTruthy();
+      expect(getByText('Inspect vocabularies')).toBeTruthy();
       expect(getByText('Download editor content')).toBeTruthy();
       expect(getByText('Download as JSON')).toBeTruthy();
       expect(getByText('Download bundle')).toBeTruthy();
