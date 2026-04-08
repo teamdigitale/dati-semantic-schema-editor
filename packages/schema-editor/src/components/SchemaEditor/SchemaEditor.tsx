@@ -1,9 +1,10 @@
 import 'swagger-ui/dist/swagger-ui.css';
 import './SchemaEditor.scss';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import SwaggerEditor from 'swagger-editor';
 import SwaggerUI from 'swagger-ui';
+import { usePrevious } from '../../hooks';
 import {
   Config,
   ConfigurationPlugin,
@@ -123,12 +124,4 @@ export function SchemaEditor({
   }, [system, sparqlUrl, vocabulariesApiUrl, sparqlAutocompleteEnabled, oasCheckerUrl, schemaEditorUrl, tabsList]);
 
   return SwaggerUIComponent ? <SwaggerUIComponent /> : null;
-}
-
-function usePrevious<T>(value: T): T | undefined {
-  const ref = useRef<typeof value>();
-  useEffect(() => {
-    ref.current = value;
-  }, [value]);
-  return ref.current;
 }
