@@ -1,6 +1,8 @@
 import cx from 'classnames';
 import { version } from '../../../package.json';
 import {
+  Chip,
+  ChipLabel,
   Col,
   Header,
   HeaderBrand,
@@ -42,13 +44,23 @@ export function Layout({ children }: { children: ReactNode }) {
           <Col className="flex-grow-1 animate">
             <Header type="center" small className="inner-header">
               <HeaderContent>
-                <HeaderBrand iconAlt="it code circle icon" iconName="it-code-circle">
-                  <h2>Schema Editor - {version} beta</h2>
-                  <h3>Italian OpenAPI Schema Editor</h3>
+                <HeaderBrand>
+                  <div className="d-flex align-items-center gap-2">
+                    <img
+                      src="logo.svg"
+                      className="icon"
+                      style={{ maxWidth: '48px' }}
+                      alt="Italian OpenAPI Schema Editor"
+                    />
+                    <h2>Italian OpenAPI Schema Editor</h2>
+                    <Chip simple disabled className="my-0" style={{ minWidth: 'unset', cursor: 'default' }}>
+                      <ChipLabel className="text-primary">{version}</ChipLabel>
+                    </Chip>
+                  </div>
                 </HeaderBrand>
 
                 <HeaderRightZone>
-                  <HeaderSocialsZone label="Info + Repo">
+                  <HeaderSocialsZone>
                     <ul>
                       <li>
                         <a
@@ -56,9 +68,10 @@ export function Layout({ children }: { children: ReactNode }) {
                           href="https://github.com/teamdigitale/dati-semantic-schema-editor"
                           target="_blank"
                           rel="noreferrer"
-                          className={cx({ 'text-white': !showMenu, 'text-primary': showMenu })}
+                          className={cx({ 'text-white': !showMenu, 'text-primary': showMenu }, 'text-decoration-none')}
                         >
-                          <Icon icon="it-github" title="Source code" />
+                          Repository
+                          <Icon icon="it-github" title="Source code" className="ms-2" />
                         </a>
                       </li>
                     </ul>

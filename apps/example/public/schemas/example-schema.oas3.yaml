@@ -1,8 +1,23 @@
-#
-#    ## Welcome!
-#    Edit the following schema examples in this semantic editor
-#    based on Swagger Editor.
-#
+# > 🇮🇹 ITALIAN
+
+# Questo editor ti permette di creare e modificare schemi dati OpenAPI
+# attingendo alle risorse semantiche del catalogo nazionale per la semantica dei dati <https://schema.gov.it>.
+# Cerca ontologie e vocabolari controllati per descrivere in modo non ambiguo
+# i dati scambiati tra i tuoi sistemi, poi esporta lo schema pronto per <https://api.gov.it>.
+
+# Usa la barra di ricerca per trovare risorse semantiche,
+# componi il tuo schema e scarica il file OpenAPI generato.
+
+# > 🇬🇧 ENGLISH
+
+# This editor lets you create and edit OpenAPI data schemas
+# by drawing on the semantic resources of the national semantic data catalog <https://schema.gov.it>.
+# Search ontologies and controlled vocabularies to unambiguously define
+# the data exchanged between your systems, then export the schema ready for <https://api.gov.it>.
+
+# Use the search bar to find semantic resources,
+# compose your schema and download the generated OpenAPI file.
+
 openapi: 3.0.3
 components:
   schemas:
@@ -11,11 +26,11 @@ components:
       x-jsonld-context:
         # Use the value of the id field as the identifier, prefixed
         #  with the @base URL.
-        id: '@id'
-        '@base': 'https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/'
+        id: "@id"
+        "@base": "https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/"
         # Then use the @vocab to define the default vocabulary
         #  for the other fields.
-        '@vocab': 'https://w3id.org/italia/onto/CPV/'
+        "@vocab": "https://w3id.org/italia/onto/CPV/"
         description: educationLevelDesc
       type: object
       additionalProperties: false
@@ -57,7 +72,7 @@ components:
       type: object
     Parent:
       x-jsonld-context:
-        '@vocab': 'https://w3id.org/italia/onto/CPV/'
+        "@vocab": "https://w3id.org/italia/onto/CPV/"
         parent_id: taxCode
       type: object
       x-jsonld-type: https://w3id.org/italia/onto/CPV/Person
@@ -69,7 +84,7 @@ components:
         - parent_id
       properties:
         parent_id:
-          $ref: '#/components/schemas/TaxCode'
+          $ref: "#/components/schemas/TaxCode"
     BirthPlace:
       type: object
       additionalProperties: false
@@ -78,18 +93,18 @@ components:
         - province
         - country
       x-jsonld-context: &BirthPlaceContext
-        '@vocab': 'https://w3id.org/italia/onto/CLV/'
+        "@vocab": "https://w3id.org/italia/onto/CLV/"
         city: hasCity
         country:
-          '@id': 'hasCountry'
-          '@type': '@id'
-          '@context':
-            '@base': 'http://publications.europa.eu/resource/authority/country/'
+          "@id": "hasCountry"
+          "@type": "@id"
+          "@context":
+            "@base": "http://publications.europa.eu/resource/authority/country/"
         province:
-          '@id': 'hasProvince'
-          '@type': '@id'
-          '@context':
-            '@base': 'https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/'
+          "@id": "hasProvince"
+          "@type": "@id"
+          "@context":
+            "@base": "https://w3id.org/italia/data/identifiers/provinces-identifiers/vehicle-code/"
         interno: null
       properties:
         city:
@@ -107,7 +122,7 @@ components:
         postCode:
           type: string
           description: The post code (zip code)
-          example: '00100'
+          example: "00100"
         interno:
           type: string
           maxLength: 32
@@ -115,8 +130,8 @@ components:
         city: Roma
         province: RM
         country: ITA
-        postCode: '00100'
-        interno: 'Interno 8'
+        postCode: "00100"
+        interno: "Interno 8"
     Person:
       type: object
       x-jsonld-type: https://w3id.org/italia/onto/CPV/Person
@@ -124,29 +139,29 @@ components:
       #   context that can be used to semantically describe
       #   the instances.
       x-jsonld-context:
-        '@vocab': 'https://w3id.org/italia/onto/CPV/'
-        RPO: 'https://w3id.org/italia/onto/RPO/'
+        "@vocab": "https://w3id.org/italia/onto/CPV/"
+        RPO: "https://w3id.org/italia/onto/RPO/"
         tax_code: taxCode
         date_of_birth: dateOfBirth
         given_name: givenName
         family_name: familyName
         education_level:
-          '@id': hasLevelOfEducation
-          '@type': '@id'
-          '@context':
-            '@base': 'https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/'
+          "@id": hasLevelOfEducation
+          "@type": "@id"
+          "@context":
+            "@base": "https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/"
         resident_in:
-          '@id': 'RPO:currentlyHasRegisteredResidenceIn'
-          '@type': '@id'
-          '@context':
-            '@base': 'https://w3id.org/italia/onto/RPO/'
+          "@id": "RPO:currentlyHasRegisteredResidenceIn"
+          "@type": "@id"
+          "@context":
+            "@base": "https://w3id.org/italia/onto/RPO/"
         birth_place:
-          '@id': 'hasBirthPlace'
-          '@context': *BirthPlaceContext
+          "@id": "hasBirthPlace"
+          "@context": *BirthPlaceContext
         children:
-          '@id': isParentOf
+          "@id": isParentOf
         parents:
-          '@id': isChildOf
+          "@id": isChildOf
       additionalProperties: false
       description: |-
         Questo schema rappresenta una persona fisica.
@@ -156,7 +171,7 @@ components:
         - tax_code
       properties:
         tax_code:
-          $ref: '#/components/schemas/TaxCode'
+          $ref: "#/components/schemas/TaxCode"
         family_name:
           maxLength: 255
           type: string
@@ -173,7 +188,7 @@ components:
             Il livello di istruzione della persona.
             I valori ammessi sono indicati nel [vocabolario](https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level)
         birth_place:
-          $ref: '#/components/schemas/BirthPlace'
+          $ref: "#/components/schemas/BirthPlace"
         resident_in:
           type: string
           description: >-
@@ -182,21 +197,21 @@ components:
         children:
           type: array
           items:
-            $ref: '#/components/schemas/Person'
+            $ref: "#/components/schemas/Person"
           minItems: 0
           maxItems: 50
         parents:
           type: array
           items:
-            $ref: '#/components/schemas/Parent'
+            $ref: "#/components/schemas/Parent"
           maxItems: 2
           minItems: 0
       example:
         tax_code: RSSMRA75L01H501A
         family_name: Rossi
         given_name: Mario
-        date_of_birth: '1961-01-01'
-        education_level: 'NED'
+        date_of_birth: "1961-01-01"
+        education_level: "NED"
         birth_place:
           city: Roma
           province: RM
@@ -222,8 +237,8 @@ components:
         A fake schema that helps identifying
         the core schemas contained in this file.
       anyOf:
-        - $ref: '#/components/schemas/Person'
-        - $ref: '#/components/schemas/EducationLevel'
+        - $ref: "#/components/schemas/Person"
+        - $ref: "#/components/schemas/EducationLevel"
 paths: {}
 servers: []
 tags: []

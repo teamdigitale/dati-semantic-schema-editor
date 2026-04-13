@@ -89,7 +89,7 @@ function App() {
               <h3>Italian OpenAPI Schema Editor</h3>
             </HeaderBrand>
             <HeaderRightZone>
-              <HeaderSocialsZone label="Info + Repo">
+              <HeaderSocialsZone>
                 <ul>
                   <li>
                     <a
@@ -97,8 +97,10 @@ function App() {
                       href="https://github.com/teamdigitale/dati-semantic-schema-editor"
                       target="_blank"
                       rel="noreferrer"
+                      className="text-decoration-none"
                     >
-                      <Icon icon="it-github" title="Source code" />
+                      Repository
+                      <Icon icon="it-github" title="Source code" className="ms-2" />
                     </a>
                   </li>
                 </ul>
