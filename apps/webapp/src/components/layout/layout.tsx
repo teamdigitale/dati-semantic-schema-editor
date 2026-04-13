@@ -46,16 +46,21 @@ export function Layout({ children }: { children: ReactNode }) {
               <HeaderContent>
                 <HeaderBrand>
                   <div className="d-flex align-items-center gap-2">
-                    <img src="logo.svg" className="icon" alt="Italian OpenAPI Schema Editor" />
+                    <img
+                      src="logo.svg"
+                      className="icon"
+                      style={{ maxWidth: '48px' }}
+                      alt="Italian OpenAPI Schema Editor"
+                    />
                     <h2>Italian OpenAPI Schema Editor</h2>
-                    <Chip simple disabled className="my-0" style={{ minWidth: 'unset' }}>
+                    <Chip simple disabled className="my-0" style={{ minWidth: 'unset', cursor: 'default' }}>
                       <ChipLabel className="text-primary">{version}</ChipLabel>
                     </Chip>
                   </div>
                 </HeaderBrand>
 
                 <HeaderRightZone>
-                  <HeaderSocialsZone label="Info + Repo">
+                  <HeaderSocialsZone>
                     <ul>
                       <li>
                         <a
@@ -63,9 +68,10 @@ export function Layout({ children }: { children: ReactNode }) {
                           href="https://github.com/teamdigitale/dati-semantic-schema-editor"
                           target="_blank"
                           rel="noreferrer"
-                          className={cx({ 'text-white': !showMenu, 'text-primary': showMenu })}
+                          className={cx({ 'text-white': !showMenu, 'text-primary': showMenu }, 'text-decoration-none')}
                         >
-                          <Icon icon="it-github" title="Source code" />
+                          Repository
+                          <Icon icon="it-github" title="Source code" className="ms-2" />
                         </a>
                       </li>
                     </ul>

@@ -1,19 +1,90 @@
 ###### 🇮🇹 ITALIAN
 
-Questo editor ti permette di creare e modificare schemi dati OpenAPI
-attingendo alle risorse semantiche del catalogo nazionale per la semantica dei dati <https://schema.gov.it>.
-Cerca ontologie e vocabolari controllati per descrivere in modo non ambiguo
-i dati scambiati tra i tuoi sistemi, poi esporta lo schema pronto per <https://api.gov.it>.
+Questa applicazione visualizza i tuoi schemi dati (modelli) in formato OpenAPI interrogando i dati presenti su <https://schema.gov.it>.
+Insieme al [validatore OpenAPI](https://italia.github.io/api-oas-checker/) supporta
+la progettazione di API conformi al Modello di Interoperablità.
 
-Usa la barra di ricerca per trovare risorse semantiche,
-componi il tuo schema e scarica il file OpenAPI generato.
+L'applicazione mostra:
+
+- le informazioni sintattiche specificate
+  in formato [OpenAPI 3.0](https://spec.openapis.org/oas/v3.0.3.html) (JSON Schema Wright Draft 00) quali
+  il tipo sintattico (`string`, `number`, `object`, `array`, etc.) la lunghezza massima, minima, i valori o le espressioni regolari ammesse, etc;
+- le informazioni semantiche in formato
+  [JSON-LD](https://spec.openapis.org/oas/v3.0.3.html)
+  come
+  la descrizione([`rdfs:comment`](https://www.w3.org/2000/01/rdf-schema#comment)),
+  il titolo ([`rdfs:label`](https://www.w3.org/2000/01/rdf-schema#label)),
+  i vincoli legati alle classi semantiche
+  ([`rdfs:Class`](https://www.w3.org/2000/01/rdf-schema#Class) / [`owl:Class`](https://www.w3.org/2002/07/owl#Class))
+  e al dominio applicativo ([`rdfs:domain`](https://www.w3.org/2000/01/rdf-schema#domain), [`rdfs:range`](https://www.w3.org/2000/01/rdf-schema#range)).
+- un punteggio semantico (semantic score) che indica il livello di completezza
+  delle annotazioni semantiche presenti nello schema.
+  Il punteggio viene calcolato sulla base delle informazioni semantiche disponibili ed è visualizzato nell'interfaccia tramite apposita dicitura 'Schema Semantic Score' e tramite un indicatore laterale accanto agli elementi dello schema di tipo `object`. L'indicatore avrà colore verde nel caso di un punteggio sufficiente, giallo in caso contrario, grigio in caso di tipo non `object`.
+
+Puoi aprire uno schema OpenAPI in formato JSON o YAML:
+
+- incollando direttamente il contenuto nell'editor;
+- trascinando un file sul pannello dell'editor;
+- indicando nella barra degli indirizzi l'url del file da aprire.
+
+Apporta le modifiche direttamente nell'editor,
+quindi usa l'Action menu per
+scaricarle localmente
+o condividerle via web.
+
+Usa `CTRL+Space` per attivare l'auto-completamento
+delle parole chiave OpenAPI
+(incluse quelle semantiche: `x-jsonld-type` e `x-jsonld-context`)
+e degli URI delle classi semantiche principali.
+
+L'editor supporta le seguenti scorciatoie da tastiera:
+
+- `CTRL+F` cerca nel testo;
+- `CTRL+H` sostituisci nel testo;
+- `ALT+E` vai al prossimo errore.
 
 ###### 🇬🇧 ENGLISH
 
-This editor lets you create and edit OpenAPI data schemas
-by drawing on the semantic resources of the national semantic data catalog <https://schema.gov.it>.
-Search ontologies and controlled vocabularies to unambiguously define
-the data exchanged between your systems, then export the schema ready for <https://api.gov.it>.
+This application displays your data schemas (models) in OpenAPI format by querying the data on <https://schema.gov.it>.
+Together with the [OpenAPI validator](https://italia.github.io/api-oas-checker/) it supports
+the design of APIs compliant with the Italian Interoperability Model.
 
-Use the search bar to find semantic resources,
-compose your schema and download the generated OpenAPI file.
+The application shows:
+
+- the syntactic information specified
+  in [OpenAPI 3.0](https://spec.openapis.org/oas/v3.0.3.html) format (JSON Schema Wright Draft 00)
+  such as the syntactic type (`string`, `number`, `object`, `array`, etc.), the maximum and minimum length, the allowed values or regular expressions, etc;
+- the semantic information in JSON-LD format
+  like
+  the description([`rdfs:comment`](https://www.w3.org/2000/01/rdf-schema#comment)),
+  the title([`rdfs:label`](https://www.w3.org/2000/01/rdf-schema#label)),
+  the constraints related to the semantic classes
+  ( [`rdfs:Class`](https://www.w3.org/2000/01/rdf-schema#Class) / [`owl:Class`](https://www.w3.org/2002/07/owl#Class)) and to the application domain (`rdfs:domain`, `rdfs:range`).
+- a semantic score indicating the level of completeness
+  of the semantic annotations in the schema.
+  The score is calculated based on the available semantic metadata
+  (for example `rdfs:label`, `rdfs:comment`, `rdfs:domain`, `rdfs:range`, etc.)
+  and is displayed in the interface through the "Schema Semantic Score" label
+  and through a side indicator next to schema elements defined as `type: object`.
+  The indicator is green when the score is considered sufficient, yellow otherwise, grey if type is non-object.
+
+You can open an OpenAPI schema in JSON or YAML format:
+
+- by pasting the content directly into the editor;
+- by dragging a file onto the editor panel;
+- by entering the file's URL in the address bar.
+
+Make changes directly in the editor,
+then use the Action menu to
+download them locally
+or share them online.
+
+Use `CTRL+Space` to activate the automatic completion
+of OpenAPI keywords
+and the URIs of the main semantic classes.
+
+The editor supports the following keyboard shortcuts:
+
+- `CTRL+F` search in the text;
+- `CTRL+H` replace in the text;
+- `ALT+E` go to the next error.
