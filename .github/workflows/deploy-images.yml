@@ -113,10 +113,10 @@ jobs:
         if: steps.should_build.outputs.build == 'true'
         uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5.8.0
         with:
-          images: ${{ env.REGISTRY }}/${{ matrix.image_name }}
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image_name }}
           labels: |
             maintainer=teamdigitale
-            org.opencontainers.image.title=${{ matrix.image_name }}
+            org.opencontainers.image.title=${{ github.repository_owner }}/${{ matrix.image_name }}
           tags: |
             type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
             type=raw,value=${{ steps.version.outputs.value }},enable=${{ steps.version.outputs.value != '' }}
