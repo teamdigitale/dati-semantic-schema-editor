@@ -56,16 +56,23 @@ jobs:
     strategy:
       matrix:
         include:
-          - target: webapp
+          - name: Webapp
+            target: webapp
             image_name: dati-semantic-schema-editor
             tag_pattern: "^refs/tags/webapp@(.+)$"
             force_push_label: push-container:webapp # Label prefix to force push the image in pull request
-          - target: api
+          - name: API
+            target: api
             image_name: dati-semantic-schema-editor-api
             tag_pattern: "^refs/tags/api@(.+)$"
             force_push_label: push-container:api # Label prefix to force push the image in pull request
+          - name: API PDND
+            target: api
+            image_name: dati-semantic-schema-editor-api-pdnd
+            tag_pattern: "^refs/tags/api@(.+)$"
+            force_push_label: push-container:api # Label prefix to force push the image in pull request
 
-    name: Docker Build ${{ matrix.target }}
+    name: Docker Build ${{ matrix.name }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -135,11 +142,13 @@ jobs:
     strategy:
       matrix:
         include:
-          - target: webapp
+          - name: Webapp
             image_name: dati-semantic-schema-editor
-          - target: api
+          - name: API
             image_name: dati-semantic-schema-editor-api
-    name: Cleanup Docker Images ${{ matrix.target }}
+          - name: API PDND
+            image_name: dati-semantic-schema-editor-api-pdnd
+    name: Cleanup Docker Images ${{ matrix.name }}
     steps:
       - name: Cleanup Docker Images
         uses: actions/delete-package-versions@e5bc658cc4c965c472efe991f8beea3981499c55 # v5
