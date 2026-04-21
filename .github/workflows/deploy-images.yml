@@ -15,8 +15,13 @@ on:
       - ".husky/**"
       - ".changeset/**"
   pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
     branches-ignore:
-    - "changeset-release/**"
+      - "changeset-release/**"
     paths-ignore:
       - "*.md"
       - "LICENSE"
@@ -30,7 +35,6 @@ permissions:
 env:
   CI: true
   REGISTRY: ghcr.io
-  IMAGE_NAME_PREFIX: ${{ github.repository }}
   DOCKER_BUILDKIT: "1"
 
 jobs:
@@ -55,18 +59,26 @@ jobs:
     needs:
       - security
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - target: webapp
-            image_suffix: ""
+          - name: Webapp
+            target: webapp
+            image_name: dati-semantic-schema-editor
             tag_pattern: "^refs/tags/webapp@(.+)$"
             force_push_label: push-container:webapp # Label prefix to force push the image in pull request
-          - target: api
-            image_suffix: "-api"
+          - name: API
+            target: api
+            image_name: dati-semantic-schema-editor-api
+            tag_pattern: "^refs/tags/api@(.+)$"
+            force_push_label: push-container:api # Label prefix to force push the image in pull request
+          - name: API PDND
+            target: api
+            image_name: dati-semantic-schema-editor-api-pdnd
             tag_pattern: "^refs/tags/api@(.+)$"
             force_push_label: push-container:api # Label prefix to force push the image in pull request
 
-    name: Docker Build ${{ matrix.target }}
+    name: Docker Build ${{ matrix.name }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -106,10 +118,10 @@ jobs:
         if: steps.should_build.outputs.build == 'true'
         uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5.8.0
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}${{ matrix.image_suffix }}
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image_name }}
           labels: |
             maintainer=teamdigitale
-            org.opencontainers.image.title=${{ env.IMAGE_NAME_PREFIX }}${{ matrix.image_suffix }}
+            org.opencontainers.image.title=${{ github.repository_owner }}/${{ matrix.image_name }}
           tags: |
             type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
             type=raw,value=${{ steps.version.outputs.value }},enable=${{ steps.version.outputs.value != '' }}
@@ -120,7 +132,9 @@ jobs:
         with:
           context: .
           target: ${{ matrix.target }}
-          push: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, matrix.force_push_label) }}
+          push: ${{ github.event_name != 'pull_request' ||
+            contains(github.event.pull_request.labels.*.name,
+            matrix.force_push_label) }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
@@ -134,16 +148,24 @@ jobs:
     strategy:
       matrix:
         include:
-          - target: webapp
-            image_suffix: ""
-          - target: api
-            image_suffix: "-api"
-    name: Cleanup Docker Images ${{ matrix.target }}
+          - name: Webapp
+            image_name: dati-semantic-schema-editor
+          - name: API
+            image_name: dati-semantic-schema-editor-api
+          - name: API PDND
+            image_name: dati-semantic-schema-editor-api-pdnd
+    name: Cleanup Docker Images ${{ matrix.name }}
     steps:
       - name: Cleanup Docker Images
+        id: cleanup_images
+        continue-on-error: true
         uses: actions/delete-package-versions@e5bc658cc4c965c472efe991f8beea3981499c55 # v5
         with:
-          package-name: "dati-semantic-schema-editor${{ matrix.image_suffix }}"
+          package-name: "${{ matrix.image_name }}"
           package-type: "container"
           min-versions-to-keep: 30
           ignore-versions: "(latest|^[0-9]+\\.[0-9]+\\.[0-9]+$)"
+      - name: Warn if cleanup fails
+        if: ${{ steps.cleanup_images.outcome == 'failure' }}
+        run: echo "::warning::Cleanup failed for ${{ matrix.image_name }}. The workflow
+          will continue."
