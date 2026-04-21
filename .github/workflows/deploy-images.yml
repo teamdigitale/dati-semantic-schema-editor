@@ -16,7 +16,7 @@ on:
       - ".changeset/**"
   pull_request:
     branches-ignore:
-    - "changeset-release/**"
+      - "changeset-release/**"
     paths-ignore:
       - "*.md"
       - "LICENSE"
@@ -30,7 +30,6 @@ permissions:
 env:
   CI: true
   REGISTRY: ghcr.io
-  IMAGE_NAME_PREFIX: ${{ github.repository }}
   DOCKER_BUILDKIT: "1"
 
 jobs:
@@ -58,11 +57,11 @@ jobs:
       matrix:
         include:
           - target: webapp
-            image_suffix: ""
+            image_name: dati-semantic-schema-editor
             tag_pattern: "^refs/tags/webapp@(.+)$"
             force_push_label: push-container:webapp # Label prefix to force push the image in pull request
           - target: api
-            image_suffix: "-api"
+            image_name: dati-semantic-schema-editor-api
             tag_pattern: "^refs/tags/api@(.+)$"
             force_push_label: push-container:api # Label prefix to force push the image in pull request
 
@@ -106,10 +105,10 @@ jobs:
         if: steps.should_build.outputs.build == 'true'
         uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5.8.0
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}${{ matrix.image_suffix }}
+          images: ${{ env.REGISTRY }}/${{ matrix.image_name }}
           labels: |
             maintainer=teamdigitale
-            org.opencontainers.image.title=${{ env.IMAGE_NAME_PREFIX }}${{ matrix.image_suffix }}
+            org.opencontainers.image.title=${{ matrix.image_name }}
           tags: |
             type=raw,value={{date 'YYYYMMDD'}}-${{github.run_number}}-{{sha}}
             type=raw,value=${{ steps.version.outputs.value }},enable=${{ steps.version.outputs.value != '' }}
@@ -120,7 +119,9 @@ jobs:
         with:
           context: .
           target: ${{ matrix.target }}
-          push: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, matrix.force_push_label) }}
+          push: ${{ github.event_name != 'pull_request' ||
+            contains(github.event.pull_request.labels.*.name,
+            matrix.force_push_label) }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
@@ -135,15 +136,15 @@ jobs:
       matrix:
         include:
           - target: webapp
-            image_suffix: ""
+            image_name: dati-semantic-schema-editor
           - target: api
-            image_suffix: "-api"
+            image_name: dati-semantic-schema-editor-api
     name: Cleanup Docker Images ${{ matrix.target }}
     steps:
       - name: Cleanup Docker Images
         uses: actions/delete-package-versions@e5bc658cc4c965c472efe991f8beea3981499c55 # v5
         with:
-          package-name: "dati-semantic-schema-editor${{ matrix.image_suffix }}"
+          package-name: "${{ matrix.image_name }}"
           package-type: "container"
           min-versions-to-keep: 30
           ignore-versions: "(latest|^[0-9]+\\.[0-9]+\\.[0-9]+$)"
