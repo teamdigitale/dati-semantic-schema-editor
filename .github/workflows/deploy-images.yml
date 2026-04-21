@@ -54,6 +54,7 @@ jobs:
     needs:
       - security
     strategy:
+      fail-fast: false
       matrix:
         include:
           - name: Webapp
