@@ -127,6 +127,9 @@ importers:
       http-status-codes:
         specifier: ^2.3.0
         version: 2.3.0
+      immutable:
+        specifier: ^5.1.4
+        version: 5.1.4
       js-yaml:
         specifier: ^4.1.1
         version: 4.1.1

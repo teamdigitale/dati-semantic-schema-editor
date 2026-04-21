@@ -1,35 +1,7 @@
 import { Map } from 'immutable';
 import { expand } from 'jsonld';
 import { basename } from '../utils';
-
-/**
- * JSON-LD vocabulary keys
- * @see https://www.w3.org/ns/json-ld
- */
-const JSONLD_VOCABULARY = [
-  '@base',
-  '@container',
-  '@context',
-  '@definition',
-  '@direction',
-  '@id',
-  '@import',
-  '@language',
-  '@nest',
-  '@prefix',
-  '@propagate',
-  '@protected',
-  '@reverse',
-  '@term',
-  '@type',
-  '@version',
-  '@vocab',
-
-  '@graph',
-  '@index',
-  '@list',
-  '@set',
-];
+import { JSONLD_VOCABULARY } from './jsonld-vocabulary';
 
 export interface JsonLDResolverResult {
   fieldName: string;

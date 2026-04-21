@@ -1,7 +1,6 @@
-/* eslint-disable react/display-name */
 import { Button } from 'design-react-kit';
 import { List } from 'immutable';
-import { resolveSpecPathRefs } from './utils';
+import { resolveSpecPathRefs } from '@teamdigitale/schema-editor-utils';
 
 export const JumpToPathOverridePlugin = () => {
   return {
@@ -9,13 +8,16 @@ export const JumpToPathOverridePlugin = () => {
       spec: {
         wrapSelectors: {
           bestJumpPath: (oriSelector, system) => (state, options: { path?: string; specPath: List<string> }) => {
-            const specPathArray: string[] = resolveSpecPathRefs(system, options.specPath?.toJS() || []);
-            return oriSelector({ path: options.path, specPath: specPathArray });
+            const specJson = system.specSelectors.specJson();
+            const specPath = options.specPath?.toJS() || [];
+            const resolvedSpecPath: string[] = resolveSpecPathRefs(specJson, specPath);
+            return oriSelector({ path: options.path, specPath: resolvedSpecPath });
           },
         },
       },
     },
     wrapComponents: {
+      // eslint-disable-next-line react/display-name
       JumpToPath: (Original, system) => (props) => {
         return (
           <Original

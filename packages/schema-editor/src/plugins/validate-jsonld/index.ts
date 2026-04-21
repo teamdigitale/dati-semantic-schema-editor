@@ -1,4 +1,4 @@
-import { validateJsonldContext } from './validators/validate-jsonld-context';
+import { validateJsonldContext } from '@teamdigitale/schema-editor-utils';
 
 export const JSONLDValidatorPlugin = () => {
   return {
@@ -10,12 +10,21 @@ export const JSONLDValidatorPlugin = () => {
         },
         actions: {
           validate: () => async (system) => {
+            // Clear previous errors
             const source = system.jsonldValidatorSelectors.errSource();
             system.errActions.clear({ source });
-            system.errActions.newSpecErrBatch([
-              // Insert here all validation functions
-              ...(await validateJsonldContext(system)),
-            ]);
+
+            // Validate jsonld context
+            const specJson = system.specSelectors.specJson();
+            let issues = await validateJsonldContext(specJson);
+            issues = issues.map((error) => ({
+              ...error,
+              line: system.specSelectors.getSpecLineFromPath(error.path),
+              source: system.jsonldValidatorSelectors.errSource(),
+            }));
+
+            // Add new errors
+            system.errActions.newSpecErrBatch(issues);
           },
         },
       },
