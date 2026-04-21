@@ -151,9 +151,15 @@ jobs:
     name: Cleanup Docker Images ${{ matrix.name }}
     steps:
       - name: Cleanup Docker Images
+        id: cleanup_images
+        continue-on-error: true
         uses: actions/delete-package-versions@e5bc658cc4c965c472efe991f8beea3981499c55 # v5
         with:
           package-name: "${{ matrix.image_name }}"
           package-type: "container"
           min-versions-to-keep: 30
           ignore-versions: "(latest|^[0-9]+\\.[0-9]+\\.[0-9]+$)"
+      - name: Warn if cleanup fails
+        if: ${{ steps.cleanup_images.outcome == 'failure' }}
+        run: echo "::warning::Cleanup failed for ${{ matrix.image_name }}. The workflow
+          will continue."
