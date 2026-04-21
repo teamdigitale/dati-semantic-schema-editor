@@ -114,12 +114,12 @@ The response will output informations about the global semantic score and the mo
     // Parse file content to JS object
     this.logger.debug(`Parsing file content to JS object`);
     const fileContent = file.buffer.toString('utf-8');
-    let specJson: any;
+    let specJson: object;
     if (
       file.mimetype === 'application/yaml' ||
       file.originalname.endsWith('.yaml')
     ) {
-      specJson = yaml.load(fileContent);
+      specJson = yaml.load(fileContent) as object;
       if (!specJson) {
         throw new UnsupportedMediaTypeException('Invalid YAML content');
       }
@@ -128,7 +128,7 @@ The response will output informations about the global semantic score and the mo
       file.mimetype === 'application/json' ||
       file.originalname.endsWith('.json')
     ) {
-      specJson = JSON.parse(fileContent);
+      specJson = JSON.parse(fileContent) as object;
       if (!specJson) {
         throw new UnsupportedMediaTypeException('Invalid JSON content');
       }
@@ -148,6 +148,16 @@ The response will output informations about the global semantic score and the mo
     if (errors.length > 0) {
       const errorTxt = errors
         .map((x) => x.toString(undefined, undefined, undefined, true))
+        .join('\n');
+      throw new NotAcceptableException(errorTxt);
+    }
+
+    // Validate JSON-LD context
+    const jsonldContextErrors =
+      await this.semanticScoreService.validateJsonldContext(specJson);
+    if (jsonldContextErrors.length > 0) {
+      const errorTxt = jsonldContextErrors
+        .map((x) => `[${x.path.join('/')}] ${x.message}`)
         .join('\n');
       throw new NotAcceptableException(errorTxt);
     }

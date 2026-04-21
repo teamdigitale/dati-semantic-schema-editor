@@ -1,19 +1,7 @@
-import { fromJS } from 'immutable';
+import { fromJS, OrderedMap } from 'immutable';
 import yaml from 'js-yaml';
-import { describe, expect, it, vi } from 'vitest';
-import { validateJsonldContext } from './validate-jsonld-context';
-
-const createMockSystem = (specJson) => {
-  return {
-    specSelectors: {
-      specJson: vi.fn(() => specJson),
-      getSpecLineFromPath: vi.fn(() => 1),
-    },
-    jsonldValidatorSelectors: {
-      errSource: vi.fn(() => 'JsonLD Validator'),
-    },
-  };
-};
+import { describe, expect, it } from 'vitest';
+import { validateJsonldContext } from './jsonld-validator';
 
 describe('validateJsonldContext', () => {
   describe('validate x-jsonld-context keys and values', () => {
@@ -31,8 +19,7 @@ describe('validateJsonldContext', () => {
             },
           },
         });
-        const system = createMockSystem(specJson);
-        const errors = await validateJsonldContext(system);
+        const errors = await validateJsonldContext(specJson);
         expect(errors).toHaveLength(0);
       });
 
@@ -49,8 +36,7 @@ describe('validateJsonldContext', () => {
             },
           },
         });
-        const system = createMockSystem(specJson);
-        const errors = await validateJsonldContext(system);
+        const errors = await validateJsonldContext(specJson);
         expect(errors).toHaveLength(1);
         expect(errors[0].level).toBe('warning');
         expect(errors[0].message).toContain('@base value is not valid');
@@ -72,8 +58,7 @@ describe('validateJsonldContext', () => {
             },
           },
         });
-        const system = createMockSystem(specJson);
-        const errors = await validateJsonldContext(system);
+        const errors = await validateJsonldContext(specJson);
         expect(errors).toHaveLength(1);
         expect(errors[0].level).toBe('error');
         expect(errors[0].message).toContain('not a valid jsonld keyword');
@@ -94,8 +79,7 @@ describe('validateJsonldContext', () => {
             },
           },
         });
-        const system = createMockSystem(specJson);
-        const errors = await validateJsonldContext(system);
+        const errors = await validateJsonldContext(specJson);
         expect(errors).toHaveLength(0);
       });
     });
@@ -116,8 +100,7 @@ describe('validateJsonldContext', () => {
             },
           },
         });
-        const system = createMockSystem(specJson);
-        const errors = await validateJsonldContext(system);
+        const errors = await validateJsonldContext(specJson);
         expect(errors).toHaveLength(1);
         expect(errors[0].level).toBe('warning');
         expect(errors[0].message).toContain('limitations and security implications');
@@ -139,8 +122,7 @@ describe('validateJsonldContext', () => {
             },
           },
         });
-        const system = createMockSystem(specJson);
-        const errors = await validateJsonldContext(system);
+        const errors = await validateJsonldContext(specJson);
         expect(errors).toHaveLength(1);
         expect(errors[0].level).toBe('warning');
         expect(errors[0].message).toContain('limitations and security implications');
@@ -164,8 +146,7 @@ describe('validateJsonldContext', () => {
             },
           },
         });
-        const system = createMockSystem(specJson);
-        const errors = await validateJsonldContext(system);
+        const errors = await validateJsonldContext(specJson);
         expect(errors).toHaveLength(0);
       });
     });
@@ -211,9 +192,8 @@ components:
         birth_place:
           $ref: '#/components/schemas/BirthPlace'
           `;
-        const specJson = fromJS(yaml.load(specYaml));
-        const system = createMockSystem(specJson);
-        const errors = await validateJsonldContext(system);
+        const specJson = fromJS(yaml.load(specYaml)) as OrderedMap<string, any>;
+        const errors = await validateJsonldContext(specJson);
         const warning = errors.filter(
           (e) =>
             e.level === 'warning' && e.message.includes('The @id annotation should be used with string properties.'),
@@ -261,9 +241,8 @@ components:
         birth_place:
           $ref: '#/components/schemas/BirthPlace'
           `;
-        const specJson = fromJS(yaml.load(specYaml));
-        const system = createMockSystem(specJson);
-        const errors = await validateJsonldContext(system);
+        const specJson = fromJS(yaml.load(specYaml)) as OrderedMap<string, any>;
+        const errors = await validateJsonldContext(specJson);
         const warning = errors.find(
           (e) =>
             e.level === 'warning' && e.message.includes('The @id annotation should be used with string properties.'),
@@ -289,9 +268,8 @@ components:
         bar:
           type: string
           `;
-        const specJson = fromJS(yaml.load(specYaml));
-        const system = createMockSystem(specJson);
-        const errors = await validateJsonldContext(system);
+        const specJson = fromJS(yaml.load(specYaml)) as OrderedMap<string, any>;
+        const errors = await validateJsonldContext(specJson);
         const error = errors.find(
           (e) =>
             e.level === 'error' &&
@@ -316,9 +294,8 @@ components:
         bar:
           type: string
           `;
-        const specJson = fromJS(yaml.load(specYaml));
-        const system = createMockSystem(specJson);
-        const errors = await validateJsonldContext(system);
+        const specJson = fromJS(yaml.load(specYaml)) as OrderedMap<string, any>;
+        const errors = await validateJsonldContext(specJson);
         expect(errors).toHaveLength(0);
       });
     });
@@ -339,9 +316,8 @@ components:
         name:
           type: string
         `;
-      const specJson = fromJS(yaml.load(specYaml));
-      const system = createMockSystem(specJson);
-      const errors = await validateJsonldContext(system);
+      const specJson = fromJS(yaml.load(specYaml)) as OrderedMap<string, any>;
+      const errors = await validateJsonldContext(specJson);
       expect(errors).toHaveLength(0);
     });
 
@@ -359,9 +335,8 @@ components:
         invalid:
           type: string
         `;
-      const specJson = fromJS(yaml.load(specYaml));
-      const system = createMockSystem(specJson);
-      const errors = await validateJsonldContext(system);
+      const specJson = fromJS(yaml.load(specYaml)) as OrderedMap<string, any>;
+      const errors = await validateJsonldContext(specJson);
       expect(errors.length).toBeGreaterThan(0);
       expect(errors[0].level).toBe('error');
     });

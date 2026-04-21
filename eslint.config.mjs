@@ -3,10 +3,21 @@ import pluginJs from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import reactPlugin from 'eslint-plugin-react';
 import eslintConfigPrettier from 'eslint-config-prettier';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const tsconfigRootDir = dirname(fileURLToPath(import.meta.url));
 
 export default [
   {
     ignores: ['node_modules/**', 'coverage/**', 'public/**', 'dist/**', '**/pnpm-lock.yaml', '**/pnpm-workspace.yaml'],
+  },
+  {
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir,
+      },
+    },
   },
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,

@@ -1,17 +1,17 @@
 import { fromJS } from 'immutable';
 import { describe, expect, it } from 'vitest';
-import { resolveSpecPathRefs } from './utils';
+import { resolveSpecPathRefs } from './resolve-spec-path-refs';
 
 describe('resolveSpecPathRefs', () => {
-  const system = { specSelectors: { specJson: getSchema } };
-
   it('should resolve direct $ref', async () => {
-    const result = resolveSpecPathRefs(system, ['components', 'schemas', 'A', 'properties', 'hasBirthPlace']);
+    const specJson = getSchema();
+    const result = resolveSpecPathRefs(specJson, ['components', 'schemas', 'A', 'properties', 'hasBirthPlace']);
     expect(result).toEqual(['components', 'schemas', 'B']);
   });
 
   it('should resolve inner property $ref', async () => {
-    const result = resolveSpecPathRefs(system, [
+    const specJson = getSchema();
+    const result = resolveSpecPathRefs(specJson, [
       'components',
       'schemas',
       'A',

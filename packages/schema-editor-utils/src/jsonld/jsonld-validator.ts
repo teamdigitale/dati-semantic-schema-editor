@@ -1,45 +1,57 @@
 import { resolveJsonldContext, resolvePropertyByJsonldContext } from '@teamdigitale/schema-editor-utils';
 import { Map, OrderedMap } from 'immutable';
-import { resolveSpecPathRefs } from '../../jump-to-path/utils';
-import { SwaggerError } from '../models/error';
-import { JSONLD_VOCABULARY } from '../common/vocabulary';
+import { JSONLD_VOCABULARY } from './jsonld-vocabulary';
+import { resolveSpecPathRefs } from '../utils';
+
+export interface JsonLDValidationIssue {
+  type: string;
+  level: 'error' | 'warning';
+  message: string;
+  path: string[];
+}
 
 /**
  * Validates the jsonld context and its properties in the spec.
  * @param system - The system object.
  * @returns An array of Swagger Editor's errors.
  */
-export const validateJsonldContext = async (system): Promise<SwaggerError[]> => {
-  const specJson = system.specSelectors.specJson() as OrderedMap<string, any>;
-
-  const source = system.jsonldValidatorSelectors.errSource();
-  const errors: SwaggerError[] = [];
+export const validateJsonldContext = async (specJson: OrderedMap<string, any>): Promise<JsonLDValidationIssue[]> => {
+  const issues: JsonLDValidationIssue[] = [];
 
   // Extract all data models from spec
   const SCHEMAS_PATH = ['components', 'schemas'];
   const dataModels = specJson.getIn(SCHEMAS_PATH) as Map<any, any> | undefined;
   if (!dataModels) {
-    return errors;
+    return issues;
   }
 
   // Process every element in #/components/schemas that has a jsonld context
   const filteredSchemas = dataModels.filter((x) => x.has('x-jsonld-context'));
   for (const [dataModelKey, dataModel] of filteredSchemas.entries()) {
-    // Check if x-jsonld-context is a URL (not an embedded context)
     const xJsonldContext = dataModel.get('x-jsonld-context');
+    const jsonldContextPath = resolveSpecPathRefs(specJson, [...SCHEMAS_PATH, dataModelKey, 'x-jsonld-context']);
+
+    // Check if x-jsonld-context is a URL (not an embedded context)
     if (
       typeof xJsonldContext === 'string' &&
       (xJsonldContext.startsWith('http://') || xJsonldContext.startsWith('https://'))
     ) {
-      const jsonldContextPath = resolveSpecPathRefs(system, [...SCHEMAS_PATH, dataModelKey, 'x-jsonld-context']);
-      const jsonldContextLine = system.specSelectors.getSpecLineFromPath(jsonldContextPath);
-      errors.push({
+      issues.push({
         type: 'spec',
-        source,
         level: 'warning',
         message: `Context URL dereferencing is not supported. URL contexts have limitations and security implications. Use an embedded context instead.`,
         path: jsonldContextPath,
-        line: jsonldContextLine,
+      });
+      continue;
+    }
+
+    // Check if x-jsonld-context is an object
+    if (typeof xJsonldContext !== 'object' || xJsonldContext === null) {
+      issues.push({
+        type: 'spec',
+        level: 'error',
+        message: `Context must be an object.`,
+        path: jsonldContextPath,
       });
       continue;
     }
@@ -58,41 +70,36 @@ export const validateJsonldContext = async (system): Promise<SwaggerError[]> => 
 
       for (const [key, value] of entries) {
         const innerPath = [...resolvedPath, key];
-        const jsonldPropertyFullPath = resolveSpecPathRefs(system, [
+        const jsonldPropertyFullPath = resolveSpecPathRefs(specJson, [
           ...SCHEMAS_PATH,
           dataModelKey,
           'x-jsonld-context',
           ...innerPath,
         ]);
-        const jsonldPropertyLine = system.specSelectors.getSpecLineFromPath(jsonldPropertyFullPath);
 
         // VALIDATION 1A: avoid invalid @base values
         if (key === '@base' && !['#', '/', ':'].some((x) => value?.toString().endsWith(x))) {
-          errors.push({
+          issues.push({
             type: 'spec',
-            source,
             level: 'warning',
             message: `The provided @base value is not valid. It should end with #, /, or :`,
             path: jsonldPropertyFullPath,
-            line: jsonldPropertyLine,
           });
         }
 
         // VALIDATION 1B: avoid invalid jsonld keywords
         if (key.startsWith('@') && !JSONLD_VOCABULARY.includes(key)) {
-          errors.push({
+          issues.push({
             type: 'spec',
-            source,
             level: 'error',
             message: `Key ${key} is not a valid jsonld keyword. Allowed keywords are: ${JSONLD_VOCABULARY.join(', ')}`,
             path: jsonldPropertyFullPath,
-            line: jsonldPropertyLine,
           });
         }
 
         // VALIDATION 1C: avoid invalid @id values associated with non-string properties
         if (value === '@id') {
-          const propertyPath = resolveSpecPathRefs(system, [
+          const propertyPath = resolveSpecPathRefs(specJson, [
             ...SCHEMAS_PATH,
             dataModelKey,
             'properties',
@@ -100,13 +107,11 @@ export const validateJsonldContext = async (system): Promise<SwaggerError[]> => 
           ]);
           const property = specJson.getIn(propertyPath) as Map<string, any>;
           if (!property || property.get('type') !== 'string') {
-            errors.push({
+            issues.push({
               type: 'spec',
-              source,
               level: 'warning',
               message: `The @id annotation should be used with string properties.`,
               path: jsonldPropertyFullPath,
-              line: jsonldPropertyLine,
             });
           }
         }
@@ -115,13 +120,11 @@ export const validateJsonldContext = async (system): Promise<SwaggerError[]> => 
         // Pay attention: don't block properties full URIs like "https://w3id.org/italia/onto/CPV/description"
         // prefixes must be referenced by other properties (i.e. "description": "CPV:description").
         if (/^https?:\/\/.*[^#/:]$/.test(value) && stringifiedJsonldContext.includes(`${key}:`)) {
-          errors.push({
+          issues.push({
             type: 'spec',
-            source,
             level: 'error',
             message: `The prefix ${key} is not valid. It should end with a final / or # or :`,
             path: jsonldPropertyFullPath,
-            line: jsonldPropertyLine,
           });
         }
 
@@ -147,18 +150,15 @@ export const validateJsonldContext = async (system): Promise<SwaggerError[]> => 
         await resolvePropertyByJsonldContext(jsonldContext, propertyRelativePath);
       } catch (ex) {
         const propertyFullPath = [...SCHEMAS_PATH, dataModelKey, 'properties', ...propertyRelativePath];
-        const propertyLine = system.specSelectors.getSpecLineFromPath(propertyFullPath);
-        errors.push({
+        issues.push({
           type: 'spec',
-          source,
           level: 'error',
           message: ex.message,
           path: propertyFullPath,
-          line: propertyLine,
         });
       }
     }
   }
 
-  return errors;
+  return issues;
 };

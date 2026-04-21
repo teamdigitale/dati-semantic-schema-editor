@@ -1,3 +1,7 @@
+/**
+ * JSON-LD vocabulary keys
+ * @see https://www.w3.org/ns/json-ld
+ */
 export const JSONLD_VOCABULARY = [
   '@base',
   '@container',
