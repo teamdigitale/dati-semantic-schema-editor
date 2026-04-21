@@ -1,7 +1,8 @@
-import { resolveJsonldContext, resolvePropertyByJsonldContext } from '@teamdigitale/schema-editor-utils';
 import { Map, OrderedMap } from 'immutable';
-import { JSONLD_VOCABULARY } from './jsonld-vocabulary';
 import { resolveSpecPathRefs } from '../utils';
+import { resolvePropertyByJsonldContext } from './jsonld-resolver';
+import { JSONLD_VOCABULARY } from './jsonld-vocabulary';
+import { resolveJsonldContext } from './resolve-jsonld-context';
 
 export interface JsonLDValidationIssue {
   type: string;
