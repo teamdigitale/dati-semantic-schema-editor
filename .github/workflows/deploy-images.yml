@@ -15,6 +15,11 @@ on:
       - ".husky/**"
       - ".changeset/**"
   pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
     branches-ignore:
       - "changeset-release/**"
     paths-ignore:
