@@ -1,5 +1,12 @@
 # example
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies [3ce0af7]
+  - @teamdigitale/schema-editor@0.2.0
+
 ## 0.1.1
 
 ### Patch Changes
