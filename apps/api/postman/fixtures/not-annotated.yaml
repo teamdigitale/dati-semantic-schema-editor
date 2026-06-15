@@ -1,0 +1,55 @@
+openapi: 3.0.3
+info:
+  title: A non-annotated schema collection
+  version: '1.0.0'
+  description: |-
+    Uno schema OpenAPI 3.0 valido ma privo di annotazioni semantiche
+    (nessuna keyword x-jsonld-type / x-jsonld-context).
+    Ci si attende un semantic score pari a 0 e has_annotations=false.
+paths: {}
+servers: []
+tags: []
+components:
+  schemas:
+    Person:
+      type: object
+      additionalProperties: false
+      description: |-
+        Una persona fisica, senza alcuna annotazione JSON-LD.
+      required:
+        - given_name
+        - family_name
+        - tax_code
+      properties:
+        tax_code:
+          type: string
+          maxLength: 16
+          minLength: 11
+        family_name:
+          type: string
+          maxLength: 255
+        given_name:
+          type: string
+          maxLength: 255
+        date_of_birth:
+          type: string
+          format: date
+      example:
+        tax_code: RSSMRA75L01H501A
+        family_name: Rossi
+        given_name: Mario
+        date_of_birth: '1961-01-01'
+    Address:
+      type: object
+      additionalProperties: false
+      properties:
+        street:
+          type: string
+        city:
+          type: string
+        post_code:
+          type: string
+      example:
+        street: Via Roma 1
+        city: Roma
+        post_code: '00100'

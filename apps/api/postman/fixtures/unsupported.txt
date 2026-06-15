@@ -1,0 +1,4 @@
+Questo non e' un documento OpenAPI.
+E' un semplice file di testo usato per verificare che l'API
+risponda 415 Unsupported Media Type quando il file caricato
+non e' YAML o JSON.

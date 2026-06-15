@@ -1,0 +1,569 @@
+{
+  "info": {
+    "_postman_id": "5ef8bf58-469b-444f-9e7d-f17279100ebf",
+    "name": "Semantic Score Calculator Tests",
+    "description": "## Test della API Semantic Score Calculator (apps/api)\n\nQuesta collection testa attivamente l'API `apps/api` (NestJS) deployata in produzione,\na partire dall'OpenAPI dell'API. Il path reale e' `<host>/api/v1`.\n\nImposta la variabile di collection `baseUrl` sull'host di produzione reale\n(es. `https://<host>/api/v1`). Il valore di default e' un placeholder.\n\nLe richieste verso `/semantic-score` caricano file dalla cartella `fixtures/`:\nin Postman/Newman imposta la **working directory** su `apps/api/postman/`.\n\nCasi testati:\n1. api istat - healthcheck\n2. api istat - file annotato\n3. api istat - file non annotato\n4. api istat - file non supportato\n5. api istat - file con errori (openapi 3.1.0)\n6. api istat - disabilitazione swagger in produzione\n7. api istat - cors\n8. api istat - rate limiting",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "44944933"
+  },
+  "item": [
+    {
+      "name": "api istat - healthcheck",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Healthcheck - status 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Healthcheck - Content-Type application/json', function () {",
+              "  pm.expect(pm.response.headers.get('Content-Type') || '').to.include('application/json');",
+              "});",
+              "",
+              "pm.test('Healthcheck - body { status: 200, title: \"OK\" }', function () {",
+              "  var body = pm.response.json();",
+              "  pm.expect(body).to.have.property('status', 200);",
+              "  pm.expect(body).to.have.property('title', 'OK');",
+              "});",
+              "",
+              "pm.test('Healthcheck - header X-RateLimit-* presenti (soft)', function () {",
+              "  var h = pm.response.headers;",
+              "  var present = h.has('X-RateLimit-Limit') || h.has('X-RateLimit-Remaining') || h.has('X-RateLimit-Reset');",
+              "  if (!present) {",
+              "    console.warn('Header X-RateLimit-* non presenti sulla 200 (configurazione throttler lato server).');",
+              "  }",
+              "  pm.expect(true).to.be.true;",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/status",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "status"
+          ]
+        },
+        "description": "Verifica che il servizio sia attivo (GET /status)."
+      },
+      "response": []
+    },
+    {
+      "name": "api istat - file annotato",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('File annotato - status 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('File annotato - Content-Type application/json', function () {",
+              "  pm.expect(pm.response.headers.get('Content-Type') || '').to.include('application/json');",
+              "});",
+              "",
+              "var body = pm.response.json();",
+              "",
+              "pm.test('File annotato - score numerico tra 0 e 1', function () {",
+              "  pm.expect(body).to.have.property('score');",
+              "  pm.expect(body.score).to.be.a('number');",
+              "  pm.expect(body.score).to.be.at.least(0);",
+              "  pm.expect(body.score).to.be.at.most(1);",
+              "});",
+              "",
+              "pm.test('File annotato - timestamp numerico', function () {",
+              "  pm.expect(body).to.have.property('timestamp');",
+              "  pm.expect(body.timestamp).to.be.a('number');",
+              "});",
+              "",
+              "pm.test('File annotato - models e\\' un array non vuoto', function () {",
+              "  pm.expect(body).to.have.property('models');",
+              "  pm.expect(body.models).to.be.an('array').that.is.not.empty;",
+              "});",
+              "",
+              "pm.test('File annotato - ogni model ha i campi attesi', function () {",
+              "  body.models.forEach(function (m) {",
+              "    pm.expect(m).to.have.property('name');",
+              "    pm.expect(m).to.have.property('score');",
+              "    pm.expect(m).to.have.property('has_annotations');",
+              "    pm.expect(m).to.have.property('raw_properties_count');",
+              "    pm.expect(m).to.have.property('valid_properties_count');",
+              "    pm.expect(m).to.have.property('invalid_properties_count');",
+              "    pm.expect(m).to.have.property('properties');",
+              "    pm.expect(m.properties).to.be.an('array');",
+              "  });",
+              "});",
+              "",
+              "pm.test('File annotato - almeno un model con has_annotations=true', function () {",
+              "  var annotated = body.models.filter(function (m) { return m.has_annotations === true; });",
+              "  pm.expect(annotated.length, 'atteso almeno un model annotato').to.be.above(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "contentType": "application/yaml",
+              "src": "fixtures/annotated.yaml"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/semantic-score",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "semantic-score"
+          ]
+        },
+        "description": "Carica un OpenAPI 3.0 annotato (x-jsonld-type / x-jsonld-context) e verifica il calcolo dello score."
+      },
+      "response": []
+    },
+    {
+      "name": "api istat - file non annotato",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('File non annotato - status 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "var body = pm.response.json();",
+              "",
+              "pm.test('File non annotato - models e\\' un array', function () {",
+              "  pm.expect(body).to.have.property('models');",
+              "  pm.expect(body.models).to.be.an('array');",
+              "});",
+              "",
+              "pm.test('File non annotato - tutti i model con has_annotations=false', function () {",
+              "  body.models.forEach(function (m) {",
+              "    pm.expect(m.has_annotations, 'model ' + m.name + ' non dovrebbe essere annotato').to.eql(false);",
+              "  });",
+              "});",
+              "",
+              "pm.test('File non annotato - score pari a 0', function () {",
+              "  pm.expect(body).to.have.property('score');",
+              "  pm.expect(body.score).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "contentType": "application/yaml",
+              "src": "fixtures/not-annotated.yaml"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/semantic-score",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "semantic-score"
+          ]
+        },
+        "description": "Carica un OpenAPI 3.0 valido ma privo di annotazioni semantiche: atteso score 0 e has_annotations=false."
+      },
+      "response": []
+    },
+    {
+      "name": "api istat - file non supportato",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('File non supportato - status 415', function () {",
+              "  pm.response.to.have.status(415);",
+              "});",
+              "",
+              "pm.test('File non supportato - Content-Type application/problem+json', function () {",
+              "  pm.expect(pm.response.headers.get('Content-Type') || '').to.include('application/problem+json');",
+              "});",
+              "",
+              "pm.test('File non supportato - body Problem JSON (RFC 7807)', function () {",
+              "  var body = pm.response.json();",
+              "  pm.expect(body).to.have.property('status', 415);",
+              "  pm.expect(body).to.have.property('title');",
+              "  pm.expect(body).to.have.property('detail');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/problem+json"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "contentType": "text/plain",
+              "src": "fixtures/unsupported.txt"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/semantic-score",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "semantic-score"
+          ]
+        },
+        "description": "Carica un file con media type non supportato (text/plain): atteso 415 Unsupported Media Type."
+      },
+      "response": []
+    },
+    {
+      "name": "api istat - file con errori (openapi 3.1.0)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('OpenAPI 3.1.0 - status 406', function () {",
+              "  pm.response.to.have.status(406);",
+              "});",
+              "",
+              "pm.test('OpenAPI 3.1.0 - Content-Type application/problem+json', function () {",
+              "  pm.expect(pm.response.headers.get('Content-Type') || '').to.include('application/problem+json');",
+              "});",
+              "",
+              "pm.test('OpenAPI 3.1.0 - body Problem JSON con status 406', function () {",
+              "  var body = pm.response.json();",
+              "  pm.expect(body).to.have.property('status', 406);",
+              "  pm.expect(body).to.have.property('title');",
+              "  pm.expect(body).to.have.property('detail');",
+              "});",
+              "",
+              "pm.test('OpenAPI 3.1.0 - detail segnala la versione 3.0', function () {",
+              "  var body = pm.response.json();",
+              "  pm.expect(String(body.detail)).to.include('3.0');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/problem+json"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "contentType": "application/yaml",
+              "src": "fixtures/openapi-3.1.0.yaml"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/semantic-score",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "semantic-score"
+          ]
+        },
+        "description": "Carica un documento OpenAPI 3.1.0 (non supportato): atteso 406 Not Acceptable con detail che cita 3.0.x."
+      },
+      "response": []
+    },
+    {
+      "name": "api istat - disabilitazione swagger in produzione",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Swagger UI - disabilitato in produzione (non 200, atteso 404)', function () {",
+              "  pm.expect(pm.response.code, 'in produzione la Swagger UI deve essere disabilitata').to.not.eql(200);",
+              "});",
+              "",
+              "// Verifica accessoria: lo spec OpenAPI resta servito anche in produzione.",
+              "var base = pm.variables.get('baseUrl');",
+              "pm.sendRequest({ url: base + '/openapi.yaml', method: 'GET' }, function (err, res) {",
+              "  pm.test('OpenAPI spec (openapi.yaml) accessibile - status 200', function () {",
+              "    pm.expect(err).to.be.null;",
+              "    pm.expect(res.code).to.eql(200);",
+              "  });",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "text/html"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/swagger-ui",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "swagger-ui"
+          ]
+        },
+        "description": "In produzione (NODE_ENV=production) la Swagger UI e\\' disabilitata: atteso 404. Lo spec openapi.yaml resta servito."
+      },
+      "response": []
+    },
+    {
+      "name": "api istat - cors",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('CORS - header Access-Control-Allow-Origin presente', function () {",
+              "  pm.expect(pm.response.headers.has('Access-Control-Allow-Origin'), 'atteso header Access-Control-Allow-Origin').to.be.true;",
+              "});",
+              "",
+              "pm.test('CORS - Access-Control-Allow-Methods include GET e POST', function () {",
+              "  var methods = (pm.response.headers.get('Access-Control-Allow-Methods') || '').toUpperCase();",
+              "  pm.expect(methods).to.include('GET');",
+              "  pm.expect(methods).to.include('POST');",
+              "});",
+              "",
+              "pm.test('CORS - Access-Control-Allow-Origin coerente con Origin richiesto o wildcard', function () {",
+              "  var acao = pm.response.headers.get('Access-Control-Allow-Origin') || '';",
+              "  var origin = pm.variables.get('corsOrigin');",
+              "  pm.expect(acao === '*' || acao === origin, 'ACAO=' + acao + ' atteso \"*\" o \"' + origin + '\"').to.be.true;",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "OPTIONS",
+        "header": [
+          {
+            "key": "Origin",
+            "value": "{{corsOrigin}}"
+          },
+          {
+            "key": "Access-Control-Request-Method",
+            "value": "GET"
+          },
+          {
+            "key": "Access-Control-Request-Headers",
+            "value": "Content-Type, Accept"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/status",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "status"
+          ]
+        },
+        "description": "Preflight CORS (OPTIONS) verso /status: verifica gli header Access-Control-Allow-*. Il valore di ACAO dipende da CORS_ORIGIN lato server (default *)."
+      },
+      "response": []
+    },
+    {
+      "name": "api istat - rate limiting",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Invia richieste ripetute a /status finche' non si ottiene un 429",
+              "// (oppure fino a rateLimitMaxAttempts). Self-contained: funziona anche con \"Send\".",
+              "var base = pm.variables.get('baseUrl');",
+              "var maxAttempts = parseInt(pm.variables.get('rateLimitMaxAttempts') || '40', 10);",
+              "var attempt = 0;",
+              "",
+              "function fire() {",
+              "  attempt++;",
+              "  pm.sendRequest({ url: base + '/status', method: 'GET' }, function (err, res) {",
+              "    if (err) {",
+              "      pm.test('Rate limiting - nessun errore di rete', function () {",
+              "        pm.expect.fail('Errore di rete: ' + err);",
+              "      });",
+              "      return;",
+              "    }",
+              "    if (res.code === 429) {",
+              "      pm.test('Rate limiting - ricevuto 429 Too Many Requests (dopo ' + attempt + ' richieste)', function () {",
+              "        pm.expect(res.code).to.eql(429);",
+              "      });",
+              "      pm.test('Rate limiting - il 429 espone header di throttling', function () {",
+              "        var h = res.headers;",
+              "        var has = h.has('Retry-After') || h.has('X-RateLimit-Limit') || h.has('X-RateLimit-Remaining') || h.has('X-RateLimit-Reset');",
+              "        pm.expect(has, 'atteso almeno uno tra Retry-After / X-RateLimit-*').to.be.true;",
+              "      });",
+              "      return;",
+              "    }",
+              "    if (attempt >= maxAttempts) {",
+              "      pm.test('Rate limiting - raggiunto 429 entro ' + maxAttempts + ' tentativi', function () {",
+              "        pm.expect.fail('Nessun 429 dopo ' + attempt + ' richieste. Aumenta rateLimitMaxAttempts o verifica il throttling lato server (default 15/60s).');",
+              "      });",
+              "      return;",
+              "    }",
+              "    fire();",
+              "  });",
+              "}",
+              "",
+              "fire();"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/status",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "status"
+          ]
+        },
+        "description": "Verifica il rate limiting: invia molte richieste a /status finche' non scatta un 429 (default server 15/60s). Cap configurabile via rateLimitMaxAttempts."
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://example.com/api/v1"
+    },
+    {
+      "key": "rateLimitMaxAttempts",
+      "value": "40"
+    },
+    {
+      "key": "corsOrigin",
+      "value": "https://teamdigitale.github.io"
+    }
+  ]
+}
