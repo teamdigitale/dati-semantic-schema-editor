@@ -31,7 +31,7 @@ USER 1000
 
 ENV NODE_ENV=production
 ENV HOME=/home/node
-CMD ["pnpm","start:prod"]
+CMD ["node","dist/main"]
 
 # checkov:skip=CKV_DOCKER_2
 FROM nginx AS example
