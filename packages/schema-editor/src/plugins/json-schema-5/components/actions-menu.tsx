@@ -8,6 +8,7 @@ import { useConfiguration } from '../../configuration';
 import { LayoutTypes } from '../../layout';
 import { copyToClipboard, encodeOAS } from '../utils';
 import { useState } from 'react';
+import { SearchVocabulariesModal } from './search-vocabularies/search-vocabularies-modal';
 
 const downloadContent = (content: any, mediaType: string, fileName: string) => {
   const blob = new Blob([content], { type: mediaType });
@@ -32,6 +33,8 @@ export const ActionsMenu = (system) => {
   const { oasCheckerUrl, schemaEditorUrl, sparqlUrl = '' } = useConfiguration();
   const { url, layout } = getConfigs();
 
+  const [isSearchVocabulariesModalOpen, setIsSearchVocabulariesModalOpen] = useState(false);
+
   const actions = [
     ...(layout === LayoutTypes.EDITOR
       ? [
@@ -43,6 +46,14 @@ export const ActionsMenu = (system) => {
               const template = `${window.location.origin}/${window.location.pathname}/schemas/blank-template.oas3.yaml`;
               specActions.updateUrl(template);
               specActions.download(template);
+            },
+          },
+          {
+            id: 'InspectVocabularies',
+            text: 'Inspect vocabularies',
+            icon: 'it-search',
+            onClick: () => {
+              setIsSearchVocabulariesModalOpen(true);
             },
           },
           {
@@ -62,6 +73,7 @@ export const ActionsMenu = (system) => {
             id: 'DownloadBundle',
             text: 'Download bundle',
             icon: 'it-download',
+            disabled: !specSelectors?.definitions()?.size,
             onClick: async () => {
               const resolvedSpecJson = await createBundle(specSelectors.specJson().toJS(), { sparqlUrl });
               downloadContent(yaml.dump(resolvedSpecJson), 'application/yaml', 'spec.yaml');
@@ -105,11 +117,11 @@ export const ActionsMenu = (system) => {
   ];
 
   const [clickedAction, setClickedAction] = useState<string | undefined>();
-  const handleClick = (action: (typeof actions)[number]) => {
+  const handleClick = async (action: (typeof actions)[number]) => {
     if (!action.onClick) {
       return;
     }
-    action.onClick();
+    await action.onClick();
     setClickedAction(action.id);
     setTimeout(() => {
       setClickedAction(undefined);
@@ -126,31 +138,43 @@ export const ActionsMenu = (system) => {
         <Icon icon={actions[0].icon} size="sm" className="ms-2" fill="currentColor" />
       </Button>
     ) : (
-      <Dropdown>
-        <DropdownToggle color="primary">Action menu</DropdownToggle>
+      <>
+        <Dropdown>
+          <DropdownToggle color="primary">Action menu</DropdownToggle>
 
-        <DropdownMenu>
-          <LinkList>
-            <>
-              {actions.map(
-                (action) =>
-                  action && (
-                    <LinkListItem
-                      key={action.id}
-                      className="right-icon justify-content-between d-flex"
-                      inDropdown
-                      href={action?.href || '#'}
-                      onClick={() => handleClick(action)}
-                    >
-                      <span>{action?.text}</span>
-                      <Icon icon={clickedAction === action.id ? 'it-check' : action.icon} size="sm" className="right" />
-                    </LinkListItem>
-                  ),
-              )}
-            </>
-          </LinkList>
-        </DropdownMenu>
-      </Dropdown>
+          <DropdownMenu>
+            <LinkList>
+              <>
+                {actions.map(
+                  (action) =>
+                    action && (
+                      <LinkListItem
+                        key={action.id}
+                        className="right-icon justify-content-between d-flex"
+                        inDropdown
+                        href={action?.href || '#'}
+                        onClick={() => handleClick(action)}
+                        disabled={action?.disabled}
+                      >
+                        <span>{action?.text}</span>
+                        <Icon
+                          icon={clickedAction === action.id ? 'it-check' : action.icon}
+                          size="sm"
+                          className="right"
+                        />
+                      </LinkListItem>
+                    ),
+                )}
+              </>
+            </LinkList>
+          </DropdownMenu>
+        </Dropdown>
+
+        <SearchVocabulariesModal
+          isOpen={isSearchVocabulariesModalOpen}
+          onClose={() => setIsSearchVocabulariesModalOpen(false)}
+        />
+      </>
     ))
   );
 };
