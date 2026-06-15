@@ -1,5 +1,11 @@
 # api
 
+## 0.3.1
+
+### Patch Changes
+
+- ba71c2e: Updated docker run command to avoid pnpm version
+
 ## 0.3.0
 
 ### Minor Changes
