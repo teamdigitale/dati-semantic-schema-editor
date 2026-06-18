@@ -74,7 +74,7 @@
     "swagger-editor": "^4.13.1",
     "swagger-ui": "^5.17.14",
     "typescript": "^5.9.3",
-    "vite": "^7.3.1",
+    "vite": "^7.3.5",
     "vite-plugin-dts": "^4.5.4",
     "vitest": "^4.0.18"
   }
