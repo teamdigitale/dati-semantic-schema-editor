@@ -36,9 +36,11 @@ describe('SemanticScoreController', () => {
     const response = await request(app.getHttpServer())
       .post('/semantic-score')
       .set('Content-Type', 'multipart/form-data')
-      .attach('file', path.join(__dirname, 'invalid.yaml'), {
-        contentType: 'application/octet-stream',
-      });
+      .attach(
+        'file',
+        path.join(__dirname, 'example-with-critical-errors.yaml'),
+        { contentType: 'application/octet-stream' },
+      );
     expect(response.statusCode).toEqual(406);
     expect(response.headers['content-type']).toContain('application/json');
     expect(response.body).toBeDefined();
@@ -47,11 +49,26 @@ describe('SemanticScoreController', () => {
     expect(response.body.message).toContain('Context must be an object.');
   });
 
+  it('should process invalid YAML file and return error response with potential semantic score when possible', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/semantic-score')
+      .set('Content-Type', 'multipart/form-data')
+      .attach('file', path.join(__dirname, 'example-with-soft-errors.yaml'), {
+        contentType: 'application/octet-stream',
+      });
+    expect(response.statusCode).toEqual(406);
+    expect(response.headers['content-type']).toContain('application/json');
+    expect(response.body).toBeDefined();
+    expect(response.body).toHaveProperty('message');
+    expect(typeof response.body.message).toBe('string');
+    expect(response.body.message).toContain('Potential semantic score: 0.76.');
+  });
+
   it('should process YAML file successfully and return JSON response', async () => {
     const response = await request(app.getHttpServer())
       .post('/semantic-score')
       .set('Content-Type', 'multipart/form-data')
-      .attach('file', path.join(__dirname, 'example.yaml'), {
+      .attach('file', path.join(__dirname, 'example-valid.yaml'), {
         contentType: 'application/octet-stream',
       });
     expect(response.statusCode).toEqual(200);

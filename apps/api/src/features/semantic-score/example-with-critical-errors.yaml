@@ -114,7 +114,7 @@ components:
       # This custom property defines the associated json-ld
       #   context that can be used to semantically describe
       #   the instances.
-      x-jsonld-context: null
+      x-jsonld-context: "This is an invalid context!!!"
       additionalProperties: false
       description: |-
         Questo schema rappresenta una persona fisica.

@@ -3,6 +3,7 @@ import {
   Controller,
   HttpCode,
   Inject,
+  InternalServerErrorException,
   Logger,
   NotAcceptableException,
   ParseFilePipe,
@@ -22,6 +23,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { SemanticScoreSummary } from '@teamdigitale/schema-editor-utils';
 import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 import * as yaml from 'js-yaml';
@@ -137,8 +139,10 @@ The response will output informations about the global semantic score and the mo
         'Invalid file type. Accepted types are application/yaml and application/json.',
       );
     }
+    this.logger.debug(`File content parsed to JSON object successfully`);
 
     // Validate OAS document
+    this.logger.debug(`Validating OAS document`);
     const validatedConfig = plainToInstance(OASDocumentDTO, specJson, {
       enableImplicitConversion: true,
     });
@@ -151,27 +155,67 @@ The response will output informations about the global semantic score and the mo
         .join('\n');
       throw new NotAcceptableException(errorTxt);
     }
+    this.logger.debug(`OAS document validated successfully`);
 
     // Validate JSON-LD context
+    this.logger.debug(`Validating JSON-LD context`);
     const jsonldContextErrors =
       await this.semanticScoreService.validateJsonldContext(specJson);
-    if (jsonldContextErrors.length > 0) {
-      const errorTxt = jsonldContextErrors
-        .map((x) => `[${x.path.join('/')}] ${x.message}`)
-        .join('\n');
-      throw new NotAcceptableException(errorTxt);
+    const isJsonldContextValid = jsonldContextErrors.length === 0;
+    let jsonldContextErrorTxt: string | undefined;
+    if (!isJsonldContextValid) {
+      if (jsonldContextErrors.length > 0) {
+        jsonldContextErrorTxt = jsonldContextErrors
+          .map((x) => `[${x.path.join('/')}] ${x.message}`)
+          .join('\n');
+      }
+      this.logger.debug(
+        `JSON-LD context has some errors: ${jsonldContextErrorTxt}`,
+      );
+      // PAY ATTENTION: The error is raised after trying to calculate the score,
+      // so any info about the global score can be included in the error message.
+      this.logger.debug(`Trying to continue with the calculation...`);
+    }
+
+    // Purge JSON-LD context null properties
+    let purgedSpecJson: object = specJson;
+    if (!isJsonldContextValid) {
+      this.logger.debug(`Purging JSON-LD context null properties`);
+      purgedSpecJson =
+        this.semanticScoreService.purgeJsonldContextNullProperties(specJson);
+      this.logger.debug(`JSON-LD context null properties purged successfully`);
     }
 
     // Calculate ontoscore and normalize spec
     this.logger.debug(`Calculating ontoscore`);
-    const { schemaSemanticScore, summary } =
-      await this.semanticScoreService.calculateSchemaSemanticScore(specJson);
-    this.logger.debug(
-      `Ontoscore calculated successfully. Calculated value: ${schemaSemanticScore.toFixed(2)}`,
-    );
+    let semanticScoreResult:
+      | { schemaSemanticScore: number; summary: SemanticScoreSummary }
+      | undefined;
+    try {
+      semanticScoreResult =
+        await this.semanticScoreService.calculateSchemaSemanticScore(
+          purgedSpecJson,
+        );
+      this.logger.debug(
+        `Ontoscore calculated successfully with value: ${semanticScoreResult.schemaSemanticScore.toFixed(2)}`,
+      );
+    } catch (error) {
+      this.logger.debug(`Ontoscore calculation failed: ${error.message}`);
+    }
 
-    this.logger.log(`Schema semantic score calculated successfully`);
+    // Successfully calculated semantic score
+    if (isJsonldContextValid && semanticScoreResult) {
+      this.logger.log(`Schema semantic score calculated successfully`);
+      return new SemanticScoreResponseDTO(semanticScoreResult.summary);
+    }
 
-    return new SemanticScoreResponseDTO(summary);
+    // Handling errors
+    if (!isJsonldContextValid && semanticScoreResult) {
+      const errorTxt = `Potential semantic score: ${semanticScoreResult.schemaSemanticScore.toFixed(2)}.\nErrors: ${jsonldContextErrorTxt}`;
+      throw new NotAcceptableException(errorTxt);
+    } else if (!isJsonldContextValid && !semanticScoreResult) {
+      throw new NotAcceptableException(jsonldContextErrorTxt);
+    }
+    throw new InternalServerErrorException('No semantic score calculated');
   }
 }
