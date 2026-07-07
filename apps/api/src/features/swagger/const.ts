@@ -67,6 +67,10 @@ export const API_RESPONSE_DEFAULT: ApiResponseOptions = {
   },
 };
 
+/**
+ * 406 Not Acceptable
+ * The provided file is not a valid OpenAPI 3.0 specification document.
+ */
 export const API_RESPONSE_406: ApiResponseOptions = {
   status: 406,
   description: `The provided file is not a valid OpenAPI 3.0 specification document.`,
@@ -80,6 +84,10 @@ export const API_RESPONSE_406: ApiResponseOptions = {
   },
 };
 
+/**
+ * 413 Payload Too Large
+ * The provided file is too large.
+ */
 export const API_RESPONSE_413: ApiResponseOptions = {
   status: 413,
   description: `The provided file is too large.`,
@@ -93,6 +101,10 @@ export const API_RESPONSE_413: ApiResponseOptions = {
   },
 };
 
+/**
+ * 415 Unsupported Media Type
+ * The provided file has an unsupported media type: we only accept application/json and application/yaml.
+ */
 export const API_RESPONSE_415: ApiResponseOptions = {
   status: 415,
   description: `The provided file has an unsupported media type: we only accept application/json and application/yaml.`,
@@ -106,6 +118,10 @@ export const API_RESPONSE_415: ApiResponseOptions = {
   },
 };
 
+/**
+ * 429 Too Many Requests
+ * Too many requests sent to the server.
+ */
 export const API_RESPONSE_429: ApiResponseOptions = {
   status: 429,
   description: 'Too many requests sent to the server.',
@@ -122,6 +138,10 @@ export const API_RESPONSE_429: ApiResponseOptions = {
   },
 };
 
+/**
+ * 503 Service Unavailable
+ * The service is not available: further availability information may be provided via headers.
+ */
 export const API_RESPONSE_503: ApiResponseOptions = {
   status: 503,
   description:
@@ -139,6 +159,10 @@ export const API_RESPONSE_503: ApiResponseOptions = {
   },
 };
 
+/**
+ * 500 Internal Server Error
+ * Client or server error during semantic score calculation.
+ */
 export const API_RESPONSE_DEFAULT_SEMANTIC_SCORE: ApiResponseOptions = {
   status: 'default',
   description: 'Client or server error during semantic score calculation.',

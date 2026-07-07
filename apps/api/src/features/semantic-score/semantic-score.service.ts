@@ -41,6 +41,32 @@ export class SemanticScoreService {
     return errors;
   }
 
+  purgeJsonldContextNullProperties(specJson: object): object {
+    if (typeof specJson !== 'object' || specJson === null) {
+      return specJson;
+    }
+
+    // Helper to recursively traverse and replace
+    const traverse = (value: object): object => {
+      if (Array.isArray(value)) {
+        return value.map(traverse);
+      } else if (typeof value === 'object' && value !== null) {
+        const newObj: object = {};
+        for (const key of Object.keys(value)) {
+          if (key === 'x-jsonld-context' && value[key] === null) {
+            newObj[key] = undefined;
+          } else {
+            newObj[key] = traverse(value[key]);
+          }
+        }
+        return newObj;
+      }
+      return value;
+    };
+
+    return traverse(specJson);
+  }
+
   async calculateSchemaSemanticScore(
     specJson: object,
   ): Promise<{ schemaSemanticScore: number; summary: SemanticScoreSummary }> {
